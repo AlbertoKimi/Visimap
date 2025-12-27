@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-// Cambiamos el proveedor de CDN a esm.sh para mejorar la compatibilidad con el entorno de previsualización
-// y evitar errores de "Dynamic require".
+// Importamos Supabase desde un CDN (esm.sh) para asegurar compatibilidad total en el Canvas
 import { createClient } from 'https://esm.sh/@supabase/supabase-js';
 
 // --- CONFIGURACIÓN DE CONEXIÓN ---
+// Para la ejecución en el Canvas, definimos las constantes directamente.
+// En tu entorno local (VS Code), estas se leerían de .env.local automáticamente.
 const supabaseUrl = "https://vpetkpmxeopozhqizsqx.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZXRrcG14ZW9wb3pocWl6c3F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzY0MTUsImV4cCI6MjA3ODQ1MjQxNX0.sVooRLG4r_wd2cHNMCngTUPBWnCAVbCwoyibVjoWou8";
 
@@ -18,7 +19,7 @@ export default function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Comprobar sesión inicial
+    // Comprobar si hay sesión al cargar
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
@@ -37,9 +38,9 @@ export default function App() {
     setError(null);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError('Credenciales incorrectas');
+      if (error) setError('Email o contraseña incorrectos');
     } catch (err) {
-      setError('Error de conexión con el servidor');
+      setError('Error de conexión. Revisa la configuración del proyecto.');
     }
   };
 
@@ -52,15 +53,16 @@ export default function App() {
     </div>
   );
 
+  // --- VISTA DASHBOARD (Si el login es correcto) ---
   if (session) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans text-slate-900">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
         <div className="bg-white p-12 rounded-[40px] shadow-2xl border border-slate-100 text-center space-y-6 max-w-lg w-full transform transition hover:scale-[1.01]">
           <div className="w-20 h-20 bg-indigo-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-200">
              <span className="text-white text-4xl font-black">V</span>
           </div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">¡Acceso Correcto!</h1>
-          <p className="text-slate-500">Sesión iniciada como: <br/>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight">¡Bienvenido al MUVI!</h1>
+          <p className="text-slate-500">Has iniciado sesión como: <br/>
             <span className="font-bold text-indigo-600 break-all">{session.user.email}</span>
           </p>
           <div className="pt-4">
@@ -76,6 +78,7 @@ export default function App() {
     );
   }
 
+  // --- VISTA PÚBLICA (Landing y Login) ---
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 overflow-x-hidden">
       {/* Navegación Superior */}
@@ -92,7 +95,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Contenido Dinámico */}
       <div className="relative">
         {view === 'landing' ? (
           <main className="max-w-7xl mx-auto px-8 pt-20 md:pt-32 text-center space-y-12 animate-in fade-in duration-700">
@@ -109,19 +111,9 @@ export default function App() {
                 Acceder al Sistema
               </button>
             </div>
-
-            {/* Stats Mockup */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-16 opacity-60">
-                {['Visitantes', 'Países', 'Aforo', 'Eventos'].map((item) => (
-                    <div key={item} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm transition hover:shadow-md">
-                        <p className="text-2xl font-black text-slate-800">--</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item}</p>
-                    </div>
-                ))}
-            </div>
           </main>
         ) : (
-          <div className="max-w-md mx-auto pt-20 px-8 animate-in slide-in-from-bottom duration-500 pb-20">
+          <div className="max-w-md mx-auto pt-20 px-8 pb-20">
             <div className="bg-white p-8 md:p-10 rounded-[40px] shadow-2xl border border-slate-100 space-y-8 text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-indigo-600"></div>
               <h2 className="text-3xl font-black text-slate-800 tracking-tight">Acceso Personal</h2>
@@ -130,7 +122,7 @@ export default function App() {
                   <label className="text-[10px] font-bold text-slate-400 uppercase ml-2 tracking-widest">Email</label>
                   <input 
                     type="email" 
-                    placeholder="ejemplo@muvi.es" 
+                    placeholder="email@muvi.es" 
                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-100 focus:bg-white transition text-lg"
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)} 
@@ -149,7 +141,7 @@ export default function App() {
                   />
                 </div>
                 {error && <p className="text-red-500 text-xs font-bold text-center bg-red-50 p-3 rounded-xl border border-red-100">{error}</p>}
-                <button className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 transition hover:bg-indigo-700 active:scale-95 text-lg">
+                <button className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 transition hover:bg-indigo-700 text-lg active:scale-95">
                   Iniciar Sesión
                 </button>
               </form>
@@ -163,10 +155,8 @@ export default function App() {
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slide-in-from-bottom { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .animate-in { animation-fill-mode: both; }
         .fade-in { animation: fade-in 0.5s ease-out; }
-        .slide-in-from-bottom { animation: slide-in-from-bottom 0.5s ease-out; }
       `}} />
     </div>
   );
