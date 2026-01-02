@@ -9,7 +9,7 @@ const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function App() {
-  const [view, setView] = useState('landing'); // 'landing', 'login', 'dashboard'
+  const [view, setView] = useState('landing'); // 'landing', 'login', 'dashboard' --> estados que puede tener la app
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
@@ -63,7 +63,7 @@ export default function App() {
 
       if (error) throw error;
       
-      console.log('✅ Visitante registrado:', data);
+      console.log('Visitante registrado:', data);
     } catch (error) {
       console.error('Error al registrar:', error);
       throw error;
@@ -82,10 +82,13 @@ export default function App() {
   }
 
   // DASHBOARD - Cuando el usuario está logueado
+
   if (session && view === 'dashboard') {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header del Dashboard */}
+
+        {/* Header */}
+
         <header className="bg-white border-b sticky top-0 z-40 shadow-sm">
           <div className="container mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -111,7 +114,8 @@ export default function App() {
           </div>
         </header>
 
-        {/* Contenido del Dashboard */}
+        {/* Contenido --> aquí irá el mapa, el aside, calendario, etc */}
+
         <main className="container mx-auto px-6 py-8">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sistema de Registro de Visitantes</h2>
@@ -119,20 +123,24 @@ export default function App() {
           </div>
 
           {/* Componente del Mapa */}
+
           <MapaVisitantes onRegistrarVisitante={handleRegistrarVisitante} />
 
-          {/* Aquí podrás añadir más componentes: estadísticas, tablas, etc. */}
+          {/* Añadir más componentes: estadísticas, tablas, etc. */}
+
         </main>
       </div>
     );
   }
 
   // LANDING PAGE
+
   if (view === 'landing') {
     return <LandingPage onGetStarted={() => setView('login')} />;
   }
 
-  // VISTA DE LOGIN
+  // LOGIN
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full">

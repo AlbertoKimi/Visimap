@@ -26,7 +26,6 @@ export function LandingPage({ onGetStarted }) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -36,7 +35,6 @@ export function LandingPage({ onGetStarted }) {
                 alt="VisiMap Logo"
                 className="w-16 h-16 object-contain"
                 onError={(e) => {
-                  // Fallback por si la imagen no carga en el navegador local temporalmente
                   e.target.style.display = 'none';
                   const fallback = document.createElement('div');
                   fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
@@ -58,6 +56,7 @@ export function LandingPage({ onGetStarted }) {
       </nav>
 
       {/* Hero Section */}
+      
       <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-blue-50 via-purple-50 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto relative z-10">
@@ -104,33 +103,11 @@ export function LandingPage({ onGetStarted }) {
               </Button>
             </div>
           </motion.div>
-
-          {/*<motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="mt-16 relative max-w-5xl mx-auto"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 blur-3xl opacity-20 rounded-full"></div>
-            <img
-              src="https://images.unsplash.com/photo-1761264889291-52edcd3979b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwdGVjaG5vbG9neSUyMGRhc2hib2FyZHxlbnwxfHx8fDE3NjY3NjE4NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-              alt="VisiMap Dashboard"
-              className="rounded-lg shadow-2xl border border-gray-200 relative z-10"
-            />
-          </motion.div>*/}
         </div>
-
-        {/*<motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer"
-          onClick={() => scrollToSection('museo')}
-        >
-          <ChevronDown className="w-8 h-8 text-gray-400" />
-        </motion.div>*/}
       </section>
 
-      {/* Museo MUVI Section */}
+      {/* Sección de Museo MUVI */}
+
       <section id="museo" className="py-12 px-8 bg-white">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -207,7 +184,8 @@ export function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Características app */}
+
       <section className="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="container mx-auto">
           <motion.div
@@ -286,7 +264,8 @@ export function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* Benefits Section */}
+      {/* Beneficios de la Digitalización */}
+
       <section className="py-20 px-4 bg-white">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -358,7 +337,8 @@ export function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Números de VisiMap */}
+
       <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto">
           <motion.div
@@ -399,7 +379,8 @@ export function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Sección para contactar */}
+
       <section className="py-20 px-4 bg-white">
         <div className="container mx-auto">
           <motion.div
@@ -428,6 +409,7 @@ export function LandingPage({ onGetStarted }) {
       </section>
 
       {/* Footer */}
+
       <footer className="bg-gray-900 text-white py-12 px-4">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
@@ -438,7 +420,6 @@ export function LandingPage({ onGetStarted }) {
                   alt="VisiMap Logo"
                   className="w-16 h-16 object-contain"
                   onError={(e) => {
-                    // Fallback por si la imagen no carga en el navegador local temporalmente
                     e.target.style.display = 'none';
                     const fallback = document.createElement('div');
                     fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";

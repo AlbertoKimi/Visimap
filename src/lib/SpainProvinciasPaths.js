@@ -1,5 +1,3 @@
-// spainProvincePaths.jsx
-
 export const SpainProvincePaths = {
   alava: {
     name: "Álava",
