@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
-import { 
-  BarChart3, 
-  Users, 
-  MapPin, 
-  Calendar, 
-  Shield, 
+import {
+  BarChart3,
+  Users,
+  MapPin,
+  Calendar,
+  Shield,
   TrendingUp,
   CheckCircle2,
   ArrowRight,
@@ -15,6 +15,8 @@ import {
   Activity,
   ChevronDown
 } from 'lucide-react';
+
+const logoUrl = "/src/assets/Logo.png";
 
 export function LandingPage({ onGetStarted }) {
   const scrollToSection = (id) => {
@@ -29,9 +31,19 @@ export function LandingPage({ onGetStarted }) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-white" />
-              </div>
+              <img
+                src={logoUrl}
+                alt="VisiMap Logo"
+                className="w-16 h-16 object-contain"
+                onError={(e) => {
+                  // Fallback por si la imagen no carga en el navegador local temporalmente
+                  e.target.style.display = 'none';
+                  const fallback = document.createElement('div');
+                  fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                  fallback.innerText = "V";
+                  e.target.parentNode.prepend(fallback);
+                }}
+              />
               <div>
                 <h2 className="text-xl">VisiMap</h2>
                 <p className="text-xs text-gray-600">Museo MUVI</p>
@@ -63,18 +75,18 @@ export function LandingPage({ onGetStarted }) {
             >
               Sistema de Gestión de Visitantes
             </motion.div>
-            
+
             <h1 className="text-5xl md:text-6xl lg:text-7xl mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Digitaliza la experiencia del Museo MUVI
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-              VisiMap transforma la gestión de visitantes con tecnología avanzada, 
+              VisiMap transforma la gestión de visitantes con tecnología avanzada,
               análisis en tiempo real y una experiencia digital completa.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <Button
                 onClick={onGetStarted}
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8"
@@ -82,9 +94,9 @@ export function LandingPage({ onGetStarted }) {
                 Comenzar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button 
+              <Button
                 onClick={() => scrollToSection('museo')}
-                variant="outline" 
+                variant="outline"
                 size="lg"
                 className="text-lg px-8"
               >
@@ -93,33 +105,33 @@ export function LandingPage({ onGetStarted }) {
             </div>
           </motion.div>
 
-          <motion.div
+          {/*<motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
             className="mt-16 relative max-w-5xl mx-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 blur-3xl opacity-20 rounded-full"></div>
-            <img 
+            <img
               src="https://images.unsplash.com/photo-1761264889291-52edcd3979b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwdGVjaG5vbG9neSUyMGRhc2hib2FyZHxlbnwxfHx8fDE3NjY3NjE4NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
               alt="VisiMap Dashboard"
               className="rounded-lg shadow-2xl border border-gray-200 relative z-10"
             />
-          </motion.div>
+          </motion.div>*/}
         </div>
 
-        <motion.div 
+        {/*<motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer"
           onClick={() => scrollToSection('museo')}
         >
           <ChevronDown className="w-8 h-8 text-gray-400" />
-        </motion.div>
+        </motion.div>*/}
       </section>
 
       {/* Museo MUVI Section */}
-      <section id="museo" className="py-20 px-4 bg-white">
+      <section id="museo" className="py-12 px-8 bg-white">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -133,18 +145,18 @@ export function LandingPage({ onGetStarted }) {
               </h2>
               <div className="space-y-4 text-gray-600 text-lg">
                 <p>
-                  El <strong>Museo Municipal de Villafranca de los Barros (MUVI)</strong> es un 
-                  espacio cultural dedicado a preservar y difundir el patrimonio histórico, 
+                  El <strong>Museo Municipal de Villafranca de los Barros (MUVI)</strong> es un
+                  espacio cultural dedicado a preservar y difundir el patrimonio histórico,
                   artístico y etnográfico de la región.
                 </p>
                 <p>
-                  Con una rica colección que abarca desde la prehistoria hasta la época contemporánea, 
-                  el MUVI se ha consolidado como referente cultural en Extremadura, ofreciendo 
+                  Con una rica colección que abarca desde la prehistoria hasta la época contemporánea,
+                  el MUVI se ha consolidado como referente cultural en Extremadura, ofreciendo
                   exposiciones permanentes y temporales que conectan el pasado con el presente.
                 </p>
                 <p>
-                  Ubicado en el corazón de Villafranca de los Barros, el museo recibe miles de 
-                  visitantes cada año, tanto locales como de otras regiones, convirtiéndose en 
+                  Ubicado en el corazón de Villafranca de los Barros, el museo recibe miles de
+                  visitantes cada año, tanto locales como de otras regiones, convirtiéndose en
                   un punto de encuentro para la cultura y la educación.
                 </p>
               </div>
@@ -175,18 +187,17 @@ export function LandingPage({ onGetStarted }) {
               className="relative"
             >
               <div className="grid grid-cols-2 gap-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1575235488685-e01cd36f54c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBtdXNldW0lMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjY4NjY4MjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Museo Interior"
+                <img
+                  src="/src/assets/muvi1.jpeg"
+                  alt="Museo Fachada"
                   className="rounded-lg shadow-lg col-span-2"
                 />
-                <img 
-                  src="https://images.unsplash.com/photo-1742497360062-c5f15b7b5e8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNldW0lMjBleGhpYml0aW9uJTIwaGFsbHxlbnwxfHx8fDE3NjY4NDQ3ODh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Sala de Exposiciones"
+                <img
+                  src="/src/assets/muvihistoria.jpg"
                   className="rounded-lg shadow-lg"
                 />
-                <img 
-                  src="https://images.unsplash.com/photo-1675819823109-0582a7feaef8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNldW0lMjB2aXNpdG9yc3xlbnwxfHx8fDE3NjY3NTEyMDZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                <img
+                  src="/src/assets/muvicoche.jpg"
                   alt="Visitantes"
                   className="rounded-lg shadow-lg"
                 />
@@ -285,8 +296,8 @@ export function LandingPage({ onGetStarted }) {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <img 
-                src="https://images.unsplash.com/photo-1759661966728-4a02e3c6ed91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwYW5hbHl0aWNzJTIwdmlzdWFsaXphdGlvbnxlbnwxfHx8fDE3NjY4NTMxMjR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+              <img
+                src="/src/assets/Analisis.png"
                 alt="Analytics"
                 className="rounded-lg shadow-2xl"
               />
@@ -404,7 +415,7 @@ export function LandingPage({ onGetStarted }) {
             <p className="text-xl text-gray-600 mb-10">
               Únete a la transformación digital y lleva la gestión del Museo MUVI al siguiente nivel con VisiMap.
             </p>
-            <Button 
+            <Button
               onClick={onGetStarted}
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-12 py-6"
@@ -422,9 +433,19 @@ export function LandingPage({ onGetStarted }) {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-6 h-6" />
-                </div>
+                <img
+                  src={logoUrl}
+                  alt="VisiMap Logo"
+                  className="w-16 h-16 object-contain"
+                  onError={(e) => {
+                    // Fallback por si la imagen no carga en el navegador local temporalmente
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                    fallback.innerText = "V";
+                    e.target.parentNode.prepend(fallback);
+                  }}
+                />
                 <div>
                   <h3 className="text-lg">VisiMap</h3>
                   <p className="text-sm text-gray-400">Museo MUVI</p>
@@ -434,16 +455,16 @@ export function LandingPage({ onGetStarted }) {
                 Sistema de gestión digital para museos del siglo XXI.
               </p>
             </div>
-            
+
             <div>
               <h4 className="mb-4">Museo MUVI</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>Villafranca de los Barros</li>
                 <li>Extremadura, España</li>
                 <li>
-                  <a 
-                    href="https://www.museovillafranca.es/01_el_muvi.html" 
-                    target="_blank" 
+                  <a
+                    href="https://www.museovillafranca.es/01_el_muvi.html"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-white transition-colors"
                   >
