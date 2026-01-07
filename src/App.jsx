@@ -8,6 +8,8 @@ const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+const logoUrl = "/src/assets/Logo.png";
+
 export default function App() {
   const [view, setView] = useState('landing'); // 'landing', 'login', 'dashboard' --> estados que puede tener la app
   const [session, setSession] = useState(null);
@@ -62,7 +64,7 @@ export default function App() {
         }]);
 
       if (error) throw error;
-      
+
       console.log('Visitante registrado:', data);
     } catch (error) {
       console.error('Error al registrar:', error);
@@ -92,9 +94,18 @@ export default function App() {
         <header className="bg-white border-b sticky top-0 z-40 shadow-sm">
           <div className="container mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-black text-xl">V</span>
-              </div>
+              <img
+                src={logoUrl}
+                alt="VisiMap Logo"
+                className="w-16 h-16 object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const fallback = document.createElement('div');
+                  fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                  fallback.innerText = "V";
+                  e.target.parentNode.prepend(fallback);
+                }}
+              />
               <div>
                 <h1 className="text-xl font-bold">VisiMap</h1>
                 <p className="text-xs text-gray-600">Museo MUVI - Dashboard</p>
@@ -117,10 +128,10 @@ export default function App() {
         {/* Contenido --> aquí irá el mapa, el aside, calendario, etc */}
 
         <main className="container mx-auto px-6 py-8">
-          <div className="mb-8">
+          {/*<div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sistema de Registro de Visitantes</h2>
             <p className="text-gray-600">Gestión digital del Museo MUVI</p>
-          </div>
+          </div>*/}
 
           {/* Componente del Mapa */}
 
@@ -148,21 +159,21 @@ export default function App() {
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="text-sm font-bold text-slate-600 uppercase block mb-2">Email</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-blue-500"
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
           <div>
             <label className="text-sm font-bold text-slate-600 uppercase block mb-2">Contraseña</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-blue-500"
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
@@ -171,8 +182,8 @@ export default function App() {
             Iniciar Sesión
           </button>
         </form>
-        <button 
-          onClick={() => setView('landing')} 
+        <button
+          onClick={() => setView('landing')}
           className="mt-4 text-slate-600 hover:text-blue-600 transition w-full text-center"
         >
           ← Volver
