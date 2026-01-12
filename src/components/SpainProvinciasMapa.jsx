@@ -1,16 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SpainProvincePaths } from '../lib/SpainProvinciasPaths';
 
 export default function SpainProvincesMap({ activeId, onProvinceClick, className = "" }) {
   const [hoveredProvince, setHoveredProvince] = useState(null);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+    const updateCursorPosition = (e) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', updateCursorPosition);
+
+    return () => {
+      window.removeEventListener('mousemove', updateCursorPosition);
+    };
+  }, []);
 
   return (
-    <div className={`relative bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-8 shadow-inner ${className}`}>
-      
+    <div className="flex p-2 justify-center items-center relative">
       <svg
-        viewBox="0 0 600 550"
-        className="w-full h-auto"
-        style={{ maxHeight: '700px' }}
+        viewBox="0 -10 400 460"
+        className="w-full h-[600px]"
+        style={{ maxHeight: '550px' }}
       >
         {Object.entries(SpainProvincePaths).map(([id, province]) => {
             const isSelected = activeId === id;
@@ -39,7 +51,8 @@ export default function SpainProvincesMap({ activeId, onProvinceClick, className
       {/* Mensaje sobre qué provincia es*/}
       
       {hoveredProvince && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white px-6 py-3 rounded-xl shadow-2xl border-2 border-blue-500 z-10 pointer-events-none transition-all duration-200">
+        <div className="absolute bg-white px-6 py-3 rounded-xl shadow-2xl border-2 border-blue-500 z-10 pointer-events-none transition-all duration-200"
+        style={{ left: cursorPosition.x-250, top: cursorPosition.y-150 }}>
           <p className="font-bold text-gray-800 text-lg">{hoveredProvince.name}</p>
           <p className="text-sm text-blue-600 flex items-center gap-1 mt-1">
              Click para seleccionar

@@ -12,8 +12,7 @@ import {
   ArrowRight,
   Globe,
   Clock,
-  Activity,
-  ChevronDown
+  Activity
 } from 'lucide-react';
 
 const logoUrl = "/src/assets/Logo.png";
@@ -25,7 +24,7 @@ export function LandingPage({ onGetStarted }) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -47,7 +46,7 @@ export function LandingPage({ onGetStarted }) {
                 <p className="text-xs text-gray-600">Museo MUVI</p>
               </div>
             </div>
-            <Button onClick={onGetStarted} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Button onClick={onGetStarted} className=" text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               Iniciar Sesión
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -88,7 +87,7 @@ export function LandingPage({ onGetStarted }) {
               <Button
                 onClick={onGetStarted}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8"
+                className="text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8"
               >
                 Comenzar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -399,7 +398,7 @@ export function LandingPage({ onGetStarted }) {
             <Button
               onClick={onGetStarted}
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-12 py-6"
+              className="text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-12 py-6"
             >
               Comenzar Ahora
               <ArrowRight className="ml-2 h-5 w-5" />
