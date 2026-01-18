@@ -1,7 +1,7 @@
 import { Map, Users, Calendar, UserCog, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
-export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout, logoUrl }) => {
+export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout}) => {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-xl z-20">
 

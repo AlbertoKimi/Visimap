@@ -18,7 +18,7 @@ export default function SpainProvincesMap({ activeId, onProvinceClick, className
   }, []);
 
   return (
-    <div className="flex p-2 justify-center items-center relative">
+    <div className="flex p-2 justify-center items-center relative border-2 border-blue-700">
       <svg
         viewBox="0 -10 400 460"
         className="w-full h-[600px]"

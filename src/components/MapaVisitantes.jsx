@@ -4,6 +4,7 @@ import { X, Users, User, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 import SpainProvincesMap from './SpainProvinciasMapa';
 import { supabase } from '../lib/supabaseClient';
+import { SpainProvincePaths } from '../lib/SpainProvinciasPaths';
 
 export function MapaVisitantes({ onRegistrarVisitante }) {
   const [selectedProvince, setSelectedProvince] = useState(null);
@@ -14,7 +15,7 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
     tipoVisita: 'individual',
     numPersonas: 1,
     pais: 'España',
-    observaciones: ''
+    /*observaciones: ''*/
   });
 
   const clickProvincia = (province) => {
@@ -74,7 +75,7 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
       alert('Visitante registrado correctamente');
 
       if (onRegistrarVisitante) {
-        onRegistrarVisitante(); 
+        onRegistrarVisitante();
       }
 
       setShowForm(false);
@@ -99,11 +100,66 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
   }));*/
 
   return (
-    <div className="w-full">
+    <div className="w-full grid gap-10" style={{ gridTemplateColumns: '1fr max-content' }}>
       <SpainProvincesMap
         activeId={selectedProvince?.id}
         onProvinceClick={clickProvincia}
       />
+
+      {/* Formulario lateral para añadir cualquier país.*/ }
+
+      <div className="p-4 max-w-max flex flex-col border-red-500 border-2">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-4">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900">Registro Visitante de cualquier país</h3>
+            </div>
+          </div>
+        </div>
+
+        {/* FORMULARIO */}
+
+        <div className="space-y-5">
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-3">Tipo de Visita</label>
+            <div className="grid grid-cols-2 gap-6">
+              <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'individual' ? 'border-blue-500 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
+                <User className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'individual' ? 'text-blue-600' : 'text-gray-400'}`} />
+                <p className={`font-semibold ${formData.tipoVisita === 'individual' ? 'text-blue-900' : 'text-gray-600'}`}>Individual</p>
+              </button>
+              <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'grupo' })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'grupo' ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
+                <Users className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'grupo' ? 'text-purple-600' : 'text-gray-400'}`} />
+                <p className={`font-semibold ${formData.tipoVisita === 'grupo' ? 'text-purple-900' : 'text-gray-600'}`}>Grupo</p>
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {formData.tipoVisita === 'grupo' && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Número de Personas *</label>
+                <input type="number" min="2" max="100" value={formData.numPersonas} onChange={(e) => setFormData({ ...formData, numPersonas: parseInt(e.target.value) })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 text-lg transition-all" placeholder="Ej: 25" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">País de Origen *</label>
+            <input type="text" className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-lg transition-all" placeholder="Ej: España, Francia..." />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2">Observaciones</label>
+            <textarea value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none" rows="4" />
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button onClick={() => setShowForm(false)} variant="outline" className="flex-1 h-12 text-base">Cancelar</Button>
+            <Button onClick={clickRegistroVisitante} className="flex-1 h-12 text-base bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">Registrar Visitante</Button>
+          </div>
+        </div>
+
+      </div>
 
       {/* MODAL --> FORMULARIO */}
 
@@ -121,9 +177,9 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             >
-              <div className="p-8">
+              <div className="p-8 max-w-md mx-auto">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -143,14 +199,14 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
 
                 <div className="space-y-5">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3">Tipo de Visita *</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Tipo de Visita</label>
                     <div className="grid grid-cols-2 gap-3">
                       <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'individual' ? 'border-blue-500 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                        <User className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'individual' ? 'text-blue-600' : 'text-gray-400'}`} />
+                        <User className={`w-5 h-5 mx-auto mb-2 ${formData.tipoVisita === 'individual' ? 'text-blue-600' : 'text-gray-400'}`} />
                         <p className={`font-semibold ${formData.tipoVisita === 'individual' ? 'text-blue-900' : 'text-gray-600'}`}>Individual</p>
                       </button>
                       <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'grupo' })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'grupo' ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                        <Users className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'grupo' ? 'text-purple-600' : 'text-gray-400'}`} />
+                        <Users className={`w-5 h-5 mx-auto mb-2 ${formData.tipoVisita === 'grupo' ? 'text-purple-600' : 'text-gray-400'}`} />
                         <p className={`font-semibold ${formData.tipoVisita === 'grupo' ? 'text-purple-900' : 'text-gray-600'}`}>Grupo</p>
                       </button>
                     </div>
@@ -159,21 +215,21 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
                   <AnimatePresence>
                     {formData.tipoVisita === 'grupo' && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Número de Personas *</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Número de Personas</label>
                         <input type="number" min="2" max="100" value={formData.numPersonas} onChange={(e) => setFormData({ ...formData, numPersonas: parseInt(e.target.value) })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 text-lg transition-all" placeholder="Ej: 25" />
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">País de Origen *</label>
-                    <input type="text" value={formData.pais} onChange={(e) => setFormData({ ...formData, pais: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-lg transition-all" placeholder="Ej: España, Francia..."/>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">País de Origen</label>
+                    <input type="text" value={formData.pais} onChange={(e) => setFormData({ ...formData, pais: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-lg transition-all" placeholder="Ej: España, Francia..." />
                   </div>
 
-                  <div>
+                  {/*<div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Observaciones</label>
                     <textarea value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none" rows="4" />
-                  </div>
+                  </div>*/}
 
                   <div className="flex gap-3 pt-2">
                     <Button onClick={() => setShowForm(false)} variant="outline" className="flex-1 h-12 text-base">Cancelar</Button>

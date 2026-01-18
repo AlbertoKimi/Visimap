@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { LandingPage } from './components/LandingPage';
 import { MapaVisitantes } from './components/MapaVisitantes';
@@ -84,7 +84,7 @@ export default function App() {
           </header>
 
           {/* Contenido dinámico según la vista */}
-          <div className="flex-1 overflow-auto p-8 relative">
+          <div className="flex-1 overflow-auto p-6 relative">
             {dashboardView === 'map' && (
               <MapaVisitantes onRegistrarVisitante={(data) => console.log(data)} />
             )}
