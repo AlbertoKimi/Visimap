@@ -1,167 +1,181 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, User, MapPin } from 'lucide-react';
-import { Button } from './ui/button';
+import { X, MapPin, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Formulario } from './ui/Formulario';
 import SpainProvincesMap from './SpainProvinciasMapa';
 import { supabase } from '../lib/supabaseClient';
-import { SpainProvincePaths } from '../lib/SpainProvinciasPaths';
+import { Snackbar, Alert } from '@mui/material';
 
 export function MapaVisitantes({ onRegistrarVisitante }) {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [showForm, setShowForm] = useState(false);
-
-  const [formData, setFormData] = useState({
-    provincia: '',
-    tipoVisita: 'individual',
-    numPersonas: 1,
-    pais: 'España',
-    /*observaciones: ''*/
+  const [resetLateralTrigger, setResetLateralTrigger] = useState(0);
+  const [resetModalTrigger, setResetModalTrigger] = useState(0);
+  const [estaAbierto, setEstaAbierto] = useState(false);
+  const [notificacion, setNotificacion] = useState({
+    open: false,
+    mensaje: '',
+    tipo: 'success'
   });
+
+  const handleCerrarNotificacion = (event, reason) => {
+    if (reason === 'clickaway') return;
+    setNotificacion({ ...notificacion, open: false });
+  };
+
+  const mostrarNotificacion = (mensaje, tipo = 'success') => {
+    setNotificacion({ open: true, mensaje, tipo });
+  };
 
   const clickProvincia = (province) => {
     setSelectedProvince(province);
-    setFormData({ ...formData, provincia: province.name });
     setShowForm(true);
   };
 
-  //Registro de visitantes
-
-  const clickRegistroVisitante = async (e) => {
-    e.preventDefault();
+  const handleRegistroVisitante = async (formData) => {
+    console.log('=== INICIO REGISTRO ===');
+    
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-      if (userError || !user) {
-        alert('Debes iniciar sesión para registrar visitantes');
-        return;
-      }
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) { 
+            mostrarNotificacion('Debes iniciar sesión para registrar visitantes.', 'warning');
+            return false; 
+        }
+        
+        const { data: paisData, error: errorPais } = await supabase
+            .from('pais')
+            .select('id_pais, nombre_pais')
+            .ilike('nombre_pais', formData.pais.trim())
+            .single();
 
-      const { data: paisData, error: paisError } = await supabase
-        .from('pais')
-        .select('id_pais')
-        .eq('nombre_pais', formData.pais)
-        .single();
+        if (errorPais || !paisData) {
+            mostrarNotificacion(`El país "${formData.pais}" no existe en la base de datos.`, 'error');
+            return false;
+        }
+        
+        let provinciaId = null;
+        
+        if (formData.provincia && formData.provincia.trim() !== '') {
+            const { data: provData } = await supabase
+                .from('provincia')
+                .select('id_provincia, nombre_provincia')
+                .ilike('nombre_provincia', formData.provincia.trim())
+                .single();
+            
+            if (provData) {
+                provinciaId = provData.id_provincia;
+            } else {
+                mostrarNotificacion(`La provincia "${formData.provincia}" no es válida.`, 'error');
+                return false;
+            }
+        }
 
-      if (paisError) {
-        console.error('Error al buscar país:', paisError);
-        throw new Error('No se encontró el país seleccionado');
-      }
-
-      const { data: provinciaData, error: provinciaError } = await supabase
-        .from('provincia')
-        .select('id_provincia')
-        .eq('nombre_provincia', formData.provincia)
-        .single();
-
-      if (provinciaError) {
-        console.error('Error al buscar provincia:', provinciaError);
-        throw new Error('No se encontró la provincia seleccionada');
-      }
-
-      const { error } = await supabase
-        .from('registro_visitante')
-        .insert([
-          {
+        const dataToInsert = {
             id_pais: paisData.id_pais,
-            id_provincia: provinciaData.id_provincia,
+            id_provincia: provinciaId,
             id_usuario: user.id,
             cantidad: formData.numPersonas,
             tipo_visita: formData.tipoVisita,
-          }
-        ]);
+            observaciones: formData.observaciones || null
+        };
 
-      if (error) throw error;
+        const { error } = await supabase.from('registro_visitante').insert([dataToInsert]);
+        
+        if (error) throw error; 
 
-      alert('Visitante registrado correctamente');
-
-      if (onRegistrarVisitante) {
-        onRegistrarVisitante();
-      }
-
-      setShowForm(false);
-      setSelectedProvince(null);
-      setFormData({
-        provincia: '',
-        tipoVisita: 'individual',
-        numPersonas: 1,
-        pais: 'España',
-        observaciones: ''
-      });
+        mostrarNotificacion('¡Visita registrada correctamente!', 'success');
+        
+        if (onRegistrarVisitante) onRegistrarVisitante();
+        setShowForm(false);
+        setSelectedProvince(null);
+        return true;
 
     } catch (error) {
-      console.error('Error completo:', error);
-      alert('Error al registrar visitante: ' + error.message);
+        console.error("Error real:", error);
+        
+        let mensajeAmigable = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
+
+        if (error.message) {
+        
+             if (error.message.includes('chk_coherencia_pais_provincia')) {
+                mensajeAmigable = 'Error: La provincia seleccionada no pertenece al país indicado.';
+            } 
+            else if (error.message.includes('violates foreign key constraint')) {
+                mensajeAmigable = 'Error de datos: El país o provincia no existen en nuestros registros.';
+            } 
+            else if (error.message.includes('duplicate key')) {
+                mensajeAmigable = 'Este registro ya existe en el sistema.';
+            } 
+            else if (error.code === '23502') { 
+                mensajeAmigable = 'Faltan campos obligatorios por completar.';
+            }
+        }
+
+        mostrarNotificacion(mensajeAmigable, 'error');
+        return false;
     }
   };
 
-  /*const provinciasArray = Object.entries(SpainProvincePaths).map(([id, data]) => ({
-    id,
-    ...data
-  }));*/
+  const handleRegistroLateral = async (formData) => {
+    const success = await handleRegistroVisitante(formData);
+    if (success) setResetLateralTrigger(prev => prev + 1);
+  };
+
+  const handleRegistroModal = async (formData) => {
+    const success = await handleRegistroVisitante(formData);
+    if (success) setResetModalTrigger(prev => prev + 1);
+  };
 
   return (
-    <div className="w-full grid gap-10" style={{ gridTemplateColumns: '1fr max-content' }}>
-      <SpainProvincesMap
-        activeId={selectedProvince?.id}
-        onProvinceClick={clickProvincia}
-      />
-
-      {/* Formulario lateral para añadir cualquier país.*/ }
-
-      <div className="p-4 max-w-max flex flex-col border-red-500 border-2">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Registro Visitante de cualquier país</h3>
-            </div>
-          </div>
-        </div>
-
-        {/* FORMULARIO */}
-
-        <div className="space-y-5">
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-3">Tipo de Visita</label>
-            <div className="grid grid-cols-2 gap-6">
-              <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'individual' ? 'border-blue-500 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                <User className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'individual' ? 'text-blue-600' : 'text-gray-400'}`} />
-                <p className={`font-semibold ${formData.tipoVisita === 'individual' ? 'text-blue-900' : 'text-gray-600'}`}>Individual</p>
-              </button>
-              <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'grupo' })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'grupo' ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                <Users className={`w-8 h-8 mx-auto mb-2 ${formData.tipoVisita === 'grupo' ? 'text-purple-600' : 'text-gray-400'}`} />
-                <p className={`font-semibold ${formData.tipoVisita === 'grupo' ? 'text-purple-900' : 'text-gray-600'}`}>Grupo</p>
-              </button>
-            </div>
-          </div>
-
-          <AnimatePresence>
-            {formData.tipoVisita === 'grupo' && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Número de Personas *</label>
-                <input type="number" min="2" max="100" value={formData.numPersonas} onChange={(e) => setFormData({ ...formData, numPersonas: parseInt(e.target.value) })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 text-lg transition-all" placeholder="Ej: 25" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">País de Origen *</label>
-            <input type="text" className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-lg transition-all" placeholder="Ej: España, Francia..." />
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Observaciones</label>
-            <textarea value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none" rows="4" />
-          </div>
-
-          <div className="flex gap-3 pt-2">
-            <Button onClick={() => setShowForm(false)} variant="outline" className="flex-1 h-12 text-base">Cancelar</Button>
-            <Button onClick={clickRegistroVisitante} className="flex-1 h-12 text-base bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">Registrar Visitante</Button>
-          </div>
-        </div>
-
+    <div className="flex w-full relative overflow-hidden items-stretch">
+      
+      <div className="flex-1 min-w-0 relative transition-all duration-300 ease-in-out">
+         <SpainProvincesMap
+          activeId={selectedProvince?.id}
+          onProvinceClick={clickProvincia}
+        />
       </div>
 
-      {/* MODAL --> FORMULARIO */}
+      {/* Formulario lateral */}
+
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: estaAbierto ? 400 : 0 }}
+        transition={{ type: "spring", damping: 30, stiffness: 200 }}
+        className="relative bg-white shadow-xl flex-shrink-0 z-40"
+      >
+        <button
+          onClick={() => setEstaAbierto(!estaAbierto)}
+          className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-white rounded-l-xl shadow-lg border-y border-l border-gray-200 text-gray-600 hover:text-blue-600 z-50 flex items-center justify-center w-10 h-14"
+        >
+          {estaAbierto ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+        </button>
+
+        <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100">
+          <div className="p-4 flex flex-col h-full">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Registro Rápido</h3>
+                <p className="text-sm text-gray-500">Visitante internacional</p>
+              </div>
+              <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1">
+              <Formulario
+                onSubmit={handleRegistroLateral}
+                mostrarObservaciones={true}
+                resetTrigger={resetLateralTrigger}
+              />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* MODAL */}
 
       <AnimatePresence>
         {showForm && (
@@ -173,75 +187,67 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
             onClick={() => setShowForm(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             >
-              <div className="p-8 max-w-md mx-auto">
+              <div className="p-8">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <MapPin className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <MapPin className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Nuevo Visitante</h3>
-                      <p className="text-sm text-gray-600 mt-1 font-medium">{selectedProvince?.name}</p>
+                      <h3 className="text-xl font-bold text-gray-900">Nuevo Visitante</h3>
+                      <p className="text-sm text-blue-600 font-medium">{selectedProvince?.name}</p>
                     </div>
                   </div>
                   <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <X className="w-6 h-6 text-gray-500" />
+                    <X className="w-5 h-5 text-gray-500" />
                   </button>
                 </div>
 
-                {/* FORMULARIO */}
-
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3">Tipo de Visita</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'individual' ? 'border-blue-500 bg-blue-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                        <User className={`w-5 h-5 mx-auto mb-2 ${formData.tipoVisita === 'individual' ? 'text-blue-600' : 'text-gray-400'}`} />
-                        <p className={`font-semibold ${formData.tipoVisita === 'individual' ? 'text-blue-900' : 'text-gray-600'}`}>Individual</p>
-                      </button>
-                      <button type="button" onClick={() => setFormData({ ...formData, tipoVisita: 'grupo' })} className={`p-5 rounded-xl border-2 transition-all ${formData.tipoVisita === 'grupo' ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
-                        <Users className={`w-5 h-5 mx-auto mb-2 ${formData.tipoVisita === 'grupo' ? 'text-purple-600' : 'text-gray-400'}`} />
-                        <p className={`font-semibold ${formData.tipoVisita === 'grupo' ? 'text-purple-900' : 'text-gray-600'}`}>Grupo</p>
-                      </button>
-                    </div>
-                  </div>
-
-                  <AnimatePresence>
-                    {formData.tipoVisita === 'grupo' && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-                        <label className="block text-sm font-bold text-gray-700 mb-2">Número de Personas</label>
-                        <input type="number" min="2" max="100" value={formData.numPersonas} onChange={(e) => setFormData({ ...formData, numPersonas: parseInt(e.target.value) })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-purple-200 focus:border-purple-500 text-lg transition-all" placeholder="Ej: 25" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">País de Origen</label>
-                    <input type="text" value={formData.pais} onChange={(e) => setFormData({ ...formData, pais: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 text-lg transition-all" placeholder="Ej: España, Francia..." />
-                  </div>
-
-                  {/*<div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Observaciones</label>
-                    <textarea value={formData.observaciones} onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })} className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none" rows="4" />
-                  </div>*/}
-
-                  <div className="flex gap-3 pt-2">
-                    <Button onClick={() => setShowForm(false)} variant="outline" className="flex-1 h-12 text-base">Cancelar</Button>
-                    <Button onClick={clickRegistroVisitante} className="flex-1 h-12 text-base bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">Registrar Visitante</Button>
-                  </div>
-                </div>
-
+                <Formulario
+                  mostrarObservaciones={true}
+                  provinciaInicial={selectedProvince?.name || ''}
+                  paisInicial="España"
+                  onSubmit={handleRegistroModal}
+                  onCancel={() => setShowForm(false)}
+                  resetTrigger={resetModalTrigger}
+                  bloquearProvincia={true}
+                />
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mensajes */}
+
+      <Snackbar 
+        open={notificacion.open} 
+        autoHideDuration={6000} 
+        onClose={handleCerrarNotificacion}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        className="z-[100]" 
+      >
+        <Alert 
+          onClose={handleCerrarNotificacion} 
+          severity={notificacion.tipo} 
+          variant="filled"
+          sx={{ 
+            width: '100%', 
+            minWidth: '300px',
+            boxShadow: 4,
+            fontSize: '0.95rem'
+          }}
+        >
+          {notificacion.mensaje}
+        </Alert>
+      </Snackbar>
+
     </div>
   );
 }
