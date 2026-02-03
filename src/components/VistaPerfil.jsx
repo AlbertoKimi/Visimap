@@ -45,38 +45,38 @@ export const VistaPerfil = ({ session }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Nombre</label>
-                  <input 
-                    type="text" 
-                    defaultValue="Administrador" 
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                  <input
+                    type="text"
+                    defaultValue="Administrador"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-700">Apellidos</label>
-                  <input 
-                    type="text" 
-                    defaultValue="MUVI" 
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                  <input
+                    type="text"
+                    defaultValue="MUVI"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Correo Electrónico</label>
-                <input 
-                  type="email" 
-                  defaultValue={session?.user?.email} 
-                  disabled 
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed" 
+                <input
+                  type="email"
+                  defaultValue={session?.user?.email}
+                  disabled
+                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">Teléfono</label>
-                <input 
-                  type="tel" 
-                  placeholder="+34 600 000 000" 
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                <input
+                  type="tel"
+                  placeholder="+34 600 000 000"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                 />
               </div>
 
@@ -87,6 +87,50 @@ export const VistaPerfil = ({ session }) => {
                 <Button onClick={handleSubmit} className="bg-slate-900 hover:bg-slate-800 text-white shadow-lg">
                   Guardar Cambios
                 </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tarjeta de Seguridad (Contraseña) */}
+        <Card className="md:col-span-3 border-none shadow-xl bg-slate-900 text-white mt-0">
+          <CardHeader>
+            <CardTitle className="text-white">Seguridad y Acceso</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <p className="text-slate-400 text-sm">
+                Si has ingresado por invitación, establece aquí tu contraseña definitiva.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-300">Nueva Contraseña</label>
+                  <input
+                    type="password"
+                    id="newPassword"
+                    className="w-full p-3 bg-slate-800 border border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-white"
+                    placeholder="********"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-end items-end h-full">
+                    <Button
+                      onClick={async () => {
+                        const password = document.getElementById('newPassword').value;
+                        if (!password) return alert('Introduce una contraseña');
+
+                        const { error } = await import('../lib/supabaseClient').then(m => m.supabase.auth.updateUser({ password }));
+
+                        if (error) alert('Error: ' + error.message);
+                        else alert('¡Contraseña actualizada correctamente!');
+                        document.getElementById('newPassword').value = '';
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg w-full sm:w-auto"
+                    >
+                      Actualizar Contraseña
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>

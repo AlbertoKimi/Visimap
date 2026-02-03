@@ -1,7 +1,7 @@
 import { Map, Users, Calendar, UserCog, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
-export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout}) => {
+export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout }) => {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-xl z-20">
 
@@ -61,7 +61,7 @@ export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout}) =
       <div className="p-4">
         <Button
           onClick={onLogout}
-          variant = "outline"
+          variant="outline"
           size="lg"
           className="w-40 flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors text-sm font-medium"
         >
@@ -73,12 +73,13 @@ export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout}) =
 };
 
 // Componente para cada item del menú lateral
+
 const ItemLateral = ({ icon: Icon, label, active, onClick }) => (
   <button
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${active
-        ? 'bg-blue-50 text-blue-700 shadow-sm'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+      ? 'bg-blue-50 text-blue-700 shadow-sm'
+      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       }`}
   >
     <Icon className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-slate-400'}`} />

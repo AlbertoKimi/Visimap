@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { InputField } from './ui/InputField';
 
 export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
   const [email, setEmail] = useState('');
@@ -8,7 +9,6 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    
     try {
       await onLogin(email, password);
     } catch (err) {
@@ -37,37 +37,34 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
         </div>
 
         <div className="space-y-5">
-          <div>
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1 mb-1 block">
-              Email
-            </label>
-            <input
-              type="email"
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ejemplo@muvi.es"
-              required
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1 mb-1 block">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
-          </div>
+          <InputField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="ejemplo@muvi.es"
+            required
+            labelClassName="text-slate-500 ml-1"
+            className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-blue-500"
+          />
+          
+          <InputField
+            label="Contraseña"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            labelClassName="text-slate-500 ml-1"
+            className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-blue-500"
+          />
+
           {error && (
             <p className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
               {error}
             </p>
           )}
+          
           <button 
             onClick={handleSubmit}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-200"

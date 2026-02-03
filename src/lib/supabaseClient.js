@@ -1,4 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from '@supabase/supabase-js';
 
 // Estas constantes leen automáticamente los valores de tu archivo .env.local
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;

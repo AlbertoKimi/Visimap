@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, User } from 'lucide-react';
 import { Button } from './button';
+import { InputField } from './InputField';
 
 export function Formulario({
   provinciaInicial = '',
-  paisInicial = 'España',
+  paisInicial = '', 
   onSubmit,
   onCancel,
   mostrarObservaciones = false,
@@ -23,7 +24,6 @@ export function Formulario({
   useEffect(() => {
     setFormData(prev => ({ ...prev, provincia: provinciaInicial }));
   }, [provinciaInicial]);
-
 
   useEffect(() => {
     if (resetTrigger > 0) {
@@ -44,41 +44,48 @@ export function Formulario({
     }
   };
 
+  const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
+
   return (
     <div className="flex flex-col h-full gap-3">
-
       <div className="flex-none space-y-3">
 
-        {/* TIPO DE VISITA */}
+        {/* Tipo de visita */}
+
         <div>
           <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Tipo de Visita</label>
           <div className="flex justify-center items-center gap-4">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })}
-              className={`flex flex-col items-center justify-center gap-2 p-1 h-20 w-32 rounded-lg border transition-all ${formData.tipoVisita === 'individual'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm'
-                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                }`}
+              className={`flex-col h-20 w-32 gap-2 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 ${
+                formData.tipoVisita === 'individual'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-50 hover:text-blue-700'
+                  : 'border-gray-200 text-gray-600'
+              }`}
             >
               <User className="size-5" />
               <span className="text-sm font-semibold">Individual</span>
-            </button>
-            <button
+            </Button>
+
+            <Button
               type="button"
-              onClick={() => setFormData({ ...formData, tipoVisita: 'grupo' })}
-              className={`flex flex-col items-center justify-center gap-2 p-1 h-20 w-32 rounded-lg border transition-all ${formData.tipoVisita === 'grupo'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm'
-                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                }`}
+              variant="outline"
+              onClick={() => setFormData({ ...formData, tipoVisita: 'grupo', numPersonas: 2 })}
+              className={`flex-col h-20 w-32 gap-2 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 ${
+                formData.tipoVisita === 'grupo'
+                  ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm hover:bg-purple-50 hover:text-purple-700'
+                  : 'border-gray-200 text-gray-600'
+              }`}
             >
               <Users className="size-5" />
               <span className="text-sm font-semibold">Grupo</span>
-            </button>
+            </Button>
           </div>
         </div>
 
-        {/* NÚMERO DE PERSONAS */}
+        {/* Número de Personas */}
 
         <AnimatePresence>
           {formData.tipoVisita === 'grupo' && (
@@ -88,61 +95,51 @@ export function Formulario({
               exit={{ opacity: 0, height: 0, marginTop: 0 }}
               className="overflow-hidden"
             >
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                Nº Personas
-              </label>
-              <input
+              <InputField
+                label="Nº Personas"
                 type="number"
                 min="2"
                 max="500"
                 value={formData.numPersonas}
                 onChange={(e) => setFormData({ ...formData, numPersonas: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-200 focus:border-purple-500 outline-none transition-all"
+                className="focus:ring-purple-200 focus:border-purple-500"
                 placeholder="Ej: 25"
               />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* PAÍS Y PROVINCIA */}
+        {/* Pais y Provincia */}
 
         <div className="flex flex-col gap-2">
-          <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">País</label>
-            <input
-              type="text"
-              value={formData.pais}
-              onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 outline-none transition-all"
-              placeholder="España..."
-            />
-          </div>
+          <InputField
+            label="País"
+            value={formData.pais}
+            onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
+            className="focus:ring-blue-200 focus:border-blue-500"
+            placeholder="Ej: España" 
+          />
 
           <div className="relative">
             <AnimatePresence mode='popLayout'>
-              {(formData.pais === 'España' || formData.provincia) && (
+
+              {(esEspana || formData.provincia) && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                 >
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                    Provincia
-                  </label>
-                  
-                  <input
-                    type="text"
+                  <InputField
+                    label="Provincia"
                     value={formData.provincia}
                     readOnly={bloquearProvincia}
                     onChange={(e) => !bloquearProvincia && setFormData({ ...formData, provincia: e.target.value })}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none transition-all ${
-                      bloquearProvincia 
+                    className={bloquearProvincia 
                         ? 'bg-gray-100 text-gray-500 cursor-not-allowed focus:border-gray-300 select-none' 
-                        : 'focus:ring-2 focus:ring-purple-200 focus:border-purple-500 bg-white'
-                    }`}
+                        : 'focus:ring-purple-200 focus:border-purple-500 bg-white'
+                    }
                     placeholder="Ej: Madrid"
                   />
-
                 </motion.div>
               )}
             </AnimatePresence>
@@ -150,21 +147,24 @@ export function Formulario({
         </div>
       </div>
 
-      {/* OBSERVACIONES */}
-      
+      {/* Observaciones */}
+
       {mostrarObservaciones && (
         <div className="flex-1 min-h-[80px] flex flex-col">
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Observaciones</label>
-          <textarea
+           <InputField
+            isTextArea
+            label="Observaciones"
             value={formData.observaciones}
             onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none flex-1"
+            className="focus:ring-blue-200 focus:border-blue-500 resize-none flex-1 h-full min-h-[60px]"
+            containerClassName="flex-1 h-full"
             placeholder="Escribe aquí notas adicionales..."
           />
         </div>
       )}
 
-      {/* BOTONES DE ACCIÓN */}
+      {/* Botones */}
+
       <div className="flex gap-2 pt-2 mt-auto">
         {onCancel && (
           <Button

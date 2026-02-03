@@ -18,3 +18,6 @@ If you are developing a production application, we recommend using TypeScript wi
 SESIONES:
 
 - 13/01/2026 --> Reunión con el tutor del proyecto para enseyarle la landing page, formulario de inicio y dashboard con el mapa implementado. También para resolver algunas dudas del proyecto.
+- 20/01/2026 --> Reunión con el tutor para mostrar la mejora del mapa con colores y leyenda
+- 27/01/2026 --> Reunión con el tutor para mostrar que funciona correctamente el dashboard de registro de visitante. También le he consultado temas de mejoras de mi aplicativo, como por ejemplo, meter una sección de notas o correo interno. Consulta de a la hora de añadir un trabajador si debo de enviar un correo de confirmación o no para que se registre de forma correcta en la base de datos.
+- 03/02/2026 --> Reunión con el tutor para mostrarle la insercción de trabajadores, el correo de invitación, el "eliminado" de un trabajador y que no te permite iniciar sesión y la modificación de datos de un trabajador mediante el menú del admin en trabajadores.

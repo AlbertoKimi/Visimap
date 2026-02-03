@@ -34,86 +34,97 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
 
   const handleRegistroVisitante = async (formData) => {
     console.log('=== INICIO REGISTRO ===');
-    
+
+    if (formData.tipoVisita === 'grupo' && formData.numPersonas < 2) {
+      mostrarNotificacion('No puedes añadir menos de 2 personas como grupo.', 'error');
+      return false;
+    }
+
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        mostrarNotificacion('Debes iniciar sesión para registrar visitantes.', 'warning');
+        return false;
+      }
 
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) { 
-            mostrarNotificacion('Debes iniciar sesión para registrar visitantes.', 'warning');
-            return false; 
+      //Puedo poner que también no coja tildes. Para ello debo crear otra columna en mi tabla Pais con el nombre sin nada
+      // y debo rellenarla. La cosa es que pierdo espacio en mi base de datos. ¿merece la pena?
+
+      //Debo de tener una constante para normalizarlo y reemplazarlo, ese nombre "limpio" lo debemos de tener en nuestra
+      //base de datos. Luego en pasís y provincia, donde está ilike debo poner el nombre de la columna y ponerle esa constante
+      //que he creado antes.
+
+      const { data: paisData, error: errorPais } = await supabase
+        .from('pais')
+        .select('id_pais, nombre_pais')
+        .ilike('nombre_pais', formData.pais.trim())
+        .single();
+
+      if (errorPais || !paisData) {
+        mostrarNotificacion(`El país "${formData.pais}" no existe en la base de datos.`, 'error');
+        return false;
+      }
+
+      let provinciaId = null;
+
+      if (formData.provincia && formData.provincia.trim() !== '') {
+        const { data: provData } = await supabase
+          .from('provincia')
+          .select('id_provincia, nombre_provincia')
+          .ilike('nombre_provincia', formData.provincia.trim())
+          .single();
+
+        if (provData) {
+          provinciaId = provData.id_provincia;
+        } else {
+
+          mostrarNotificacion(`La provincia "${formData.provincia}" no es válida.`, 'error');
+          return false;
         }
-        
-        const { data: paisData, error: errorPais } = await supabase
-            .from('pais')
-            .select('id_pais, nombre_pais')
-            .ilike('nombre_pais', formData.pais.trim())
-            .single();
+      }
 
-        if (errorPais || !paisData) {
-            mostrarNotificacion(`El país "${formData.pais}" no existe en la base de datos.`, 'error');
-            return false;
-        }
-        
-        let provinciaId = null;
-        
-        if (formData.provincia && formData.provincia.trim() !== '') {
-            const { data: provData } = await supabase
-                .from('provincia')
-                .select('id_provincia, nombre_provincia')
-                .ilike('nombre_provincia', formData.provincia.trim())
-                .single();
-            
-            if (provData) {
-                provinciaId = provData.id_provincia;
-            } else {
-                mostrarNotificacion(`La provincia "${formData.provincia}" no es válida.`, 'error');
-                return false;
-            }
-        }
+      const dataToInsert = {
+        id_pais: paisData.id_pais,
+        id_provincia: provinciaId,
+        id_usuario: user.id,
+        cantidad: formData.numPersonas,
+        tipo_visita: formData.tipoVisita,
+        observaciones: formData.observaciones || null
+      };
 
-        const dataToInsert = {
-            id_pais: paisData.id_pais,
-            id_provincia: provinciaId,
-            id_usuario: user.id,
-            cantidad: formData.numPersonas,
-            tipo_visita: formData.tipoVisita,
-            observaciones: formData.observaciones || null
-        };
+      const { error } = await supabase.from('registro_visitante').insert([dataToInsert]);
 
-        const { error } = await supabase.from('registro_visitante').insert([dataToInsert]);
-        
-        if (error) throw error; 
+      if (error) throw error;
 
-        mostrarNotificacion('¡Visita registrada correctamente!', 'success');
-        
-        if (onRegistrarVisitante) onRegistrarVisitante();
-        setShowForm(false);
-        setSelectedProvince(null);
-        return true;
+      mostrarNotificacion('¡Visita registrada correctamente!', 'success');
+
+      if (onRegistrarVisitante) onRegistrarVisitante();
+      setShowForm(false);
+      setSelectedProvince(null);
+      return true;
 
     } catch (error) {
-        console.error("Error real:", error);
-        
-        let mensajeAmigable = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
+      console.error("Error real:", error);
 
-        if (error.message) {
-        
-             if (error.message.includes('chk_coherencia_pais_provincia')) {
-                mensajeAmigable = 'Error: La provincia seleccionada no pertenece al país indicado.';
-            } 
-            else if (error.message.includes('violates foreign key constraint')) {
-                mensajeAmigable = 'Error de datos: El país o provincia no existen en nuestros registros.';
-            } 
-            else if (error.message.includes('duplicate key')) {
-                mensajeAmigable = 'Este registro ya existe en el sistema.';
-            } 
-            else if (error.code === '23502') { 
-                mensajeAmigable = 'Faltan campos obligatorios por completar.';
-            }
+      let mensajeAmigable = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
+
+      if (error.message) {
+        if (error.message.includes('chk_coherencia_pais_provincia')) {
+          mensajeAmigable = 'Error: La provincia seleccionada no pertenece al país indicado.';
         }
+        else if (error.message.includes('violates foreign key constraint')) {
+          mensajeAmigable = 'Error de datos: El país o provincia no existen en nuestros registros.';
+        }
+        else if (error.message.includes('duplicate key')) {
+          mensajeAmigable = 'Este registro ya existe en el sistema.';
+        }
+        else if (error.code === '23502') {
+          mensajeAmigable = 'Faltan campos obligatorios por completar.';
+        }
+      }
 
-        mostrarNotificacion(mensajeAmigable, 'error');
-        return false;
+      mostrarNotificacion(mensajeAmigable, 'error');
+      return false;
     }
   };
 
@@ -129,9 +140,9 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
 
   return (
     <div className="flex w-full relative overflow-hidden items-stretch">
-      
+
       <div className="flex-1 min-w-0 relative transition-all duration-300 ease-in-out">
-         <SpainProvincesMap
+        <SpainProvincesMap
           activeId={selectedProvince?.id}
           onProvinceClick={clickProvincia}
         />
@@ -226,19 +237,19 @@ export function MapaVisitantes({ onRegistrarVisitante }) {
 
       {/* Mensajes */}
 
-      <Snackbar 
-        open={notificacion.open} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={notificacion.open}
+        autoHideDuration={4000}
         onClose={handleCerrarNotificacion}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        className="z-[100]" 
+        className="z-[100]"
       >
-        <Alert 
-          onClose={handleCerrarNotificacion} 
-          severity={notificacion.tipo} 
+        <Alert
+          onClose={handleCerrarNotificacion}
+          severity={notificacion.tipo}
           variant="filled"
-          sx={{ 
-            width: '100%', 
+          sx={{
+            width: '100%',
             minWidth: '300px',
             boxShadow: 4,
             fontSize: '0.95rem'
