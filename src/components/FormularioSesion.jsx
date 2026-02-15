@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { InputField } from './ui/InputField';
+import { InputField } from './InputField';
 
 export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
   const [email, setEmail] = useState('');
@@ -47,7 +47,7 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
             labelClassName="text-slate-500 ml-1"
             className="p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-blue-500"
           />
-          
+
           <InputField
             label="Contraseña"
             type="password"
@@ -64,15 +64,15 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
               {error}
             </p>
           )}
-          
-          <button 
+
+          <button
             onClick={handleSubmit}
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
           >
             Iniciar Sesión
           </button>
         </div>
-        <button 
+        <button
           onClick={onBack}
           className="w-full text-slate-400 text-sm font-medium mt-6 hover:text-blue-600 transition-colors"
         >

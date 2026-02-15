@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from '../components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/card';
 
 export const VistaCalendario = () => {
   const days = Array.from({ length: 35 }, (_, i) => i + 1);
@@ -41,11 +41,10 @@ export const VistaCalendario = () => {
             </div>
             <div className="grid grid-cols-7 gap-2">
               {days.map((d) => (
-                <div 
-                  key={d} 
-                  className={`min-h-[5rem] border border-slate-100 rounded-xl p-2 hover:border-blue-200 hover:shadow-md transition-all relative bg-white group cursor-pointer ${
-                    d === 12 ? 'bg-blue-50/30' : ''
-                  }`}
+                <div
+                  key={d}
+                  className={`min-h-[5rem] border border-slate-100 rounded-xl p-2 hover:border-blue-200 hover:shadow-md transition-all relative bg-white group cursor-pointer ${d === 12 ? 'bg-blue-50/30' : ''
+                    }`}
                 >
                   <span className={`text-sm font-semibold ${d === 12 ? 'text-blue-600' : 'text-slate-500'}`}>
                     {d <= 31 ? d : ''}
@@ -73,15 +72,14 @@ export const VistaCalendario = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             {upcomingEvents.map((event) => (
-              <div 
-                key={event.id} 
+              <div
+                key={event.id}
                 className="flex gap-4 items-center p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all"
               >
-                <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-bold text-xs shadow-inner ${
-                  event.type === 'Visita' ? 'bg-blue-100 text-blue-600' :
-                  event.type === 'Evento' ? 'bg-purple-100 text-purple-600' : 
-                  'bg-slate-100 text-slate-600'
-                }`}>
+                <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-bold text-xs shadow-inner ${event.type === 'Visita' ? 'bg-blue-100 text-blue-600' :
+                  event.type === 'Evento' ? 'bg-purple-100 text-purple-600' :
+                    'bg-slate-100 text-slate-600'
+                  }`}>
                   <span>{event.date.split(' ')[0]}</span>
                   <span className="text-[10px] uppercase">{event.date.split(' ')[1]}</span>
                 </div>

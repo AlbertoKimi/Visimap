@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
+import { Button } from '../components/button';
+import { Card, CardContent } from '../components/card';
 import {
   BarChart3,
   Users,
@@ -55,7 +55,7 @@ export function LandingPage({ onGetStarted }) {
       </nav>
 
       {/* Hero Section */}
-      
+
       <section className="pt-32 pb-20 px-4 bg-gradient-to-br from-blue-50 via-purple-50 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container mx-auto relative z-10">

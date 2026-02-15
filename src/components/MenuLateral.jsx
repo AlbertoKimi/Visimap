@@ -1,5 +1,5 @@
 import { Map, Users, Calendar, UserCog, LogOut } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from './button';
 
 export const MenuLateral = ({ session, userProfile, dashboardView, onViewChange, onLogout }) => {
   return (

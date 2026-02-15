@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { LandingPage } from './components/LandingPage';
-import { MapaVisitantes } from './components/MapaVisitantes';
-import { VistaUsuarios } from './components/VistaUsuarios';
-import { VistaCalendario } from './components/VistaCalendario';
-import { VistaPerfil } from './components/VistaPerfil';
+import { LandingPage } from './pages/LandingPage';
+import { MapaVisitantes } from './pages/MapaVisitantes';
+import { VistaUsuarios } from './pages/VistaUsuarios';
+import { VistaCalendario } from './pages/VistaCalendario';
+import { VistaPerfil } from './pages/VistaPerfil';
 import { FormularioSesion } from './components/FormularioSesion';
 import { MenuLateral } from './components/MenuLateral';
-import { EstablecerContrasena } from './components/EstablecerContrasena';
+import { EstablecerContrasena } from './pages/EstablecerContrasena';
 import { Bell } from 'lucide-react';
 
 const supabaseUrl = "https://vpetkpmxeopozhqizsqx.supabase.co";

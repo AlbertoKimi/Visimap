@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, ChevronRight, ChevronLeft } from 'lucide-react';
-import { Formulario } from './ui/Formulario';
-import SpainProvincesMap from './SpainProvinciasMapa';
-import { supabase } from '../lib/supabaseClient';
+import { Formulario } from '../components/Formulario';
+import SpainProvincesMap from '../components/SpainProvinciasMapa';
+import { supabase } from '../utils/supabaseClient';
 import { Snackbar, Alert } from '@mui/material';
 
 export function MapaVisitantes({ onRegistrarVisitante }) {

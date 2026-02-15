@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { SpainProvincePaths } from '../lib/SpainProvinciasPaths';
-import { getColoresProvincia } from '../lib/ProvinciasColores';
-import { LeyendaColores } from './ui/Leyenda';
+import { SpainProvincePaths } from '../utils/SpainProvinciasPaths';
+import { getColoresProvincia } from '../utils/ProvinciasColores';
+import { LeyendaColores } from './Leyenda';
 
 export default function SpainProvincesMap({ activeId, onProvinceClick, className = "" }) {
   const [hoveredProvince, setHoveredProvince] = useState(null);
@@ -19,11 +19,11 @@ export default function SpainProvincesMap({ activeId, onProvinceClick, className
   }, []);
 
   return (
-    
+
     <div className={`flex justify-center items-center w-full h-full ${className}`}>
-      
+
       <div className="relative w-full max-w-[550px]">
-        
+
         <svg
           viewBox="0 -10 400 460"
           className="w-full h-auto max-h-[83vh] drop-shadow-lg"

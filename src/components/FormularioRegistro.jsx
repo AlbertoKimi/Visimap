@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { InputField } from './ui/InputField';
-import { supabase } from '../lib/supabaseClient';
+import { Button } from './button';
+import { InputField } from './InputField';
+import { supabase } from '../utils/supabaseClient';
 
 export function FormularioRegistroUsuario({ onCancel, onSuccess, mostrarNotificacion }) {
     const [isLoading, setIsLoading] = useState(false);

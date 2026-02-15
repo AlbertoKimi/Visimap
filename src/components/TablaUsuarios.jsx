@@ -1,5 +1,5 @@
 import { UserX } from 'lucide-react';
-import { UserRow } from './ui/FilasUsuario';
+import { UserRow } from './FilasUsuario';
 
 export const UsersTable = ({ users, roles, onAction }) => {
 

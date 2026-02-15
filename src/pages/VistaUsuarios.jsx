@@ -1,10 +1,10 @@
 import { Plus, Loader2, X, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
-import { UsersTable } from './TablaUsuarios';
-import { supabase } from '../lib/supabaseClient';
-import { FormularioRegistroUsuario } from './FormularioRegistro';
+import { Button } from '../components/button';
+import { Card, CardContent } from '../components/card';
+import { UsersTable } from '../components/TablaUsuarios';
+import { supabase } from '../utils/supabaseClient';
+import { FormularioRegistroUsuario } from '../components/FormularioRegistro';
 import { DetalleUsuario } from './DetalleUsuario';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Snackbar, Alert } from '@mui/material';

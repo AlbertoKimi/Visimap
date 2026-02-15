@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Eye, EyeOff, CheckCircle, ShieldCheck } from 'lucide-react';
 import { Snackbar, Alert } from '@mui/material';
-import { InputField } from './ui/InputField';
-import { Button } from './ui/button';
+import { InputField } from '../components/InputField';
+import { Button } from '../components/button';
 
 const supabaseUrl = "https://vpetkpmxeopozhqizsqx.supabase.co";
 const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwZXRrcG14ZW9wb3pocWl6c3F4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NzY0MTUsImV4cCI6MjA3ODQ1MjQxNX0.sVooRLG4r_wd2cHNMCngTUPBWnCAVbCwoyibVjoWou8";

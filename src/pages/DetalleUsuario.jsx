@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Trash2, Edit2, Shield, User, Phone, Mail, Lock, Camera } from 'lucide-react';
-import { Button } from './ui/button';
-import { InputField } from './ui/InputField';
-import { supabase } from '../lib/supabaseClient';
+import { Button } from '../components/button';
+import { InputField } from '../components/InputField';
+import { supabase } from '../utils/supabaseClient';
 
 export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack, onUpdate, onDelete, mostrarNotificacion }) => {
     const [mode, setMode] = useState(initialMode); // 'view' or 'edit'
@@ -446,8 +446,8 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                 variant="outline"
                                 onClick={handleToggleStatus}
                                 className={`w-48 h-10 text-sm font-medium border-2 ${formData.active
-                                        ? 'border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 hover:border-red-300'
-                                        : 'border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800 hover:border-green-300'
+                                    ? 'border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 hover:border-red-300'
+                                    : 'border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800 hover:border-green-300'
                                     }`}
                             >
                                 {formData.active ? 'Desactivar' : 'Activar'}

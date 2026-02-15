@@ -1,5 +1,5 @@
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from '../components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/card';
 
 export const VistaPerfil = ({ session }) => {
   const handleSubmit = (e) => {
@@ -119,7 +119,7 @@ export const VistaPerfil = ({ session }) => {
                         const password = document.getElementById('newPassword').value;
                         if (!password) return alert('Introduce una contraseña');
 
-                        const { error } = await import('../lib/supabaseClient').then(m => m.supabase.auth.updateUser({ password }));
+                        const { error } = await import('../utils/supabaseClient').then(m => m.supabase.auth.updateUser({ password }));
 
                         if (error) alert('Error: ' + error.message);
                         else alert('¡Contraseña actualizada correctamente!');

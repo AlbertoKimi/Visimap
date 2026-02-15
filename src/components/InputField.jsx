@@ -1,4 +1,4 @@
-import { cn } from './utils';
+import { cn } from '../utils/utils';
 
 export function InputField({
   label,
@@ -18,14 +18,14 @@ export function InputField({
   return (
     <div className={cn("flex flex-col", containerClassName)}>
       {label && (
-        <label 
-          htmlFor={id} 
+        <label
+          htmlFor={id}
           className={cn(labelBaseClasses, "text-gray-500", labelClassName)}
         >
           {label}
         </label>
       )}
-      
+
       <Comp
         id={id}
         type={type}
@@ -36,7 +36,7 @@ export function InputField({
         )}
         {...props}
       />
-      
+
       {error && (
         <span className="text-red-500 text-xs mt-1">{error}</span>
       )}
