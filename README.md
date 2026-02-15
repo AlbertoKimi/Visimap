@@ -26,13 +26,14 @@ Visimap combina una arquitectura moderna y eficiente para ofrecer una experienci
 ```bash
 visimap/
 │
+├── docs/                 # Documentación del proyecto
 ├── public/               # Recursos estáticos (imágenes, logos...)
 ├── src/
-│   ├── components/       # Componentes (Mapa, Calendario, Perfil, MenuLateral...)
-│   ├── assets/           # Imágenes y recursos gráficos
-│   ├── App.jsx           # Componente principal y lógica de enrutamiento
-│   ├── main.jsx          # Punto de entrada de la aplicación
-│   └── index.css         # Estilos globales de TailwindCSS
+│   ├── components/       # Componentes reutilizables (Botones, Inputs, Mapas...)
+│   ├── pages/            # Vistas principales (Login, Perfil, Usuarios...)
+│   ├── utils/            # Funciones de utilidad y cliente Supabase
+│   ├── App.jsx           # Componente principal y rutas
+│   └── main.jsx          # Punto de entrada
 │
 ├── .env                  # Variables de entorno
 ├── package.json          # Dependencias y scripts
