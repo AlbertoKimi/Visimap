@@ -1,7 +1,7 @@
 import { Map, Users, Calendar, UserCog, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 
-export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout }) => {
+export const MenuLateral = ({ session, userProfile, dashboardView, onViewChange, onLogout }) => {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col shadow-xl z-20">
 
@@ -9,12 +9,20 @@ export const MenuLateral = ({ session, dashboardView, onViewChange, onLogout }) 
 
       <div className="p-3 border border-slate-100 bg-slate-50/50">
         <div className="flex flex-col items-center gap-3 px-2">
-          <div className="size-24 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold">
-            {session?.user?.email?.charAt(0).toUpperCase()}
-          </div>
+          {userProfile?.avatar_url ? (
+            <img
+              src={userProfile.avatar_url}
+              alt="Avatar"
+              className="size-24 rounded-full object-cover border border-slate-200"
+            />
+          ) : (
+            <div className="size-24 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-bold">
+              {session?.user?.email?.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="overflow-hidden text-center">
             <p className="text-sm font-medium text-slate-700 truncate">
-              {session?.user?.email}
+              {userProfile?.nombre || session?.user?.email}
             </p>
             <p className="text-xs text-slate-400 p-2">Administrador</p>
           </div>
