@@ -30,45 +30,62 @@ export default function App() {
       setIsRecoveryMode(true);
     }
 
-    const refreshUserProfile = async (userId) => {
-      if (!userId) return;
+    const checkUserStatus = async (currentSession) => {
+      if (!currentSession?.user) {
+        setSession(null);
+        setUserProfile(null);
+        setLoading(false);
+        return;
+      }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', currentSession.user.id)
+          .single();
 
-      if (profile) {
-        if (profile.active === false) {
+        if (error) {
+          console.error("Error fetching profile:", error);
+          setSession(currentSession);
+          setLoading(false);
+          return;
+        }
+
+        if (profile && profile.active === false) {
+
           await supabase.auth.signOut();
           setSession(null);
-          alert("Tu cuenta ha sido desactivada. No puedes iniciar sesión.");
-          return null;
-        }
-        setUserProfile(profile);
-      }
-      return profile;
-    };
+          setUserProfile(null);
+        } else {
 
-    const checkUserStatus = async (currentSession) => {
-      if (!currentSession?.user) return;
-      await refreshUserProfile(currentSession.user.id);
+          setUserProfile(profile);
+          setSession(currentSession);
+        }
+      } catch (err) {
+        console.error("Error checking user status:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (session) checkUserStatus(session);
+      checkUserStatus(session);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth Event:", event);
-      setSession(session);
-      if (session) checkUserStatus(session);
 
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecoveryMode(true);
+      }
+
+      if (session) {
+        checkUserStatus(session);
+      } else {
+        setSession(null);
+        setUserProfile(null);
+        setLoading(false);
       }
     });
 
@@ -77,30 +94,37 @@ export default function App() {
 
   const refreshProfileCallback = async () => {
     if (session?.user) {
-      await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single()
-        .then(({ data }) => {
-          if (data) setUserProfile(data);
-        });
+        .single();
+
+      if (data) {
+        if (data.active === false) {
+          handleLogout();
+        } else {
+          setUserProfile(data);
+        }
+      }
     }
   };
 
   const handleLogin = async (email, password) => {
-    const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message);
 
-    if (session?.user) {
+    if (data?.session?.user) {
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('active')
-        .eq('id', session.user.id)
+        .eq('id', data.session.user.id)
         .single();
 
-      // Check if active is explicitly false
       if (profile && profile.active === false) {
+
         await supabase.auth.signOut();
         throw new Error("Tu cuenta ha sido desactivada. Contacta con el administrador.");
       }
@@ -127,15 +151,14 @@ export default function App() {
     );
   }
 
-  // Crear contraseña y nombre de usuario
   if (session && isRecoveryMode) {
     return <EstablecerContrasena session={session} onComplete={handlePasswordSet} />;
   }
 
-  // Dashboard principal con sesión activa
   if (session) {
     return (
       <div className="flex h-screen bg-slate-50 font-sans text-slate-900 overflow-hidden">
+
         {/* MenuLateral */}
 
         <MenuLateral

@@ -75,17 +75,16 @@ export const VistaUsuarios = () => {
 
   const handleAction = async (action, user) => {
     if (action === 'toggle_status') {
-      const currentStatus = user.active !== false; // Default to true if undefined
+      const currentStatus = user.active !== false;
       const newStatus = !currentStatus;
       const actionVerb = newStatus ? 'activar' : 'desactivar';
 
-      // Simple confirmation
       if (window.confirm(`¿Estás seguro de que deseas ${actionVerb} a ${user.nombre || 'este usuario'}?`)) {
         await handleToggleUserStatus(user, newStatus);
       }
       return;
     }
-    // view or edit
+
     setViewState({ mode: 'detail', selectedUser: user, initialMode: action });
   };
 
@@ -112,22 +111,14 @@ export const VistaUsuarios = () => {
 
   const handleUpdateSuccess = () => {
     fetchProfiles();
-    // Optionally stay in view mode or go back? Usually stay in view mode to see changes.
-    // But we need to update the selectedUser object with new data if we stay.
-    // For now, let's go back to list or just re-fetch and keep selectedUser updated
-    // A simple approach: reload profiles and find the user again, or just go back to list.
-    // Let's go refresh data and current user.
     fetchProfiles().then(() => {
-      // We'll rely on the DetalleUsuario to switch to view mode.
-      // But we might need to update reference to selectedUser if we want to show updated data.
-      // Actually, DetalleUsuario uses internal state initialized from props.
-      // If we re-render DetalleUsuario with new props (from new profiles list), it works if we update selectedUser.
+
     });
   };
 
-  // If in Detail Mode
+
   if (viewState.mode === 'detail' && viewState.selectedUser) {
-    // Find the most up to date user object from profiles list to pass down
+
     const currentUser = profiles.find(p => p.id === viewState.selectedUser.id) || viewState.selectedUser;
 
     return (
@@ -197,11 +188,8 @@ export const VistaUsuarios = () => {
               <div className="p-8">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                      <MapPin className="w-6 h-6 text-white" />
-                    </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">Nuevo Trabajador</h3>
+                      <h3 className="text-2xl font-bold text-gray-900">Nuevo Trabajador</h3>
                       <p className="text-sm text-blue-600 font-medium">Registro de personal</p>
                     </div>
                   </div>

@@ -36,7 +36,7 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
           <p className="text-slate-500 mt-2">Introduce tus credenciales para continuar</p>
         </div>
 
-        <div className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <InputField
             label="Email"
             type="email"
@@ -66,12 +66,12 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
           )}
 
           <button
-            onClick={handleSubmit}
+            type="submit"
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
           >
             Iniciar Sesión
           </button>
-        </div>
+        </form>
         <button
           onClick={onBack}
           className="w-full text-slate-400 text-sm font-medium mt-6 hover:text-blue-600 transition-colors"

@@ -29,6 +29,7 @@ export function FormularioRegistroUsuario({ onCancel, onSuccess, mostrarNotifica
             }
 
             // Separar apellidos
+
             const apellidosStr = formData.apellidos.trim();
             const primerEspacio = apellidosStr.indexOf(' ');
 
@@ -117,7 +118,7 @@ export function FormularioRegistroUsuario({ onCancel, onSuccess, mostrarNotifica
                         console.error("Edge Function Body:", jsonError);
                         if (jsonError.error) mensajeError = jsonError.error;
                         else if (jsonError.message) mensajeError = jsonError.message;
-                    } catch (e) { /* ignore */ }
+                    } catch (e) { }
                 }
                 if (err.error) mensajeError = typeof err.error === 'string' ? err.error : JSON.stringify(err.error);
             }
@@ -193,7 +194,7 @@ export function FormularioRegistroUsuario({ onCancel, onSuccess, mostrarNotifica
                     </div>
                 </div>
 
-                <div className="flex gap-2 pt-2 mt-auto">
+                <div className="flex gap-2 pt-6 mt-auto">
                     {onCancel && (
                         <Button
                             type="button"
