@@ -15,7 +15,8 @@ import {
   Activity
 } from 'lucide-react';
 
-const logoUrl = "/src/assets/Logo.png";
+const logoUrl = "/src/assets/Logo-1.png";
+const logoModoOscuroUrl = "/src/assets/Logo-MO.png";
 
 export function LandingPage({ onGetStarted }) {
   const scrollToSection = (id) => {
@@ -28,23 +29,19 @@ export function LandingPage({ onGetStarted }) {
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div>
               <img
                 src={logoUrl}
                 alt="VisiMap Logo"
-                className="w-16 h-16 object-contain"
+                className="w-20 h-20 object-contain"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   const fallback = document.createElement('div');
-                  fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                  fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
                   fallback.innerText = "V";
                   e.target.parentNode.prepend(fallback);
                 }}
               />
-              <div>
-                <h2 className="text-xl">VisiMap</h2>
-                <p className="text-xs text-gray-600">Museo MUVI</p>
-              </div>
             </div>
             <Button onClick={onGetStarted} className=" text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               Iniciar Sesión
@@ -415,21 +412,17 @@ export function LandingPage({ onGetStarted }) {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <img
-                  src={logoUrl}
+                  src={logoModoOscuroUrl}
                   alt="VisiMap Logo"
-                  className="w-16 h-16 object-contain"
+                  className="w-20 h-20 object-contain"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     const fallback = document.createElement('div');
-                    fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                    fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
                     fallback.innerText = "V";
                     e.target.parentNode.prepend(fallback);
                   }}
                 />
-                <div>
-                  <h3 className="text-lg">VisiMap</h3>
-                  <p className="text-sm text-gray-400">Museo MUVI</p>
-                </div>
               </div>
               <p className="text-gray-400">
                 Sistema de gestión digital para museos del siglo XXI.

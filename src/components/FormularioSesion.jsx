@@ -23,7 +23,7 @@ export const FormularioSesion = ({ onLogin, onBack, logoUrl }) => {
           <img
             src={logoUrl}
             alt="VisiMap Logo"
-            className="w-24 h-24 object-contain"
+            className="w-32 h-32 object-contain"
             onError={(e) => {
               e.target.style.display = 'none';
               const fallback = document.createElement('div');
