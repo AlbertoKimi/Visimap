@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/assets/Logo.png" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
+  <img src="src/assets/Logo-1.png" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
 
   # Visimap
   **Plataforma Integral de Gestión de Visitantes y Personal**
