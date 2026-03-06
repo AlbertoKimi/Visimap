@@ -115,10 +115,25 @@ La aplicación utiliza Supabase para la persistencia de datos y la autenticació
 ---
 
 ## 📚 Sesiones
-- 13/01/2026 --> Reunión con el tutor del proyecto para enseyarle la landing page, formulario de inicio y dashboard con el mapa implementado. También para resolver algunas dudas del proyecto.
-- 20/01/2026 --> Reunión con el tutor para mostrar la mejora del mapa con colores y leyenda
-- 27/01/2026 --> Reunión con el tutor para mostrar que funciona correctamente el dashboard de registro de visitante. También le he consultado temas de mejoras de mi aplicativo, como por ejemplo, meter una sección de notas o correo interno. Consulta de a la hora de añadir un trabajador si debo de enviar un correo de confirmación o no para que se registre de forma correcta en la base de datos.
-- 03/02/2026 --> Reunión con el tutor para mostrarle la insercción de trabajadores, el correo de invitación, el "eliminado" de un trabajador y que no te permite iniciar sesión y la modificación de datos de un trabajador mediante el menú del admin en trabajadores.
+
+- 07/10/2025 --> **Creación de una imagen corporativa**, desarrollando la identidad visual, el logotipo y la paleta de colores.
+- 14/10/2025 --> Elaboración y **creación de contrato de prestación de servicios informáticos** para definir el alcance del proyecto.
+- 21/10/2025 --> Redacción del **acta de reuniones** para la validación técnica inicial.
+- 23/10/2025 --> **Puesta en marcha de la idea de nuestro proyecto**, definiendo la planificación y distribución de tareas.
+- 28/10/2025 --> Definición de los **requisitos funcionales y no funcionales** del aplicativo, documentando todas las necesidades técnicas.
+- 04/11/2025 --> **Presentación de nuestra idea de proyecto**, exponiendo los objetivos y comenzando el diseño de las interfaces y la arquitectura visual (*Atomic Design*).
+- 25/11/2025 --> **Creación de la base de datos (modelo entidad relación)**, estructurando el esquema principal del sistema.
+- 02/12/2025 --> **Presentación de la base de datos**, mostrando de forma exhaustiva los campos, tablas y las relaciones elegidas.
+- 09/12/2025 --> **Optimización del modelo relacional** y revisión de la lógica de negocio para mejorar su robustez.
+- 16/12/2025 --> Revisión final del planteamiento del proyecto y cierre de la primera fase antes de iniciar el desarrollo técnico del año siguiente.
+- 13/01/2026 --> **Presentación del primer prototipo funcional al tutor del proyecto**. Se exhibió la *landing page*, el formulario de acceso y la integración inicial del dashboard con el mapa interactivo. Resolución de dudas técnicas sobre la arquitectura.
+- 20/01/2026 --> **Revisión de la visualización de datos geoespaciales**. Demostración de las mejoras implementadas en el mapa interactivo, incluyendo la asignación dinámica de colores y la inclusión de una leyenda explicativa.
+- 27/01/2026 --> **Validación del módulo de visitantes**. Pruebas de funcionamiento del dashboard para el registro de usuarios. Se plantearon propuestas de escalabilidad (como un buzón de mensajería interna) y se analizó el flujo de validación por correo electrónico en alta de trabajadores.
+- 03/02/2026 --> **Presentación del módulo de gestión de personal**. Demostración del ciclo de vida de la cuenta de un empleado: inserción inicial, envío automático de invitaciones, edición mediante el panel de administrador y medidas de seguridad para la restricción de acceso (bajas).
+- 10/02/2026 --> **Desarrollo del flujo de invitación por correo**. Creación de la interfaz mediante la cual los empleados completan su registro tras recibir la invitación. Paralelamente, se llevó a cabo una **optimización de los formularios** para garantizar una experiencia de usuario (UX) más intuitiva.
+- 17/02/2026 --> **Refactorización visual de la *landing page***. Mejora del diseño y la presentación del producto corporativo. Refinamiento de las validaciones de seguridad e interacción en los formularios de autenticación.
+- 24/02/2026 --> **Elaboración del manual técnico y del manual de proyecto**. Documentación de la arquitectura del software, configuración del entorno de desarrollo y justificación de las decisiones técnicas adoptadas a lo largo del desarrollo.
+- 03/03/2026 --> **Redacción de la documentación de usuario**. Creación de una guía detallada para la operación y explotación del sistema, ilustrando cómo gestionar adecuadamente el mapa, los registros de visitantes y el calendario de eventos.
 
 ## 👩‍💻 Autoría
 - **Desarrollador Principal**

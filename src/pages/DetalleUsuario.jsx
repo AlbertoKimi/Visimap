@@ -271,7 +271,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                         <label className={`${labelSize} font-bold text-slate-500 uppercase tracking-wider`}>Nombre de Usuario</label>
                                         {mode === 'view' ? (
                                             <div className={`flex items-center ${inputPadding} bg-slate-50 rounded-lg ${fontSize} text-slate-700 font-medium border border-slate-100 ${controlHeight}`}>
-                                                <User className="w-4 h-4 mr-2 text-slate-400" />
+                                                {/* <User className="w-4 h-4 mr-2 text-slate-400" /> */}
                                                 @{formData.nombre_usuario || '-'}
                                             </div>
                                         ) : (
@@ -288,7 +288,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                         <label className={`${labelSize} font-bold text-slate-500 uppercase tracking-wider`}>Rol</label>
                                         {mode === 'view' ? (
                                             <div className={`flex items-center ${inputPadding} bg-slate-50 rounded-lg ${fontSize} text-slate-700 font-medium border border-slate-100 ${controlHeight}`}>
-                                                <Shield className="w-4 h-4 mr-2 text-slate-400" />
+                                                {/* <Shield className="w-4 h-4 mr-2 text-slate-400" /> */}
                                                 {getRoleName(formData.role_id)}
                                             </div>
                                         ) : (
@@ -350,7 +350,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                         <label className={`${labelSize} font-bold text-slate-500 uppercase tracking-wider`}>Email</label>
                                         {mode === 'view' ? (
                                             <div className={`flex items-center ${inputPadding} bg-slate-50 rounded-lg ${fontSize} text-slate-700 font-medium border border-slate-100 truncate ${controlHeight}`}>
-                                                <Mail className="w-4 h-4 mr-2 text-slate-400 flex-shrink-0" />
+                                                {/* <Mail className="w-4 h-4 mr-2 text-slate-400 flex-shrink-0" /> */}
                                                 <span className="truncate">{formData.email}</span>
                                             </div>
                                         ) : (
@@ -359,7 +359,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                                 disabled={true}
                                                 onChange={(e) => handleChange('email', e.target.value)}
                                                 className={`${fontSize} ${inputPadding} ${controlHeight}`}
-                                                icon={<Mail className="w-4 h-4 text-slate-400" />}
+                                            // icon={<Mail className="w-4 h-4 text-slate-400" />}
                                             />
                                         )}
                                     </div>
@@ -367,7 +367,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                         <label className={`${labelSize} font-bold text-slate-500 uppercase tracking-wider`}>Teléfono</label>
                                         {mode === 'view' ? (
                                             <div className={`flex items-center ${inputPadding} bg-slate-50 rounded-lg ${fontSize} text-slate-700 font-medium border border-slate-100 ${controlHeight}`}>
-                                                <Phone className="w-4 h-4 mr-2 text-slate-400" />
+                                                {/* <Phone className="w-4 h-4 mr-2 text-slate-400" /> */}
                                                 {formData.telefono || '-'}
                                             </div>
                                         ) : (
@@ -385,7 +385,7 @@ export const DetalleUsuario = ({ user, initialMode = 'view', roles = [], onBack,
                                 {mode === 'edit' && (
                                     <div className="mt-5 pt-5 border-t border-slate-100 animate-in fade-in">
                                         <div className="flex items-center mb-3">
-                                            <Lock className="w-4 h-4 mr-2 text-blue-600" />
+                                            {/* <Lock className="w-4 h-4 mr-2 text-blue-600" /> */}
                                             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Cambiar Contraseña</h4>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
