@@ -1,146 +1,170 @@
-# 🗺️ Visimap — Gestión de Visitantes y Personal
+# Visimap
+**Plataforma Integral de Gestión de Visitantes y Personal**
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Frontend-React-blue?logo=react" alt="React Badge">
-  <img src="https://img.shields.io/badge/Backend-Supabase-green?logo=supabase" alt="Supabase Badge">
-  <img src="https://img.shields.io/badge/Estilos-TailwindCSS-38bdf8?logo=tailwindcss" alt="Tailwind Badge">
-  <img src="https://img.shields.io/badge/Licencia-MIT-yellow" alt="License Badge">
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS">
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
 </p>
 
-> 🏢 **Visimap** es una solución integral para la gestión de visitantes y personal en el Museo MUVI de Vca.
-> Permite registrar visitantes por provincia mediante un mapa interactivo, gestionar perfiles de empleados y organizar eventos mediante un calendario interactivo.
+> **Visimap** es una solución de software diseñada para optimizar la gestión de accesos, flujos de visitantes y organización del personal en el Museo MUVI. Proporciona control geoespacial, administración de perfiles y planificación de eventos en tiempo real.
 
 ---
 
-## 🌍 Descripción general
-Visimap combina una arquitectura moderna y eficiente para ofrecer una experiencia de usuario fluida:
-- 🔹 **Frontend:** React + Vite + TailwindCSS
-- 🔹 **Backend:** Supabase (PostgreSQL + Auth + Storage)
-- 🔹 **Gestión:** Mapas interactivos, control de usuarios y agenda de eventos
-- 🔹 **Diseño:** Interfaz limpia, intuitiva y responsive
-- 🔹 **Objetivo:** Facilitar el control de acceso y la gestión en el Museo MUVI
+## Índice
+- [Descripción General](#descripción-general)
+- [Características Implementadas](#características-implementadas)
+- [Tecnologías Principales](#tecnologías-principales)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación y Despliegue](#instalación-y-despliegue)
+- [Comandos Útiles](#comandos-útiles)
+- [Modelo de Datos](#modelo-de-datos)
+- [Registro de Sesiones de Trabajo](#registro-de-sesiones-de-trabajo)
+- [Autoría y Licencia](#autoría-y-licencia)
 
 ---
 
-## 🧱 Estructura del proyecto
+## Descripción General
+Visimap consolida un sistema escalable y eficiente para ofrecer una experiencia de usuario optimizada en entornos de alta concurrencia. Su propósito principal es facilitar el control de acceso fluido y mejorar la toma de decisiones basada en datos geográficos y organizativos.
+
+---
+
+## Características Implementadas
+El sistema incluye las siguientes funcionalidades clave para la operativa diaria del museo:
+
+* **Dashboard Analítico:** Visualización en tiempo real de métricas y distribución geográfica de visitantes mediante mapas interactivos.
+* **Gestión de Personal:** Sistema robusto de administración para perfiles de usuario, con asignación de roles corporativos y control de estados (activo/inactivo).
+* **Calendario de Eventos:** Planificación, visualización y seguimiento integral de la agenda corporativa.
+* **Sistema de Invitaciones:** Flujo seguro por correo electrónico para que los empleados configuren sus credenciales en su primer acceso.
+* **Autenticación Completa:** Inicio de sesión seguro, gestión de la sesión y flujos de recuperación de contraseñas.
+* **Diseño Responsive:** Interfaz *mobile-first* implementada para garantizar su visualización óptima en pantallas de cualquier formato.
+
+---
+
+## Tecnologías Principales
+La plataforma se fundamenta en un modelo de arquitectura moderna separando claramente la lógica de presentación de los servicios de backend.
+
+| Capa | Tecnología | Propósito |
+| :--- | :--- | :--- |
+| **Frontend** | React, Vite | Construcción de interfaces dinámicas y alto rendimiento de compilación. |
+| **Estilos** | TailwindCSS | Sistema de diseño ágil mediante utilidades CSS corporativas y adaptativas. |
+| **Backend / BaaS** | Supabase | Proveedor de base de datos (PostgreSQL) y autenticación segura. |
+| **UI e Iconos** | Lucide React | Biblioteca de iconografía vectorial estandarizada y minimalista. |
+| **Animaciones** | Framer Motion | Transiciones modulares y fluidas para el enriquecimiento visual de la interfaz. |
+
+---
+
+## Estructura del Proyecto
+Organización modular de los directorios siguiendo las mejores prácticas de desarrollo en React.
+
 ```bash
 visimap/
-│
-├── docs/                 # Documentación del proyecto
-├── public/               # Recursos estáticos (imágenes, logos...)
+├── docs/                 # Documentación técnica y manuales corporativos
+├── public/               # Assets estáticos (imágenes, logos del museo)
 ├── src/
-│   ├── components/       # Componentes reutilizables (Botones, Inputs, Mapas...)
-│   ├── pages/            # Vistas principales (Login, Perfil, Usuarios...)
-│   ├── utils/            # Funciones de utilidad y cliente Supabase
-│   ├── App.jsx           # Componente principal y rutas
-│   └── main.jsx          # Punto de entrada
+│   ├── components/       # Componentes atómicos e independientes (Inputs, Botones)
+│   ├── pages/            # Vistas principales y contenedores de ruta
+│   ├── utils/            # Configuración de clientes (Supabase) y lógicas de validación
+│   ├── App.jsx           # Enrutador principal y configuración de dependencias
+│   └── main.jsx          # Punto de entrada de la aplicación
 │
-├── .env                  # Variables de entorno
-├── package.json          # Dependencias y scripts
-├── tailwind.config.js    # Configuración de TailwindCSS
-├── vite.config.js        # Configuración de Vite
-└── README.md             # Documentación del proyecto
+├── .env                  # Variables de entorno seguras (Claves de Supabase)
+├── tailwind.config.js    # Definición del sistema de diseño (tokens)
+└── vite.config.js        # Configuración del empaquetador
 ```
 
 ---
 
-## ⚙️ Instalación y ejecución local
+## Instalación y Despliegue
 
-### 1️⃣ Clonar el repositorio
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd visimap
-```
+### Requisitos Previos
+* Node.js (v18 o superior)
+* Gestor de paquetes `npm`
 
-### 2️⃣ Instalar dependencias
-```bash
-npm install
-```
+### Pasos de Instalación
+1. **Clonar el repositorio:**
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd visimap
+   ```
 
-### 3️⃣ Ejecutar el entorno de desarrollo
-```bash
-npm run dev
-```
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
 
-El proyecto se abrirá en: `http://localhost:5173`
+3. **Configurar variables de entorno:**
+   Crear un archivo `.env` en la raíz del proyecto y definir las referencias al backend:
+   ```env
+   VITE_SUPABASE_URL=tu_url_de_supabase
+   VITE_SUPABASE_ANON_KEY=tu_anon_key
+   ```
 
----
-
-## 🗄️ Base de datos (Supabase)
-La aplicación utiliza Supabase para la persistencia de datos y la autenticación segura.
-
-**Tablas principales:**
-| Tabla | Descripción |
-|---|---|
-| `profiles` | Información detallada de usuarios y empleados (nombre, rol, estado, avatar) |
-| `visitas` | Registro de actividad y ubicación de visitantes |
-| `eventos` | Datos del calendario para la agenda corporativa |
-
-**Políticas de Seguridad (RLS):**
-- Los datos están protegidos mediante Row Level Security.
-- La autenticación gestiona sesiones y recuperación de contraseñas.
+4. **Ejecutar el entorno de desarrollo:**
+   ```bash
+   npm run dev
+   ```
+   *La aplicación estará disponible en `http://localhost:5173`.*
 
 ---
 
-## 🧠 Tecnologías principales
-| Tecnología | Uso |
-|---|---|
-| ⚛️ React + Vite | Desarrollo de interfaz de usuario rápido y modular |
-| 🎨 TailwindCSS | Estilizado moderno y adaptativo |
-| 🧰 Supabase | Backend as a Service (BaaS) para base de datos y autenticación |
-| 🗺️ Lucide React | Iconografía vectorial ligera y consistente |
-| 🎭 Framer Motion | Animaciones fluidas para la interfaz |
+## Comandos Útiles
+
+Tabla de referencias rápidas para la operativa sobre el código base:
+
+| Acción | Comando | Descripción |
+| :--- | :--- | :--- |
+| **Instalación** | `npm install` | Descarga e instala los módulos y dependencias de NPM. |
+| **Desarrollo** | `npm run dev` | Lanza el servidor de Vite en caliente (HMR). |
+| **Compilación** | `npm run build` | Genera la carpeta `/dist` optimizada para producción. |
+| **Previsualización**| `npm run preview` | Levanta un servidor sobre los estáticos de la última compilación. |
+| **Análisis** | `npm run lint` | Comprueba la calidad y el estándar de sintaxis del código. |
 
 ---
 
-## 💻 Comandos útiles
-| Acción | Comando |
-|---|---|
-| Instalar dependencias | `npm install` |
-| Ejecutar en desarrollo | `npm run dev` |
-| Construir para producción | `npm run build` |
-| Previsualizar build | `npm run preview` |
-| Linting (Sintaxis) | `npm run lint` |
+## Modelo de Datos
+La persistencia y seguridad de la información está delegada en Supabase (PostgreSQL). Toda la información está protegida mediante **Row Level Security (RLS)** y manejada por políticas de control de acceso.
+
+| Entidad | Descripción |
+| :--- | :--- |
+| `profiles` | Gestión centralizada de la identidad del personal. Almacena nombres, roles corporativos, estados de sesión y avatares. |
+| `visitas` | Entidad transaccional para el registro de accesos y procedencia geográfica de los visitantes del museo. |
+| `eventos` | Registro temporal y descriptivo de la planificación del calendario interno. |
 
 ---
 
-## 🧩 Características implementadas
-- ✅ **Dashboard Interactivo:** Vista principal con mapa de visitantes en tiempo real.
-- ✅ **Gestión de Personal:** Administración de perfiles de usuario con roles y estados.
-- ✅ **Calendario de Eventos:** Planificación y visualización de la agenda corporativa.
-- ✅ **Perfil de Usuario:** Configuración personal y edición de datos.
-- ✅ **Autenticación Completa:** Inicio de sesión, cierre de sesión y recuperación de contraseña.
-- ✅ **Diseño Responsive:** Interfaz adaptada a diferentes tamaños de pantalla.
+## Registro de Sesiones de Trabajo
+
+### Fase de Planificación y Diseño (2025)
+- **07/10/2025** | **Creación de una imagen corporativa**: Desarrollo de la identidad visual, conceptualización del logotipo y definición de la paleta de colores.
+- **14/10/2025** | **Contrato de prestación de servicios**: Elaboración del documento legal para definir el alcance, términos y condiciones del proyecto informático.
+- **21/10/2025** | **Acta de reuniones**: Redacción formal del documento para la validación técnica inicial y registro de acuerdos.
+- **23/10/2025** | **Puesta en marcha del proyecto**: Definición de la planificación estratégica, cronograma y distribución de tareas del equipo.
+- **28/10/2025** | **Requisitos funcionales y no funcionales**: Levantamiento de requerimientos y documentación exhaustiva de las especificaciones y limitantes técnicas del sistema.
+- **04/11/2025** | **Presentación del proyecto**: Exposición de los objetivos principales e inicio del diseño de interfaces bajo la metodología de *Atomic Design*.
+- **25/11/2025** | **Diseño de Base de Datos**: Creación del modelo Entidad-Relación y estructuración preliminar del esquema principal del sistema.
+- **02/12/2025** | **Presentación del Modelo de Datos**: Demostración y defensa de la arquitectura de datos, exponiendo tablas, campos y relaciones establecidas.
+- **09/12/2025** | **Optimización del esquema relacional**: Revisión final de la lógica de negocio, normalización y mejora de la robustez de la base de datos.
+- **16/12/2025** | **Cierre de Fase 1**: Revisión global del planteamiento del proyecto y validación antes de dar paso a la implementación técnica del Frontend/Backend.
+
+### Fase de Desarrollo y Despliegue (2026)
+- **13/01/2026** | **Presentación del primer prototipo funcional**. Exhibición formal ante la tutoría del proyecto de la *landing page*, el formulario de acceso y la integración inicial del dashboard interactivo. Resolución de dudas de arquitectura.
+- **20/01/2026** | **Revisión de visualización de datos**. Demostración de las mejoras aplicadas al mapa geoespacial, incluyendo asignación dinámica de colores y renderizado de leyendas.
+- **27/01/2026** | **Validación de módulos**. Pruebas en entornos reales del dashboard de visitantes. Análisis de propuestas de escalabilidad (mensajería interna) y debate sobre el flujo de validación de cuentas por correo.
+- **03/02/2026** | **Presentación de la gestión de personal**. Demostración completa del ciclo de vida de usuarios: alta, envío automático de invitaciones, edición desde el panel de administrador y revocación de accesos.
+- **10/02/2026** | **Desarrollo del flujo de invitaciones**. Creación de las vistas específicas para la configuración de credenciales de nuevos empleados. Optimización general de la UX/UI de los formularios de la plataforma.
+- **17/02/2026** | **Refactorización de la *Landing Page***. Pulido del diseño corporativo, asegurando una presentación de alto impacto visual. Implementación de validaciones robustas de los esquemas de autenticación.
+- **24/02/2026** | **Elaboración de manuales**. Documentación exhaustiva en el manual técnico y el manual de proyecto: arquitectura, infraestructura, configuración y justificación de stack tecnológico.
+- **03/03/2026** | **Redacción de documentación de usuario**. Publicación de la guía de explotación operativa del sistema, orientada a formar a los operadores del museo en el uso del mapa, registros y agenda.
 
 ---
 
-## 📚 Sesiones
+## Autoría y Licencia
 
-- 07/10/2025 --> **Creación de una imagen corporativa**, desarrollando la identidad visual, el logotipo y la paleta de colores.
-- 14/10/2025 --> Elaboración y **creación de contrato de prestación de servicios informáticos** para definir el alcance del proyecto.
-- 21/10/2025 --> Redacción del **acta de reuniones** para la validación técnica inicial.
-- 23/10/2025 --> **Puesta en marcha de la idea de nuestro proyecto**, definiendo la planificación y distribución de tareas.
-- 28/10/2025 --> Definición de los **requisitos funcionales y no funcionales** del aplicativo, documentando todas las necesidades técnicas.
-- 04/11/2025 --> **Presentación de nuestra idea de proyecto**, exponiendo los objetivos y comenzando el diseño de las interfaces y la arquitectura visual (*Atomic Design*).
-- 25/11/2025 --> **Creación de la base de datos (modelo entidad relación)**, estructurando el esquema principal del sistema.
-- 02/12/2025 --> **Presentación de la base de datos**, mostrando de forma exhaustiva los campos, tablas y las relaciones elegidas.
-- 09/12/2025 --> **Optimización del modelo relacional** y revisión de la lógica de negocio para mejorar su robustez.
-- 16/12/2025 --> Revisión final del planteamiento del proyecto y cierre de la primera fase antes de iniciar el desarrollo técnico del año siguiente.
-- 13/01/2026 --> **Presentación del primer prototipo funcional al tutor del proyecto**. Se exhibió la *landing page*, el formulario de acceso y la integración inicial del dashboard con el mapa interactivo. Resolución de dudas técnicas sobre la arquitectura.
-- 20/01/2026 --> **Revisión de la visualización de datos geoespaciales**. Demostración de las mejoras implementadas en el mapa interactivo, incluyendo la asignación dinámica de colores y la inclusión de una leyenda explicativa.
-- 27/01/2026 --> **Validación del módulo de visitantes**. Pruebas de funcionamiento del dashboard para el registro de usuarios. Se plantearon propuestas de escalabilidad (como un buzón de mensajería interna) y se analizó el flujo de validación por correo electrónico en alta de trabajadores.
-- 03/02/2026 --> **Presentación del módulo de gestión de personal**. Demostración del ciclo de vida de la cuenta de un empleado: inserción inicial, envío automático de invitaciones, edición mediante el panel de administrador y medidas de seguridad para la restricción de acceso (bajas).
-- 10/02/2026 --> **Desarrollo del flujo de invitación por correo**. Creación de la interfaz mediante la cual los empleados completan su registro tras recibir la invitación. Paralelamente, se llevó a cabo una **optimización de los formularios** para garantizar una experiencia de usuario (UX) más intuitiva.
-- 17/02/2026 --> **Refactorización visual de la *landing page***. Mejora del diseño y la presentación del producto corporativo. Refinamiento de las validaciones de seguridad e interacción en los formularios de autenticación.
-- 24/02/2026 --> **Elaboración del manual técnico y del manual de proyecto**. Documentación de la arquitectura del software, configuración del entorno de desarrollo y justificación de las decisiones técnicas adoptadas a lo largo del desarrollo.
-- 03/03/2026 --> **Redacción de la documentación de usuario**. Creación de una guía detallada para la operación y explotación del sistema, ilustrando cómo gestionar adecuadamente el mapa, los registros de visitantes y el calendario de eventos.
+**Desarrollado por:**
+* Desarrollador Principal - Alumno de Desarrollo de Aplicaciones Web (DAW)
+* *Proyecto Intermodular*
 
-## 👩‍💻 Autoría
-- **Desarrollador Principal**
-- Desarrollo de Aplicaciones Web (DAW)
-- Proyecto Intermodular
-
----
-
-## 🏷️ Licencia
-Este proyecto está distribuido bajo la Licencia MIT.
+**Licencia:**
+Distribuido bajo la [Licencia MIT](https://opensource.org/licenses/MIT). Se permite el uso comercial, modificación y distribución del software.
