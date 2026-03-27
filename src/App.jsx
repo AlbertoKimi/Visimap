@@ -197,7 +197,7 @@ export default function App() {
               <MapaVisitantes onRegistrarVisitante={(data) => console.log(data)} />
             )}
             {dashboardView === 'workers' && <VistaUsuarios onRefreshProfile={refreshProfileCallback} />}
-            {dashboardView === 'calendar' && <VistaCalendario />}
+            {dashboardView === 'calendar' && <VistaCalendario session={session} />}
             {dashboardView === 'profile' && <VistaPerfil session={session} onRefreshProfile={refreshProfileCallback} />}
           </div>
         </main>
