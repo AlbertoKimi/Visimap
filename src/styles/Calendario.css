@@ -43,18 +43,50 @@
 }
 
 .fc-event {
-  border-radius: 6px !important;
+  border-radius: 8px !important;
   border: none !important;
   margin: 1px 2px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .fc-event:hover {
-  opacity: 0.85;
+  filter: brightness(0.95);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10 !important;
+}
+
+/* Forzar Apilado Vertical en Cuadrícula Horaria */
+.fc-timegrid-event-harness {
+  width: 98% !important;
+  left: 1% !important;
+  /* El posicionamiento absoluto se mantiene para respetar la hora de inicio */
+}
+
+.fc-timegrid-event {
+  width: 100% !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.fc-v-event {
+  border: 2px solid white !important;
+}
+
+/* Vista Agenda (Lista) - Sin fondos */
+.fc-list-event {
+  background-color: transparent !important;
+}
+
+.fc-list-event:hover td {
+  background-color: #f8fafc !important;
+}
+
+.fc-list-event td {
+  border: none !important;
+  background-color: transparent !important;
 }
 
 .fc .fc-timegrid-slot {
@@ -68,4 +100,38 @@
 
 .fc .fc-now-indicator-arrow {
   border-top-color: #ef4444;
+}
+
+/* Grilla Manual (Semana/Día) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Estilo de los eventos en la grilla manual */
+.grid-event-pill {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-event-pill:hover {
+  transform: translateX(4px);
+  filter: brightness(0.95);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.grid-event-pill:active {
+  transform: scale(0.98);
 }

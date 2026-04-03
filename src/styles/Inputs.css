@@ -1,0 +1,51 @@
+.input-style-comun {
+  @apply w-full px-4 py-3 border rounded-xl text-sm font-medium transition-all duration-200 outline-none;
+}
+
+/* Variantes de Borde */
+.input-border-primario {
+  @apply border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10;
+}
+
+.input-border-info {
+  @apply border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10;
+}
+
+/* Estados de Validación */
+.input-error {
+  @apply border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-red-50/30;
+}
+
+.input-valido {
+  @apply border-emerald-500 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-emerald-50/30;
+}
+
+.input-disabled {
+  @apply bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed;
+}
+
+/* Adaptabilidad */
+.input-responsive {
+  @apply max-w-full;
+}
+
+.textarea-style {
+  @apply min-h-[120px] resize-y leading-relaxed;
+}
+
+.select-responsive {
+  @apply bg-white;
+}
+
+.select-color-text {
+  @apply text-slate-700;
+}
+
+/* Checkbox Custom */
+.checkbox-input {
+  @apply w-5 h-5 rounded-md border border-slate-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer;
+}
+
+.span-error {
+  @apply font-semibold tracking-tight;
+}

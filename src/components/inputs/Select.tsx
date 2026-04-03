@@ -1,0 +1,68 @@
+import { type SelectHTMLAttributes, forwardRef } from "react";
+import "../../styles/Inputs.css";
+
+export interface Option {
+  value: string | number;
+  label: string;
+}
+
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  label?: string;
+  options: Option[];
+  variant?: "primario" | "info";
+  manejarCambio: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+const Select = forwardRef<HTMLSelectElement, SelectProps>(({
+  label,
+  options,
+  value = "",
+  variant = "primario",
+  disabled,
+  manejarCambio,
+  name,
+  ...props
+}, ref) => {
+  const colorClass = `input-border-${variant}`;
+
+  return (
+    <section className="flex flex-col gap-2 w-full" aria-labelledby={`${name}-label`}>
+      {label && (
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
+          {label}
+        </label>
+      )}
+
+      <select
+        id={name}
+        name={name}
+        ref={ref}
+        value={value}
+        disabled={disabled}
+        className={`input-style-comun select-responsive select-color-text ${
+          disabled ? "input-disabled" : `${colorClass}`
+        }`}
+        {...props}
+        onChange={manejarCambio}
+      >
+        <option value="" className="text-slate-400">
+          Seleccionar una opción...
+        </option>
+
+        {options.map((option) => (
+          <option
+            key={option.value}
+            value={option.value}
+            className="text-slate-900"
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </section>
+  );
+});
+
+Select.displayName = "Select";
+
+export default Select;
