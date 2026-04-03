@@ -22,8 +22,8 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
   const [resetModalTrigger, setResetModalTrigger] = useState(0);
   const [estaAbierto, setEstaAbierto] = useState(false);
   const [notificacion, setNotificacion] = useState<{
-    open: boolean, 
-    mensaje: string, 
+    open: boolean,
+    mensaje: string,
     tipo: 'success' | 'error' | 'warning' | 'info'
   }>({
     open: false,
@@ -133,7 +133,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </button>
 
         <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100">
-          <div className="p-4 flex flex-col h-full">
+          <div className="p-3 flex flex-col h-full">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-xl font-bold text-gray-900">Registro Rápido</h3>
@@ -169,10 +169,10 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden"
             >
-              <div className="p-8">
-                <div className="flex items-start justify-between mb-6">
+              <div className="overflow-y-auto flex-1 px-6 py-3 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+                <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900">Nuevo Visitante</h3>

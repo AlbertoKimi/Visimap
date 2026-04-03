@@ -43,10 +43,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   e.target.style.display = 'none';
                   const parent = e.target.parentNode;
                   if (parent) {
-                      const fallback = document.createElement('div');
-                      fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
-                      fallback.innerText = "V";
-                      parent.prepend(fallback);
+                    const fallback = document.createElement('div');
+                    fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                    fallback.innerText = "V";
+                    parent.prepend(fallback);
                   }
                 }}
               />
@@ -166,17 +166,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             >
               <div className="grid grid-cols-2 gap-4">
                 <img
-                  src="/src/assets/muvi1.jpeg"
+                  src="/src/assets/muvi1.webp"
                   alt="Museo Fachada"
                   className="rounded-lg shadow-lg col-span-2 w-full object-cover"
                 />
                 <img
-                  src="/src/assets/muvihistoria.jpg"
+                  src="/src/assets/muvihistoria.webp"
                   alt="Historia"
                   className="rounded-lg shadow-lg w-full object-cover"
                 />
                 <img
-                  src="/src/assets/muvicoche.jpg"
+                  src="/src/assets/muvicoche.webp"
                   alt="Visitantes"
                   className="rounded-lg shadow-lg w-full object-cover"
                 />
@@ -276,7 +276,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               transition={{ duration: 0.8 }}
             >
               <img
-                src="/src/assets/Analisis.png"
+                src="/src/assets/Analisis.webp"
                 alt="Analytics"
                 className="rounded-lg shadow-2xl w-full"
               />
@@ -420,10 +420,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                     e.target.style.display = 'none';
                     const parent = e.target.parentNode;
                     if (parent) {
-                        const fallback = document.createElement('div');
-                        fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
-                        fallback.innerText = "V";
-                        parent.prepend(fallback);
+                      const fallback = document.createElement('div');
+                      fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                      fallback.innerText = "V";
+                      parent.prepend(fallback);
                     }
                   }}
                 />

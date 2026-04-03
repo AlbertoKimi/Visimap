@@ -44,7 +44,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
   };
 
   return (
-    <section className="flex flex-col gap-2 w-full" aria-labelledby={`${name}-label`}>
+    <section className="flex flex-col gap-1 w-full" aria-labelledby={`${name}-label`}>
       <header>
         <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
           {label}

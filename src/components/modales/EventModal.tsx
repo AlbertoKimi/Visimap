@@ -170,10 +170,11 @@ export const EventModal: React.FC<EventModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-md mx-4 p-8 max-h-[90vh] overflow-y-auto"
+        className="relative bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-md mx-4 max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="overflow-y-auto flex-1 px-6 py-5 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+        <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
             <span
               className="px-3 py-1 rounded-full text-xs font-bold capitalize border"
@@ -292,7 +293,7 @@ export const EventModal: React.FC<EventModalProps> = ({
               <h3 className="text-2xl font-bold text-slate-800 mb-6 tracking-tight">{formulario.nombre_evento}</h3>
             )}
 
-            <div className="space-y-4 text-sm text-slate-600 pt-4">
+            <div className="space-y-3 text-sm text-slate-600 pt-2">
               {editando && (
                 <Select
                   label="Tipo de evento"
@@ -338,7 +339,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                     value={formulario.descripcion}
                     manejarCambio={manejarCambio}
                     placeholder="Detalles sobre el evento..."
-                    rows={3}
+                    rows={2}
                 />
               ) : (
                 <div className="flex items-start">
@@ -452,7 +453,7 @@ export const EventModal: React.FC<EventModalProps> = ({
 
             {errorLocal && <p className="text-red-500 text-xs mt-3 font-medium bg-red-50 p-2 rounded-lg border border-red-100">{errorLocal}</p>}
 
-            <div className="flex justify-between mt-6 gap-3 flex-wrap">
+            <div className="flex justify-between mt-4 gap-3 flex-wrap">
               {!isNew && (
                 <Button
                   variant="ghost"
@@ -486,6 +487,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             </div>
           </>
         )}
+        </div> {/* end inner scroll div */}
       </div>
     </div>
   );

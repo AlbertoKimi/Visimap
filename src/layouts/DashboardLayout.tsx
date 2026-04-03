@@ -1,11 +1,23 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { MenuLateral } from '../components/MenuLateral';
+import { AppSidebar } from '../components/app-sidebar';
 import { Bell } from 'lucide-react';
-import { useAuthStore } from '../stores/authStore';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
 export const DashboardLayout: React.FC = () => {
-    const { userProfile } = useAuthStore();
     const location = useLocation();
 
     const getTitle = () => {
@@ -21,14 +33,30 @@ export const DashboardLayout: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen bg-slate-50 font-sans text-slate-900 overflow-hidden">
-            <MenuLateral userProfile={userProfile} />
-
-            <main className="flex-1 flex flex-col overflow-hidden">
-                <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm z-10">
-                    <h1 className="text-lg font-bold text-slate-700 capitalize">
-                        {getTitle()}
-                    </h1>
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="flex flex-col overflow-hidden w-full">
+                <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b bg-white px-4">
+                    <div className="flex items-center gap-2">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator
+                            orientation="vertical"
+                            className="mr-2 data-[orientation=vertical]:h-4"
+                        />
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                <BreadcrumbItem className="hidden md:block">
+                                    <BreadcrumbLink href="/dashboard">
+                                        Visimap
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator className="hidden md:block" />
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage>{getTitle()}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                    </div>
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors relative">
                             <Bell size={20} />
@@ -36,11 +64,10 @@ export const DashboardLayout: React.FC = () => {
                         </button>
                     </div>
                 </header>
-
-                <div className="flex-1 overflow-hidden p-6 relative">
+                <div className="flex-1 overflow-auto p-4 bg-slate-50 relative">
                     <Outlet />
                 </div>
-            </main>
-        </div>
+            </SidebarInset>
+        </SidebarProvider>
     );
 };

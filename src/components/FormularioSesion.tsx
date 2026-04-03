@@ -7,10 +7,10 @@ interface FormularioSesionProps {
   logoUrl?: string;
 }
 
-export const FormularioSesion: React.FC<FormularioSesionProps> = ({ 
-    onLogin, 
-    onBack, 
-    logoUrl 
+export const FormularioSesion: React.FC<FormularioSesionProps> = ({
+  onLogin,
+  onBack,
+  logoUrl
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +32,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmissionError(null);
-    
+
     // Verificación final antes de enviar
     if (Object.values(errorStatus).some(v => v)) {
       setSubmissionError('Por favor, corrige los errores en el formulario.');
@@ -47,24 +47,27 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+    <div
+      className="min-h-screen flex items-center justify-center p-6 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/src/assets/Fondo_Login.webp')" }}
+    >
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300">
         <div className="justify-center text-center mb-8 space-y-4 items-center flex flex-col">
           {logoUrl && (
             <img
-                src={logoUrl}
-                alt="VisiMap Logo"
-                className="w-32 h-32 object-contain"
-                onError={(e: any) => {
-                  e.target.style.display = 'none';
-                  const parent = e.target.parentNode;
-                  if (parent) {
-                      const fallback = document.createElement('div');
-                      fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
-                      fallback.innerText = "V";
-                      parent.prepend(fallback);
-                  }
-                }}
+              src={logoUrl}
+              alt="VisiMap Logo"
+              className="w-32 h-32 object-contain"
+              onError={(e: any) => {
+                e.target.style.display = 'none';
+                const parent = e.target.parentNode;
+                if (parent) {
+                  const fallback = document.createElement('div');
+                  fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                  fallback.innerText = "V";
+                  parent.prepend(fallback);
+                }
+              }}
             />
           )}
           <h2 className="text-3xl font-bold text-slate-800">Acceso Personal</h2>

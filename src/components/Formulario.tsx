@@ -15,7 +15,7 @@ interface FormData {
 
 interface FormularioProps {
   provinciaInicial?: string;
-  paisInicial?: string; 
+  paisInicial?: string;
   onSubmit?: (data: FormData) => void;
   onCancel?: () => void;
   mostrarObservaciones?: boolean;
@@ -25,7 +25,7 @@ interface FormularioProps {
 
 export function Formulario({
   provinciaInicial = '',
-  paisInicial = '', 
+  paisInicial = '',
   onSubmit,
   onCancel,
   mostrarObservaciones = false,
@@ -49,10 +49,10 @@ export function Formulario({
   useEffect(() => {
     if (resetTrigger > 0) {
       setFormData({
-        provincia: provinciaInicial, 
+        provincia: provinciaInicial,
         tipoVisita: 'individual',
         numPersonas: 1,
-        pais: paisInicial, 
+        pais: paisInicial,
         observaciones: ''
       });
     }
@@ -60,9 +60,9 @@ export function Formulario({
 
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: name === 'numPersonas' ? parseInt(value) || 0 : value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'numPersonas' ? parseInt(value) || 0 : value
     }));
   };
 
@@ -72,9 +72,9 @@ export function Formulario({
 
   const handleSubmit = (e: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
-    
+
     if (Object.values(formErrors).some(v => v)) {
-        return; // Podríamos mostrar una notificación si quisiéramos
+      return; // Podríamos mostrar una notificación si quisiéramos
     }
 
     if (onSubmit) {
@@ -85,20 +85,19 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col h-full gap-3">
-      <div className="flex-none space-y-4">
+    <div className="flex flex-col h-full gap-1">
+      <div className="flex-none space-y-2">
         <div>
-          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 ml-1">Tipo de Visita</label>
+          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] mb-1 ml-1">Tipo de Visita</label>
           <div className="flex justify-center items-center gap-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })}
-              className={`flex-col h-20 w-32 gap-2 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${
-                formData.tipoVisita === 'individual'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-50 hover:text-blue-700'
-                  : 'border-gray-200 text-gray-600'
-              }`}
+              className={`flex-col h-14 w-32 gap-1 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${formData.tipoVisita === 'individual'
+                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-50 hover:text-blue-700'
+                : 'border-gray-200 text-gray-600'
+                }`}
             >
               <User className="size-5" />
               <span className="text-sm font-semibold">Individual</span>
@@ -108,11 +107,10 @@ export function Formulario({
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'grupo', numPersonas: 2 })}
-              className={`flex-col h-20 w-32 gap-2 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${
-                formData.tipoVisita === 'grupo'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm hover:bg-purple-50 hover:text-purple-700'
-                  : 'border-gray-200 text-gray-600'
-              }`}
+              className={`flex-col h-14 w-32 gap-1 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${formData.tipoVisita === 'grupo'
+                ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm hover:bg-purple-50 hover:text-purple-700'
+                : 'border-gray-200 text-gray-600'
+                }`}
             >
               <Users className="size-5" />
               <span className="text-sm font-semibold">Grupo</span>
@@ -145,7 +143,7 @@ export function Formulario({
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <Input
             label="País"
             name="pais"
@@ -153,7 +151,7 @@ export function Formulario({
             manejarCambio={manejarCambio}
             manejarError={manejarError}
             required
-            placeholder="Ej: España" 
+            placeholder="Ej: España"
           />
 
           <div className="relative">
@@ -184,26 +182,26 @@ export function Formulario({
       </div>
 
       {mostrarObservaciones && (
-        <div className="flex-1 mt-2">
-           <TextArea
+        <div className="flex-1">
+          <TextArea
             label="Observaciones"
             name="observaciones"
             value={formData.observaciones}
             manejarCambio={manejarCambio}
             required={false}
             placeholder="Escribe aquí notas adicionales..."
-            rows={3}
+            rows={2}
           />
         </div>
       )}
 
-      <div className="flex gap-3 pt-4 mt-auto">
+      <div className="flex gap-3 pt-1 mt-auto">
         {onCancel && (
           <Button
             type="button"
             onClick={onCancel}
             variant="ghost"
-            className="flex-1 h-12 text-sm font-bold text-slate-400 hover:text-slate-600"
+            className="flex-1 h-11 text-sm font-bold text-slate-400 hover:text-slate-600"
           >
             Cancelar
           </Button>
@@ -211,7 +209,7 @@ export function Formulario({
         <Button
           type="button"
           onClick={handleSubmit}
-          className="flex-1 h-12 text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white shadow-lg shadow-blue-200 rounded-xl transition-all"
+          className="flex-1 h-11 text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white shadow-lg shadow-blue-200 rounded-xl transition-all"
         >
           Registrar Entrada
         </Button>
