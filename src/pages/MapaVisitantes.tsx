@@ -134,10 +134,10 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
 
         <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100">
           <div className="p-3 flex flex-col h-full">
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Registro Rápido</h3>
-                <p className="text-sm text-gray-500">Visitante internacional</p>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Registro Rápido</h3>
+                <p className="text-xs text-slate-500 font-medium mt-1">Visitante internacional</p>
               </div>
               <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 rounded-full">
                 <X className="w-5 h-5" />
@@ -172,11 +172,11 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
               className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden"
             >
               <div className="overflow-y-auto flex-1 px-6 py-3 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Nuevo Visitante</h3>
-                      <p className="text-sm text-blue-600 font-medium">{selectedProvince?.name}</p>
+                      <h3 className="text-2xl font-bold text-gray-900 leading-none">Nuevo Visitante</h3>
+                      <p className="text-sm text-blue-600 font-medium mt-1">{selectedProvince?.name}</p>
                     </div>
                   </div>
                   <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">

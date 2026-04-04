@@ -56,9 +56,10 @@ export class SupabaseEventRepository implements EventRepository {
       // Eliminar grupos anteriores y re-insertar
       await supabase.from('grupo_visitante').delete().eq('id_evento', id);
       if (groups.length > 0) {
+        const groupsToInsert = groups.map(g => ({ ...g, id_evento: id }));
         const { error: groupError } = await supabase
           .from('grupo_visitante')
-          .insert(groups);
+          .insert(groupsToInsert);
         if (groupError) throw groupError;
       }
     }

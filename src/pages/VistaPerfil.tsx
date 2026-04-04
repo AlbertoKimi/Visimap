@@ -64,10 +64,10 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
         <p className="text-slate-500">Administra tu información personal y visualiza tu actividad.</p>
       </div>
 
-      <DetalleUsuario 
+      <DetalleUsuario
         user={userProfile}
         roles={roles}
-        onBack={() => {}} // No necesario con hideBack
+        onBack={() => { }}
         onUpdate={() => onRefreshProfile?.()}
         mostrarNotificacion={mostrarNotificacion}
         hideBack={true}

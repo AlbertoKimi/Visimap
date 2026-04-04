@@ -16,8 +16,8 @@ import {
   Activity
 } from 'lucide-react';
 
-const logoUrl = "/src/assets/Logo-1.png";
-const logoModoOscuroUrl = "/src/assets/Logo-MO.png";
+const logoUrl = "/src/assets/Logo-1.webp";
+const logoModoOscuroUrl = "/src/assets/Logo-MO.webp";
 
 interface LandingPageProps {
   onGetStarted: () => void;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { 
-  createBrowserRouter, 
-  RouterProvider, 
+import {
+  createBrowserRouter,
+  RouterProvider,
   Navigate
 } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
@@ -21,12 +21,12 @@ import { useAuthStore } from './stores/authStore';
 import { supabase } from './supabase/client';
 import { RepositoryFactory } from './database/RepositoryFactory';
 
-const logoUrl = "/src/assets/Logo-1.png";
+const logoUrl = "/src/assets/Logo-1.webp";
 
 export default function App() {
-  const { 
-    session, 
-    isLoading, 
+  const {
+    session,
+    isLoading,
     setSession,
     clearSession,
     setUserProfile,
@@ -37,8 +37,8 @@ export default function App() {
 
   useEffect(() => {
     setLoading(true);
-    
-    // 1. Initial Session Check
+
+    // Comprobación inicial de sesión
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       if (initialSession) {
         setSession(initialSession);
@@ -48,7 +48,7 @@ export default function App() {
       }
     });
 
-    // 2. Auth State Change Listener
+    // Listener de cambio de estado de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (newSession) {
         setSession(newSession);
@@ -105,10 +105,10 @@ export default function App() {
         },
         {
           path: "/login",
-          element: <FormularioSesion 
-            onLogin={handleLogin} 
-            onBack={() => window.location.href = "/"} 
-            logoUrl={logoUrl} 
+          element: <FormularioSesion
+            onLogin={handleLogin}
+            onBack={() => window.location.href = "/"}
+            logoUrl={logoUrl}
           />
         }
       ]
@@ -125,47 +125,47 @@ export default function App() {
           ),
           children: [
             {
-               index: true,
-               element: <Navigate to="mapa" replace />
+              index: true,
+              element: <Navigate to="mapa" replace />
             },
             {
-               path: "mapa",
-               element: <MapaVisitantes onRegistrarVisitante={() => {}} />
+              path: "mapa",
+              element: <MapaVisitantes onRegistrarVisitante={() => { }} />
             },
             {
-               path: "registro-visitante",
-               element: <RegistroVisitante />
+              path: "registro-visitante",
+              element: <RegistroVisitante />
             },
             {
-               path: "personal",
-               element: <VistaUsuarios onRefreshProfile={refreshProfileCallback} />
+              path: "personal",
+              element: <VistaUsuarios onRefreshProfile={refreshProfileCallback} />
             },
             {
-               path: "eventos",
-               element: <VistaCalendario />
+              path: "eventos",
+              element: <VistaCalendario />
             },
             {
-               path: "estadisticas",
-               element: <Graficos />
+              path: "estadisticas",
+              element: <Graficos />
             },
             {
-               path: "notas",
-               element: <Notas />
+              path: "notas",
+              element: <Notas />
             },
             {
-               path: "perfil",
-               element: <VistaPerfil 
-                 userProfile={useAuthStore.getState().userProfile} 
-                 onRefreshProfile={refreshProfileCallback} 
-               />
+              path: "perfil",
+              element: <VistaPerfil
+                userProfile={useAuthStore.getState().userProfile}
+                onRefreshProfile={refreshProfileCallback}
+              />
             }
           ]
         }
       ]
     },
     {
-        path: "*",
-        element: <Navigate to={session ? "/dashboard" : "/"} replace />
+      path: "*",
+      element: <Navigate to={session ? "/dashboard" : "/"} replace />
     }
   ]);
 

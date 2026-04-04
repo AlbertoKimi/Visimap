@@ -12,10 +12,10 @@ interface FormularioRegistroProps {
   mostrarNotificacion: (mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
-export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({ 
-  onCancel, 
-  onSuccess, 
-  mostrarNotificacion 
+export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
+  onCancel,
+  onSuccess,
+  mostrarNotificacion
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -38,16 +38,16 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (Object.values(formErrors).some(v => v)) {
-        mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
-        return;
+      mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
+      return;
     }
 
     setIsLoading(true);
 
     try {
-      // Procesar apellidos
+
       const apellidosStr = formData.apellidos.trim();
       const primerEspacio = apellidosStr.indexOf(' ');
       let apellido1 = apellidosStr;
@@ -133,8 +133,8 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
             value={formData.rol}
             manejarCambio={manejarCambio}
             options={[
-                { value: 'trabajador', label: 'Trabajador' },
-                { value: 'admin', label: 'Administrador' }
+              { value: 'trabajador', label: 'Trabajador' },
+              { value: 'admin', label: 'Administrador' }
             ]}
             required
           />

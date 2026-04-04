@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// ─── Utilidades de eventos ───────────────────────────────────────────────────
+// Utilidades de eventos
 
 export function formatearFechaInput(date: string | Date | null): string {
   if (!date) return '';

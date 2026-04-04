@@ -1,3 +1,79 @@
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200/60 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none;
+}
+
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded-xl shadow-sm hover:bg-slate-100 hover:border-slate-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-100 hover:text-slate-900 hover:shadow-sm hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-200;
+}
+
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-xl shadow-sm hover:bg-red-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+
+
+.input-style-comun {
+  @apply w-full px-4 py-2.5 border rounded-xl text-sm font-medium transition-all duration-200 outline-none;
+}
+
+
+.input-border-primario {
+  @apply border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10;
+}
+
+.input-border-info {
+  @apply border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10;
+}
+
+
+.input-error {
+  @apply border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10 bg-red-50/30;
+}
+
+.input-valido {
+  @apply border-emerald-500 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-emerald-50/30;
+}
+
+.input-disabled {
+  @apply bg-slate-100 border-slate-200 text-slate-600 cursor-not-allowed;
+}
+
+
+.input-responsive {
+  @apply max-w-full;
+}
+
+.textarea-style {
+  @apply min-h-[90px] resize-y leading-relaxed;
+}
+
+.select-responsive {
+  @apply bg-white;
+}
+
+.select-color-text {
+  @apply text-slate-700;
+}
+
+
+.checkbox-input {
+  @apply w-5 h-5 rounded-md border border-slate-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer;
+}
+
+.span-error {
+  @apply font-semibold tracking-tight;
+}
+
+
+/* Estilos del calendario*/
+
 .fc {
   --fc-border-color: #f1f5f9;
   --fc-button-bg-color: #3b82f6;
@@ -59,11 +135,10 @@
   z-index: 10 !important;
 }
 
-/* Forzar Apilado Vertical en Cuadrícula Horaria */
+
 .fc-timegrid-event-harness {
   width: 98% !important;
   left: 1% !important;
-  /* El posicionamiento absoluto se mantiene para respetar la hora de inicio */
 }
 
 .fc-timegrid-event {
@@ -75,7 +150,7 @@
   border: 2px solid white !important;
 }
 
-/* Vista Agenda (Lista) - Sin fondos */
+
 .fc-list-event {
   background-color: transparent !important;
 }
@@ -102,7 +177,8 @@
   border-top-color: #ef4444;
 }
 
-/* Grilla Manual (Semana/Día) */
+/* Estilo del scrollbar*/
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -121,7 +197,7 @@
   background: #cbd5e1;
 }
 
-/* Estilo de los eventos en la grilla manual */
+
 .grid-event-pill {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

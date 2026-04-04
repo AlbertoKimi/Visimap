@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  ArrowLeft, 
-  Mail, 
-  Phone, 
-  CheckCircle2, 
-  XCircle, 
-  Edit2, 
-  Save, 
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  CheckCircle2,
+  XCircle,
+  Edit2,
+  Save,
   X,
   Camera,
   Trash,
@@ -36,11 +36,11 @@ interface DetalleUsuarioProps {
   showDangerZone?: boolean;
 }
 
-export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({ 
-  user: initialUser, 
-  initialMode = 'view', 
-  roles, 
-  onBack, 
+export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
+  user: initialUser,
+  initialMode = 'view',
+  roles,
+  onBack,
   onUpdate,
   mostrarNotificacion,
   hideBack = false,
@@ -48,7 +48,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 }) => {
   const [mode, setMode] = useState(initialMode);
   const [user, setUser] = useState<Perfil>(initialUser);
-  const [editData, setEditData] = useState<Partial<Perfil>>({...initialUser});
+  const [editData, setEditData] = useState<Partial<Perfil>>({ ...initialUser });
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
@@ -73,16 +73,16 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   // Cargar estadísticas reales
   const fetchStats = useCallback(async () => {
     try {
-      // 1. Conteo de eventos
+      // Conteo de eventos
       const resCountE = await supabase.from('evento').select('id_evento', { count: 'exact', head: true }).eq('id_usuario', user.id);
-      
-      // 2. Conteo de registros (visitantes individuales + grupos)
+
+      // Conteo de registros (visitantes individuales + grupos)
       const [resCountR, resCountG] = await Promise.all([
         supabase.from('registro_visitante').select('id_registro', { count: 'exact', head: true }).eq('id_usuario', user.id),
         supabase.from('grupo_visitante').select('id_grupo, evento!inner(id_usuario)', { count: 'exact', head: true }).eq('evento.id_usuario', user.id)
       ]);
 
-      // 3. Obtener el último registro de cada tabla para la "Última Actividad"
+      // Obtener el último registro de cada tabla para la "Última Actividad"
       const [resLastE, resLastR, resLastG] = await Promise.all([
         supabase.from('evento').select('*').eq('id_usuario', user.id).order('id_evento', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('registro_visitante').select('*').eq('id_usuario', user.id).order('id_registro', { ascending: false }).limit(1).maybeSingle(),
@@ -90,7 +90,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       ]);
 
       let fechaFinal = 'Sin datos';
-      
+
       const getFechaValida = (item: any, source: 'evento' | 'registro' | 'grupo') => {
         if (!item) return null;
         let fechaStr = null;
@@ -101,7 +101,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         if (fechaStr) {
           const d = new Date(fechaStr);
           const ahora = new Date();
-          // Ignoramos fechas futuras
+
           if (!isNaN(d.getTime()) && d <= ahora) return d;
         }
         return null;
@@ -114,8 +114,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       const fechas = [d1, d2, d3].filter(f => f !== null) as Date[];
       if (fechas.length > 0) {
         const masReciente = fechas.reduce((a, b) => a > b ? a : b);
-        fechaFinal = masReciente.toLocaleDateString('es-ES', { 
-          day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+        fechaFinal = masReciente.toLocaleDateString('es-ES', {
+          day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
         });
       }
 
@@ -132,7 +132,6 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   useEffect(() => {
     fetchStats();
 
-    // Suscripción Realtime para actualizar estadísticas al instante
     const channel = supabase
       .channel('schema-db-changes')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'registro_visitante' }, () => fetchStats())
@@ -153,7 +152,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
   useEffect(() => {
     setUser(initialUser);
-    setEditData({...initialUser});
+    setEditData({ ...initialUser });
     setMode(initialMode);
   }, [initialUser, initialMode]);
 
@@ -166,7 +165,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   };
   const handleCancel = () => {
     setMode('view');
-    setEditData({...user});
+    setEditData({ ...user });
     setNewPassword('');
     setConfirmPassword('');
     setPendingImageFile(null);
@@ -189,7 +188,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   };
 
   const handleSave = async () => {
-    // Validar contraseñas si se han introducido
+    // Validar contraseñas
     if (newPassword) {
       if (newPassword.length < 6) {
         return mostrarNotificacion('La contraseña debe tener al menos 6 caracteres', 'error');
@@ -200,14 +199,14 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     }
 
     if (Object.values(formErrors).some(v => v)) {
-        return mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
+      return mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
     }
 
     try {
       setIsSaving(true);
       let finalAvatarUrl = user.avatar_url;
 
-      // 1. SI HAY UNA IMAGEN PENDIENTE, LA SUBIMOS PRIMERO
+      // Si hay imagen pendiente, la subimos primero
       if (pendingImageFile) {
         setIsUploading(true);
         const fileExt = pendingImageFile.name.split('.').pop();
@@ -223,19 +222,19 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         const { data: { publicUrl } } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
-        
+
         finalAvatarUrl = publicUrl;
       }
-      
-      // 2. Actualizar datos de perfil (incluyendo el nuevo avatar si se subió)
+
+      // Actualizar datos de perfil (incluyendo el nuevo avatar si se subió)
       const dataToUpdate = { ...editData, avatar_url: finalAvatarUrl };
       await userRepo.update(user.id, dataToUpdate);
 
-      // 3. Actualizar contraseña si aplica
+      // Actualizar contraseña
       if (newPassword) {
         await authRepo.updatePassword(newPassword);
       }
-      
+
       setUser({ ...user, ...dataToUpdate } as Perfil);
       setMode('view');
       setNewPassword('');
@@ -257,7 +256,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Límite de 2 megas solicitado para rendimiento
+    // Límite de 2 megas
     const limit = 2 * 1024 * 1024;
     if (file.size > limit) {
       return mostrarNotificacion('Imagen demasiado pesada. Máximo 2MB.', 'warning');
@@ -293,10 +292,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
   return (
     <div className={`max-w-6xl mx-auto pb-12 ${!hideBack ? 'pt-4' : 'pt-2'}`}>
-      {/* Header / Navigation */}
+      {/* Header / Navegación */}
       <div className={`flex items-center mb-8 ${hideBack ? 'justify-end' : 'justify-between'}`}>
         {!hideBack && (
-          <button 
+          <button
             onClick={onBack}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium"
           >
@@ -309,8 +308,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           {mode === 'view' ? (
             <>
               {!hideBack && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={toggleStatus}
                   className={user.active === false ? "text-emerald-600 border-emerald-100 hover:bg-emerald-50" : "text-orange-600 border-orange-100 hover:bg-orange-50"}
                 >
@@ -336,16 +335,16 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Profile Card */}
+        {/* Columna Izquierda: Tarjeta de Perfil */}
         <div className="space-y-6">
           <Card className="border-none shadow-xl overflow-hidden">
             <div className="h-32 bg-gradient-to-r from-blue-600 to-purple-600 relative">
               <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
                 <div className="relative group">
                   {(previewUrl || user.avatar_url) ? (
-                    <img 
-                      src={previewUrl || user.avatar_url || ''} 
-                      alt="Avatar" 
+                    <img
+                      src={previewUrl || user.avatar_url || ''}
+                      alt="Avatar"
                       className="w-32 h-32 rounded-3xl object-cover border-4 border-white shadow-2xl"
                     />
                   ) : (
@@ -353,8 +352,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       {user.nombre?.charAt(0)}
                     </div>
                   )}
-                   {mode === 'edit' && (
-                    <button 
+                  {mode === 'edit' && (
+                    <button
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
                       className="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
@@ -362,8 +361,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       {isUploading ? <Loader2 size={24} className="animate-spin" /> : <Camera size={24} />}
                     </button>
                   )}
-                  {/* Input oculto para subida de imagen */}
-                  <input 
+
+                  <input
                     type="file"
                     ref={fileInputRef}
                     className="hidden"
@@ -375,27 +374,26 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
             </div>
             <div className="pt-20 pb-8 px-6 text-center">
               <h1 className="text-2xl font-bold text-slate-800">{fullName || user.nombre_usuario}</h1>
-              <p className="text-slate-500 font-medium">@{user.nombre_usuario}</p>
-              
+              <p className="text-slate-600 font-medium">@{user.nombre_usuario}</p>
+
               <div className="mt-4 flex flex-wrap justify-center gap-2">
                 <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 uppercase">
                   {getRoleName(user.role_id)}
                 </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${
-                  user.active !== false 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                    : 'bg-slate-100 text-slate-500 border-slate-200'
-                }`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${user.active !== false
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                  }`}>
                   {user.active !== false ? 'Activo' : 'Inactivo'}
                 </span>
               </div>
             </div>
           </Card>
 
-          {/* Contact Information */}
+          {/* Infomación de contacto */}
           <Card className="border-none shadow-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-400 uppercase tracking-wider font-bold">Información de Contacto</CardTitle>
+              <CardTitle className="text-sm text-slate-600 uppercase tracking-wider font-bold">Información de Contacto</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3 text-slate-600">
@@ -403,7 +401,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   <Mail size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 font-medium">Email</p>
+                  <p className="text-xs text-slate-600 font-medium">Email</p>
                   <p className="text-sm font-semibold">{user.email || 'No disponible'}</p>
                 </div>
               </div>
@@ -412,7 +410,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   <Phone size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 font-medium">Teléfono</p>
+                  <p className="text-xs text-slate-600 font-medium">Teléfono</p>
                   <p className="text-sm font-semibold">{user.telefono || 'No disponible'}</p>
                 </div>
               </div>
@@ -420,21 +418,21 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           </Card>
         </div>
 
-        {/* Right Column: Details & Stats */}
+        {/* Columna Derecha: Detalles y Estadísticas */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stats Grid */}
+          {/* Estadísticas */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {stats.map((stat, i) => (
               <Card key={i} className="border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
                 <CardContent className="p-6">
                   <p className="text-3xl font-black text-slate-800 tracking-tighter">{stat.value}</p>
-                  <p className="text-sm text-slate-500 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-sm text-slate-600 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {/* Main Info Form/Display */}
+          {/* Información principal */}
           <Card className="border-none shadow-xl">
             <CardHeader className="border-b border-slate-50">
               <CardTitle>{mode === 'edit' ? (hideBack ? 'Editar mis datos' : 'Editar Información') : (hideBack ? 'Información de mi Cuenta' : 'Detalles del Perfil')}</CardTitle>
@@ -443,7 +441,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               {mode === 'edit' ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Input 
+                    <Input
                       label="Nombre"
                       name="nombre"
                       value={editData.nombre || ''}
@@ -451,7 +449,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       manejarError={manejarError}
                       required
                     />
-                    <Input 
+                    <Input
                       label="Nombre de Usuario"
                       name="nombre_usuario"
                       value={editData.nombre_usuario || ''}
@@ -461,7 +459,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Input 
+                    <Input
                       label="Primer Apellido"
                       name="primer_apellido"
                       value={editData.primer_apellido || ''}
@@ -469,7 +467,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       manejarError={manejarError}
                       required
                     />
-                    <Input 
+                    <Input
                       label="Segundo Apellido"
                       name="segundo_apellido"
                       value={editData.segundo_apellido || ''}
@@ -477,7 +475,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <Input 
+                    <Input
                       label="Teléfono"
                       name="telefono"
                       type="tel"
@@ -488,59 +486,59 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       error="9 dígitos o +34..."
                       required
                     />
-                    <Select 
+                    <Select
                       label="Rol del Sistema"
                       name="role_id"
                       value={editData.role_id || ''}
                       manejarCambio={manejarCambio}
-                      disabled={hideBack} // No permitimos que un usuario se cambie su propio rol
+                      disabled={hideBack}
                       options={roles.map(rol => ({ value: rol.id, label: rol.nombre }))}
                     />
-                   </div>
+                  </div>
 
-                   {/* Sección de cambio de contraseña condicionada */}
-                   <div className="pt-6 border-t border-slate-100 space-y-4">
-                     <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                       <Key size={16} className="text-blue-500" /> Cambiar Contraseña
-                     </h4>
-                     <p className="text-xs text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <Input 
-                          label="Nueva Contraseña"
-                          type="password"
-                          name="newPassword"
-                          value={newPassword}
-                          manejarCambio={manejarCambioPass}
-                          manejarError={manejarError}
-                          placeholder="********"
-                          regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ : undefined}
-                          error="Mínimo 8 carac, 1 mayús, 1 num..."
-                        />
-                        <Input 
-                          label="Confirmar Contraseña"
-                          type="password"
-                          name="confirmPassword"
-                          value={confirmPassword}
-                          manejarCambio={manejarCambioPass}
-                          placeholder="********"
-                        />
-                     </div>
-                   </div>
+                  {/* Sección de cambio de contraseña */}
+                  <div className="pt-6 border-t border-slate-100 space-y-4">
+                    <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <Key size={16} className="text-blue-500" /> Cambiar Contraseña
+                    </h4>
+                    <p className="text-xs text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <Input
+                        label="Nueva Contraseña"
+                        type="password"
+                        name="newPassword"
+                        value={newPassword}
+                        manejarCambio={manejarCambioPass}
+                        manejarError={manejarError}
+                        placeholder="********"
+                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ : undefined}
+                        error="Mínimo 8 carac, 1 mayús, 1 num..."
+                      />
+                      <Input
+                        label="Confirmar Contraseña"
+                        type="password"
+                        name="confirmPassword"
+                        value={confirmPassword}
+                        manejarCambio={manejarCambioPass}
+                        placeholder="********"
+                      />
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-12">
                   <DetailItem label="Nombre Completo" value={fullName} />
                   <DetailItem label="Nombre de Usuario" value={`@${user.nombre_usuario}`} />
                   <DetailItem label="Correo Electrónico" value={user.email} />
                   <DetailItem label="Teléfono" value={user.telefono} />
                   <DetailItem label="Rol" value={getRoleName(user.role_id)} />
-                  <DetailItem 
-                    label="Estado de la Cuenta" 
+                  <DetailItem
+                    label="Estado de la Cuenta"
                     value={
-                      <span className={`inline-flex items-center gap-1.5 font-bold ${user.active !== false ? 'text-emerald-600' : 'text-slate-400'}`}>
+                      <span className={`inline-flex items-center gap-1.5 font-bold ${user.active !== false ? 'text-emerald-600' : 'text-slate-600'}`}>
                         {user.active !== false ? 'Activa y Operativa' : 'Desactivada / Bloqueada'}
                       </span>
-                    } 
+                    }
                   />
                   <DetailItem label="Fecha de Registro" value={user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'} />
                 </div>
@@ -548,19 +546,19 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
             </CardContent>
           </Card>
 
-          {/* Danger Zone */}
+          {/* Zona de Peligro. Todavía no se ha implementado */}
           {mode === 'view' && showDangerZone && (
-             <Card className="border border-red-100 bg-red-50/30 overflow-hidden">
-                <CardContent className="p-6 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-red-800">Zona de Peligro</h4>
-                    <p className="text-xs text-red-600 mt-1">Eliminar permanentemente este usuario y todos sus datos asociados.</p>
-                  </div>
-                  <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                    <Trash size={16} className="mr-2" /> Eliminar Usuario
-                  </Button>
-                </CardContent>
-             </Card>
+            <Card className="border border-red-100 bg-red-50/30 overflow-hidden">
+              <CardContent className="p-6 flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-red-800">Zona de Peligro</h4>
+                  <p className="text-xs text-red-600 mt-1">Eliminar permanentemente este usuario y todos sus datos asociados.</p>
+                </div>
+                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                  <Trash size={16} className="mr-2" /> Eliminar Usuario
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>
@@ -569,8 +567,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 };
 
 const DetailItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
-  <div className="space-y-1">
-    <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">{label}</p>
-    <div className="text-slate-700 font-medium">{value || '-'}</div>
+  <div className="space-y-1.5">
+    <p className="text-[11px] font-black text-slate-900 uppercase tracking-wider">{label}</p>
+    <div className="text-slate-700 font-medium text-[15px]">{value || '-'}</div>
   </div>
 );

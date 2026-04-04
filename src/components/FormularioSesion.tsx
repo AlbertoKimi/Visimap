@@ -33,7 +33,6 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
     e.preventDefault();
     setSubmissionError(null);
 
-    // Verificación final antes de enviar
     if (Object.values(errorStatus).some(v => v)) {
       setSubmissionError('Por favor, corrige los errores en el formulario.');
       return;
@@ -115,7 +114,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
         </form>
         <button
           onClick={onBack}
-          className="w-full text-slate-400 text-sm font-medium mt-6 hover:text-blue-600 transition-colors"
+          className="w-full text-slate-600 text-sm font-medium mt-6 hover:text-blue-700 hover:underline transition-all duration-200"
         >
           ← Volver al inicio
         </button>

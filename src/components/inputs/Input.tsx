@@ -1,6 +1,5 @@
 import { useState, type InputHTMLAttributes, forwardRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import "../../styles/Inputs.css";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -42,7 +41,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
     setTouched(true);
     const nombre = e.currentTarget.name;
     const valor = e.currentTarget.value;
-    
+
     let hasError = false;
     if (regex && !regex.test(valor)) {
       hasError = true;
@@ -57,13 +56,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   };
 
   const handleChangeInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Si ya ha sido tocado, validamos en tiempo real para quitar el error
+
     if (touched) {
-        const valor = e.target.value;
-        let hasError = false;
-        if (regex && !regex.test(valor)) hasError = true;
-        else if (props.required && valor.trim() === "") hasError = true;
-        setsmError(hasError);
+      const valor = e.target.value;
+      let hasError = false;
+      if (regex && !regex.test(valor)) hasError = true;
+      else if (props.required && valor.trim() === "") hasError = true;
+      setsmError(hasError);
     }
     manejarCambio(e);
   };
@@ -72,9 +71,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
-    <section className="flex flex-col gap-1 w-full" aria-labelledby={`${name}-label`}>
+    <section className="flex flex-col gap-1.5 w-full" aria-labelledby={`${name}-label`}>
       {label && (
-        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 ml-1">
           {label}
         </label>
       )}
@@ -87,9 +86,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           disabled={disabled}
           onChange={handleChangeInternal}
           onBlur={handleBlur}
-          className={`input-style-comun input-responsive ${
-            disabled ? "input-disabled" : `${colorClass}`
-          } ${isPassword ? "pr-11" : ""}`}
+          className={`input-style-comun input-responsive ${disabled ? "input-disabled" : `${colorClass}`
+            } ${isPassword ? "pr-11" : ""}`}
           aria-invalid={smError}
           aria-describedby={smError ? `${name}-error` : undefined}
           {...props}

@@ -123,21 +123,20 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
     return (
         <div className="h-screen flex bg-slate-50 font-sans overflow-hidden">
 
-            {/* ── LEFT PANEL: Fachada Museo ── */}
+            {/* Panel izquierdo: Fachada Museo */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-                {/* Fondo: imagen de la fachada */}
+
                 <img
                     src="/src/assets/Fachada_Muvi.webp"
                     alt="Fachada Museo MUVI"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
-                {/* Overlay oscuro suave para que el texto sea legible */}
+
                 <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
 
-                {/* Contenido del panel */}
                 <div className="relative z-10 flex flex-col h-full p-10 text-white">
 
-                    {/* Bloque principal centrado verticalmente */}
+                    {/* Bloque principal*/}
                     <div className="flex-1 flex flex-col justify-center space-y-6">
                         <div>
                             <h1 className="text-5xl font-bold leading-tight mb-4">
@@ -149,13 +148,13 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             </p>
                         </div>
 
-                        {/* Tarjeta glassmorphism con correo */}
+
                         <div className="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-5 max-w-sm">
                             <p className="text-white/50 text-[10px] uppercase tracking-widest font-semibold mb-1">Tu correo registrado</p>
                             <p className="text-white font-semibold text-base truncate">{session?.user?.email}</p>
                         </div>
 
-                        {/* Feature list */}
+                        {/* Lista*/}
                         <div className="space-y-3">
                             {[
                                 'Acceso completo al dashboard',
@@ -172,16 +171,16 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                         </div>
                     </div>
 
-                    {/* Footer siempre al fondo */}
+
                     <p className="text-white/60 text-xs font-medium">
                         © {new Date().getFullYear()} Museo MUVI · Sistema VisiMap
                     </p>
                 </div>
             </div>
 
-            {/* ── RIGHT PANEL: Formulario centrado ── */}
+            {/* Panel derecho: Formulario */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative overflow-hidden">
-                {/* Decoración sutil de fondo */}
+
                 <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
                 <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-indigo-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
 

@@ -64,7 +64,11 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Mapa Interactivo" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Mapa Interactivo" 
+                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                >
                   <NavLink to="/dashboard/mapa">
                     <Map />
                     <span>Mapa Interactivo</span>
@@ -74,7 +78,11 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Registro Visitante" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip="Registro Visitante" 
+                    className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  >
                     <NavLink to="/dashboard/registro-visitante">
                       <UserPlus />
                       <span>Registro Visitante</span>
@@ -85,7 +93,11 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Trabajadores" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip="Trabajadores" 
+                    className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  >
                     <NavLink to="/dashboard/personal">
                       <Users />
                       <span>Trabajadores</span>
@@ -95,7 +107,11 @@ export function AppSidebar() {
               )}
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Eventos" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Eventos" 
+                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                >
                   <NavLink to="/dashboard/eventos">
                     <Calendar />
                     <span>Eventos</span>
@@ -105,7 +121,11 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Gráficas" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip="Gráficas" 
+                    className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  >
                     <NavLink to="/dashboard/estadisticas">
                       <BarChart3 />
                       <span>Gráficas</span>
@@ -115,7 +135,11 @@ export function AppSidebar() {
               )}
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Notas" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Notas" 
+                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                >
                   <NavLink to="/dashboard/notas">
                     <StickyNote />
                     <span>Notas</span>
@@ -131,7 +155,11 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Editar Perfil" className="h-11 text-[15px] [&>svg]:size-5 gap-3">
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Editar Perfil" 
+                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 hover:text-blue-600 aria-[current=page]:bg-blue-50 aria-[current=page]:text-blue-600 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                >
                   <NavLink to="/dashboard/perfil">
                     <Settings />
                     <span>Editar Perfil</span>
@@ -146,8 +174,8 @@ export function AppSidebar() {
       <SidebarFooter className="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={handleLogout} 
+            <SidebarMenuButton
+              onClick={handleLogout}
               className="h-11 justify-center text-[15px] text-red-600 hover:text-red-700 hover:bg-red-50 focus:text-red-700 focus:bg-red-50 font-medium"
             >
               <LogOut className="mr-2 size-5" />

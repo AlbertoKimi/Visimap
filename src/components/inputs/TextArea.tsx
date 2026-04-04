@@ -1,5 +1,4 @@
 import { useState, type ChangeEvent, type TextareaHTMLAttributes, forwardRef } from "react";
-import "../../styles/Inputs.css";
 
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
@@ -44,9 +43,9 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
   };
 
   return (
-    <section className="flex flex-col gap-1 w-full" aria-labelledby={`${name}-label`}>
+    <section className="flex flex-col gap-1.5 w-full" aria-labelledby={`${name}-label`}>
       <header>
-        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 ml-1">
           {label}
         </label>
       </header>

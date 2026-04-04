@@ -1,5 +1,4 @@
 import { type SelectHTMLAttributes, forwardRef } from "react";
-import "../../styles/Inputs.css";
 
 export interface Option {
   value: string | number;
@@ -28,7 +27,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   return (
     <section className="flex flex-col gap-2 w-full" aria-labelledby={`${name}-label`}>
       {label && (
-        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 ml-1">
           {label}
         </label>
       )}

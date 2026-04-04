@@ -335,7 +335,7 @@ export const VistaCalendario: React.FC = () => {
         open={notificacion.open} 
         autoHideDuration={notificacion.tipo === 'warning' ? null : 5000} 
         onClose={handleCerrarNotificacion} 
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} 
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} 
         className="z-[100]"
         action={notificacion.action}
       >

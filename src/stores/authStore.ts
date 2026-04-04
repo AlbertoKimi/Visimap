@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'visimap-auth-storage',
       storage: createJSONStorage(() => localStorage),
-      // Solo persistimos lo que realmente necesitamos
+
       partialize: (state: AuthState) => ({
         session: state.session,
         user: state.user,

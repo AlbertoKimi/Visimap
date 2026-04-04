@@ -74,7 +74,7 @@ export function Formulario({
     if (e) e.preventDefault();
 
     if (Object.values(formErrors).some(v => v)) {
-      return; // Podríamos mostrar una notificación si quisiéramos
+      return;
     }
 
     if (onSubmit) {
@@ -85,35 +85,35 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col h-full gap-1">
-      <div className="flex-none space-y-2">
+    <div className="flex flex-col h-full gap-3">
+      <div className="flex-none space-y-3">
         <div>
-          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] mb-1 ml-1">Tipo de Visita</label>
-          <div className="flex justify-center items-center gap-4">
+          <label className="block text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 ml-1">Tipo de Visita</label>
+          <div className="flex justify-center items-center gap-6">
             <Button
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })}
-              className={`flex-col h-14 w-32 gap-1 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${formData.tipoVisita === 'individual'
-                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-sm hover:bg-blue-50 hover:text-blue-700'
-                : 'border-gray-200 text-gray-600'
+              className={`flex-col h-13 w-32 gap-1 p-1 border transition-all rounded-2xl ${formData.tipoVisita === 'individual'
+                ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md scale-105 hover:bg-blue-50 hover:text-blue-700 hover:scale-105'
+                : 'border-slate-200 text-slate-600 hover:bg-slate-50 hover:scale-105 hover:shadow-sm'
                 }`}
             >
               <User className="size-5" />
-              <span className="text-sm font-semibold">Individual</span>
+              <span className="text-sm font-bold">Individual</span>
             </Button>
 
             <Button
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'grupo', numPersonas: 2 })}
-              className={`flex-col h-14 w-32 gap-1 p-1 border transition-all hover:bg-gray-50 hover:text-gray-600 rounded-2xl ${formData.tipoVisita === 'grupo'
-                ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-sm hover:bg-purple-50 hover:text-purple-700'
-                : 'border-gray-200 text-gray-600'
+              className={`flex-col h-13 w-32 gap-1 p-1 border transition-all rounded-2xl ${formData.tipoVisita === 'grupo'
+                ? 'border-purple-500 bg-purple-50 text-purple-700 shadow-md scale-105 hover:bg-purple-50 hover:text-purple-700 hover:scale-105'
+                : 'border-slate-200 text-slate-600 hover:bg-slate-50 hover:scale-105 hover:shadow-sm'
                 }`}
             >
               <Users className="size-5" />
-              <span className="text-sm font-semibold">Grupo</span>
+              <span className="text-sm font-bold">Grupo</span>
             </Button>
           </div>
         </div>
@@ -143,41 +143,39 @@ export function Formulario({
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col gap-2">
-          <Input
-            label="País"
-            name="pais"
-            value={formData.pais}
-            manejarCambio={manejarCambio}
-            manejarError={manejarError}
-            required
-            placeholder="Ej: España"
-          />
+        <Input
+          label="País"
+          name="pais"
+          value={formData.pais}
+          manejarCambio={manejarCambio}
+          manejarError={manejarError}
+          required
+          placeholder="Ej: España"
+        />
 
-          <div className="relative">
-            <AnimatePresence mode='popLayout'>
-              {(esEspana || formData.provincia) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                >
-                  <Input
-                    label="Provincia"
-                    name="provincia"
-                    value={formData.provincia}
-                    readOnly={bloquearProvincia}
-                    disabled={bloquearProvincia}
-                    manejarCambio={manejarCambio}
-                    manejarError={manejarError}
-                    required={esEspana}
-                    variant="info"
-                    placeholder="Ej: Madrid"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+        <div className="relative">
+          <AnimatePresence mode='popLayout'>
+            {(esEspana || formData.provincia) && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+              >
+                <Input
+                  label="Provincia"
+                  name="provincia"
+                  value={formData.provincia}
+                  readOnly={bloquearProvincia}
+                  disabled={bloquearProvincia}
+                  manejarCambio={manejarCambio}
+                  manejarError={manejarError}
+                  required={esEspana}
+                  variant="info"
+                  placeholder="Ej: Madrid"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -190,7 +188,7 @@ export function Formulario({
             manejarCambio={manejarCambio}
             required={false}
             placeholder="Escribe aquí notas adicionales..."
-            rows={2}
+            rows={1}
           />
         </div>
       )}
@@ -201,7 +199,7 @@ export function Formulario({
             type="button"
             onClick={onCancel}
             variant="ghost"
-            className="flex-1 h-11 text-sm font-bold text-slate-400 hover:text-slate-600"
+            className="flex-1 h-11 text-sm font-bold text-slate-600 hover:text-slate-800"
           >
             Cancelar
           </Button>
