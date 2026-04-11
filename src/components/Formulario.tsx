@@ -4,6 +4,12 @@ import { Users, User } from 'lucide-react';
 import { Button } from './button';
 import Input from './inputs/Input';
 import TextArea from './inputs/TextArea';
+import Select from './inputs/Select';
+import { RepositoryFactory } from '../database/RepositoryFactory';
+import { Pais } from '../interfaces/Visitor';
+import { PROVINCIAS } from '../constantes/appConstants';
+
+const visitorRepo = RepositoryFactory.getVisitorRepository();
 
 interface FormData {
   provincia: string;
@@ -40,11 +46,29 @@ export function Formulario({
     observaciones: ''
   });
 
+  const [paises, setPaises] = useState<Pais[]>([]);
+  const [loadingPaises, setLoadingPaises] = useState(true);
+
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, provincia: provinciaInicial }));
   }, [provinciaInicial]);
+
+  useEffect(() => {
+    const cargarPaises = async () => {
+      try {
+        const data = await visitorRepo.getAllPaises();
+        setPaises(data);
+
+      } catch (error) {
+        console.error("Error al cargar países:", error);
+      } finally {
+        setLoadingPaises(false);
+      }
+    };
+    cargarPaises();
+  }, []);
 
   useEffect(() => {
     if (resetTrigger > 0) {
@@ -58,7 +82,7 @@ export function Formulario({
     }
   }, [resetTrigger, provinciaInicial, paisInicial]);
 
-  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -85,8 +109,8 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col h-full gap-3">
-      <div className="flex-none space-y-3">
+    <div className="flex flex-col h-full gap-4">
+      <div className="flex-none space-y-4">
         <div>
           <label className="block text-[11px] font-black text-slate-800 uppercase tracking-widest mb-2 ml-1">Tipo de Visita</label>
           <div className="flex justify-center items-center gap-6">
@@ -143,14 +167,14 @@ export function Formulario({
           )}
         </AnimatePresence>
 
-        <Input
+        <Select
           label="País"
           name="pais"
           value={formData.pais}
+          options={paises.map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
           manejarCambio={manejarCambio}
-          manejarError={manejarError}
           required
-          placeholder="Ej: España"
+          disabled={loadingPaises}
         />
 
         <div className="relative">

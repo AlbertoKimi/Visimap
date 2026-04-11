@@ -8,6 +8,10 @@ import TextArea from '../inputs/TextArea';
 import Select from '../inputs/Select';
 import { Button } from '../button';
 import { TipoEvento, GrupoVisitante } from '../../interfaces/Evento';
+import { Pais } from '../../interfaces/Visitor';
+import { RepositoryFactory } from '../../database/RepositoryFactory';
+
+const visitorRepo = RepositoryFactory.getVisitorRepository();
 
 interface EventModalProps {
   event: any;
@@ -51,6 +55,8 @@ export const EventModal: React.FC<EventModalProps> = ({
   const [finalizado, setFinalizado] = useState(event?.finalizado || false);
   const [enProcesoFinalizacion, setEnProcesoFinalizacion] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(event?.confirmarAlAbrir || false);
+  const [paises, setPaises] = useState<Pais[]>([]);
+  const [loadingPaises, setLoadingPaises] = useState(true);
 
   const grupoVacio = (): GrupoExtendio => ({
     _key: Date.now() + Math.random(),
@@ -61,6 +67,18 @@ export const EventModal: React.FC<EventModalProps> = ({
   });
 
   useEffect(() => {
+    const cargarPaises = async () => {
+      try {
+        const data = await visitorRepo.getAllPaises();
+        setPaises(data);
+      } catch (error) {
+        console.error("Error al cargar países:", error);
+      } finally {
+        setLoadingPaises(false);
+      }
+    };
+    cargarPaises();
+
     if (!isNew && event?.id_evento) {
       setCargandoGrupos(true);
       supabase
@@ -99,7 +117,7 @@ export const EventModal: React.FC<EventModalProps> = ({
       setFinalizado(true);
       onFinalized(event.id_evento);
     } catch (err: any) {
-      onShowError(`Error al finalizar: ${err.message}`);
+      onShowError(`No se pudo completar la acción: ${err.message}`);
     } finally {
       setEnProcesoFinalizacion(false);
     }
@@ -158,7 +176,14 @@ export const EventModal: React.FC<EventModalProps> = ({
         onClose();
       }
     } catch (err: any) {
-      onShowError(err.message);
+      const errorMessage = err.message || '';
+      let msg = 'No se ha podido guardar el evento.';
+      if (errorMessage.includes('chk_coherencia_pais_provincia')) {
+        msg = 'Si seleccionas una provincia española, el país debe ser España.';
+      } else if (errorMessage) {
+        msg = `Error: ${errorMessage}`;
+      }
+      onShowError(msg);
     } finally {
       setGuardando(false);
     }
@@ -173,7 +198,7 @@ export const EventModal: React.FC<EventModalProps> = ({
         className="relative bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-md mx-4 max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        <div className="overflow-y-auto flex-1 px-6 py-5 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+        <div className="overflow-y-auto flex-1 px-6 py-7 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2 flex-wrap">
               <span
@@ -293,7 +318,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                 <h3 className="text-2xl font-bold text-slate-800 mb-6 tracking-tight">{formulario.nombre_evento}</h3>
               )}
 
-              <div className="space-y-3 text-sm text-slate-600 pt-2">
+              <div className="space-y-5 text-sm text-slate-600 pt-2">
                 {editando && (
                   <Select
                     label="Tipo de evento"
@@ -401,18 +426,25 @@ export const EventModal: React.FC<EventModalProps> = ({
                               </div>
                               <div className="flex gap-2 items-start">
                                 <div className="flex-1">
-                                  <Input
-                                    label={g.tipo_origen === 'provincia' ? "Provincia" : "País"}
-                                    list={g.tipo_origen === 'provincia' ? `prov-list-${g._key}` : undefined}
-                                    name={`origen-${g._key}`}
-                                    value={g.origen}
-                                    manejarCambio={(e) => actualizarGrupo(g._key, 'origen', e.target.value)}
-                                    required
-                                  />
-                                  {g.tipo_origen === 'provincia' && (
-                                    <datalist id={`prov-list-${g._key}`}>
-                                      {PROVINCIAS.map(p => <option key={p} value={p} />)}
-                                    </datalist>
+                                  {g.tipo_origen === 'provincia' ? (
+                                    <Select
+                                      label="Provincia"
+                                      name={`origen-${g._key}`}
+                                      value={g.origen}
+                                      options={PROVINCIAS.map(p => ({ value: p, label: p }))}
+                                      manejarCambio={(e) => actualizarGrupo(g._key, 'origen', e.target.value)}
+                                      required
+                                    />
+                                  ) : (
+                                    <Select
+                                      label="País"
+                                      name={`origen-${g._key}`}
+                                      value={g.origen}
+                                      options={paises.map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
+                                      manejarCambio={(e) => actualizarGrupo(g._key, 'origen', e.target.value)}
+                                      required
+                                      disabled={loadingPaises}
+                                    />
                                   )}
                                 </div>
                                 <div className="w-24">

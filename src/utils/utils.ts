@@ -21,3 +21,8 @@ export function formatearRangoFechas(inicio: string | Date | null, fin: string |
   const strFin = fin ? new Date(fin).toLocaleString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
   return strFin ? `${strInicio} → ${strFin}` : strInicio;
 }
+
+export function formatearFecha(date: string | Date | null): string {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}

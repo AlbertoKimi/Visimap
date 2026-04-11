@@ -5,7 +5,7 @@ import { EventRepository } from '../repositories/EventRepository';
 export class SupabaseEventRepository implements EventRepository {
   private static instance: SupabaseEventRepository;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): SupabaseEventRepository {
     if (!SupabaseEventRepository.instance) {
@@ -79,6 +79,63 @@ export class SupabaseEventRepository implements EventRepository {
       .from('evento')
       .update({ finalizado })
       .eq('id_evento', id);
+
+    if (error) throw error;
+  }
+
+  async getAllGrupoVisitantes(): Promise<any[]> {
+    // Obtener grupos con los datos básicos del evento
+    const { data: grupos, error: grupoError } = await supabase
+      .from('grupo_visitante')
+      .select('*, evento:id_evento(nombre_evento, id_usuario)')
+      .order('created_at', { ascending: false });
+
+    if (grupoError) throw grupoError;
+    if (!grupos || grupos.length === 0) return [];
+
+    // Obtener IDs únicos de los usuarios que crearon los eventos
+    const userIds = [...new Set(grupos.map(g => g.evento?.id_usuario).filter(id => id))];
+
+    // Traer los perfiles de esos usuarios
+    const { data: perfiles, error: perfError } = await supabase
+      .from('profiles')
+      .select('id, nombre_usuario, nombre, avatar_url')
+      .in('id', userIds);
+
+    if (perfError) {
+      console.error('Error al cargar perfiles para eventos:', perfError);
+      return grupos;
+    }
+
+    // Mapear perfiles por ID
+    const perfilesMap = perfiles.reduce((acc: any, p: any) => {
+      acc[p.id] = p;
+      return acc;
+    }, {});
+
+    return grupos.map(g => ({
+      ...g,
+      evento: {
+        ...g.evento,
+        perfil: perfilesMap[g.evento?.id_usuario] || null
+      }
+    }));
+  }
+
+  async deleteGrupoVisitante(id: number): Promise<void> {
+    const { error } = await supabase
+      .from('grupo_visitante')
+      .delete()
+      .eq('id_grupo', id);
+
+    if (error) throw error;
+  }
+
+  async updateGrupoVisitante(id: number, num_visitantes: number): Promise<void> {
+    const { error } = await supabase
+      .from('grupo_visitante')
+      .update({ num_visitantes })
+      .eq('id_grupo', id);
 
     if (error) throw error;
   }

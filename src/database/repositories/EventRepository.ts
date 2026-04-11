@@ -6,4 +6,7 @@ export interface EventRepository {
   update(id: number, event: any, groups?: GrupoVisitante[]): Promise<void>;
   delete(id: number): Promise<void>;
   toggleFinalizado(id: number, finalizado: boolean): Promise<void>;
+  getAllGrupoVisitantes(): Promise<any[]>;
+  deleteGrupoVisitante(id: number): Promise<void>;
+  updateGrupoVisitante(id: number, num_visitantes: number): Promise<void>;
 }

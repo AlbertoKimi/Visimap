@@ -45,7 +45,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         onChange={manejarCambio}
       >
         <option value="" className="text-slate-400">
-          Seleccionar una opción...
+          Elige una opción...
         </option>
 
         {options.map((option) => (

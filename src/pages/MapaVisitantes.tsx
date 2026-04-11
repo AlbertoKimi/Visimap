@@ -47,7 +47,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
 
   const handleRegistroVisitante = async (formData: any) => {
     if (formData.tipoVisita === 'grupo' && formData.numPersonas < 2) {
-      mostrarNotificacion('No puedes añadir menos de 2 personas como grupo.', 'error');
+      mostrarNotificacion('Un grupo debe tener al menos 2 personas.', 'error');
       return false;
     }
 
@@ -94,7 +94,16 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
 
     } catch (err: any) {
       console.error("Error al registrar:", err);
-      let mensajeAmigable = 'Ocurrió un error inesperado: ' + err.message;
+      let mensajeAmigable = 'Ha ocurrido un error inesperado al registrar la visita.';
+
+      const errorMessage = err.message || '';
+      if (errorMessage.includes('chk_coherencia_pais_provincia')) {
+        mensajeAmigable = 'Si seleccionas una provincia española, el país debe ser España.';
+      } else if (errorMessage) {
+        // Si hay un mensaje de error técnico pero no es el de arriba, lo mostramos traducido si es posible
+        mensajeAmigable = `Error: ${errorMessage}`;
+      }
+
       mostrarNotificacion(mensajeAmigable, 'error');
       return false;
     }
@@ -133,11 +142,11 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </button>
 
         <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100">
-          <div className="p-3 flex flex-col h-full">
+          <div className="p-4 flex flex-col h-full">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Registro Rápido</h3>
-                <p className="text-xs text-slate-500 font-medium mt-1">Visitante internacional</p>
+                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Registro Internacional</h3>
+
               </div>
               <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 rounded-full">
                 <X className="w-5 h-5" />
@@ -171,8 +180,8 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
               onClick={(e) => e.stopPropagation()}
               className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden"
             >
-              <div className="overflow-y-auto flex-1 px-6 py-3 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
-                <div className="flex items-start justify-between mb-3">
+              <div className="overflow-y-auto flex-1 px-6 py-6 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+                <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 leading-none">Nuevo Visitante</h3>

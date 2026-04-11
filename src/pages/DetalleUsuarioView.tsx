@@ -9,7 +9,6 @@ import {
   Save,
   X,
   Camera,
-  Trash,
   Key,
   Loader2
 } from 'lucide-react';
@@ -33,7 +32,6 @@ interface DetalleUsuarioProps {
   onUpdate: () => void;
   mostrarNotificacion: (mensaje: string, tipo?: 'success' | 'error' | 'warning' | 'info') => void;
   hideBack?: boolean;
-  showDangerZone?: boolean;
 }
 
 export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
@@ -43,8 +41,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   onBack,
   onUpdate,
   mostrarNotificacion,
-  hideBack = false,
-  showDangerZone = true
+  hideBack = false
 }) => {
   const [mode, setMode] = useState(initialMode);
   const [user, setUser] = useState<Perfil>(initialUser);
@@ -72,61 +69,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
   // Cargar estadísticas reales
   const fetchStats = useCallback(async () => {
-    try {
-      // Conteo de eventos
-      const resCountE = await supabase.from('evento').select('id_evento', { count: 'exact', head: true }).eq('id_usuario', user.id);
-
-      // Conteo de registros (visitantes individuales + grupos)
-      const [resCountR, resCountG] = await Promise.all([
-        supabase.from('registro_visitante').select('id_registro', { count: 'exact', head: true }).eq('id_usuario', user.id),
-        supabase.from('grupo_visitante').select('id_grupo, evento!inner(id_usuario)', { count: 'exact', head: true }).eq('evento.id_usuario', user.id)
-      ]);
-
-      // Obtener el último registro de cada tabla para la "Última Actividad"
-      const [resLastE, resLastR, resLastG] = await Promise.all([
-        supabase.from('evento').select('*').eq('id_usuario', user.id).order('id_evento', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('registro_visitante').select('*').eq('id_usuario', user.id).order('id_registro', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('grupo_visitante').select('*, evento!inner(id_usuario)').eq('evento.id_usuario', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
-      ]);
-
-      let fechaFinal = 'Sin datos';
-
-      const getFechaValida = (item: any, source: 'evento' | 'registro' | 'grupo') => {
-        if (!item) return null;
-        let fechaStr = null;
-        if (source === 'evento') fechaStr = item.fecha_inicio;
-        else if (source === 'registro') fechaStr = item.creado_en;
-        else if (source === 'grupo') fechaStr = item.created_at;
-
-        if (fechaStr) {
-          const d = new Date(fechaStr);
-          const ahora = new Date();
-
-          if (!isNaN(d.getTime()) && d <= ahora) return d;
-        }
-        return null;
-      };
-
-      const d1 = getFechaValida(resLastE.data, 'evento');
-      const d2 = getFechaValida(resLastR.data, 'registro');
-      const d3 = getFechaValida(resLastG.data, 'grupo');
-
-      const fechas = [d1, d2, d3].filter(f => f !== null) as Date[];
-      if (fechas.length > 0) {
-        const masReciente = fechas.reduce((a, b) => a > b ? a : b);
-        fechaFinal = masReciente.toLocaleDateString('es-ES', {
-          day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
-        });
-      }
-
-      setRealStats({
-        eventos: resCountE.count || 0,
-        registros: (resCountR.count || 0) + (resCountG.count || 0),
-        ultimaActividad: fechaFinal
-      });
-    } catch (err) {
-      console.error("Error cargando estadísticas:", err);
-    }
+    const stats = await userRepo.getStats(user.id);
+    setRealStats(stats);
   }, [user.id]);
 
   useEffect(() => {
@@ -209,21 +153,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       // Si hay imagen pendiente, la subimos primero
       if (pendingImageFile) {
         setIsUploading(true);
-        const fileExt = pendingImageFile.name.split('.').pop();
-        const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-        const filePath = fileName;
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, pendingImageFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath);
-
-        finalAvatarUrl = publicUrl;
+        finalAvatarUrl = await userRepo.uploadAvatar(user.id, pendingImageFile);
       }
 
       // Actualizar datos de perfil (incluyendo el nuevo avatar si se subió)
@@ -547,7 +477,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           </Card>
 
           {/* Zona de Peligro. Todavía no se ha implementado */}
-          {mode === 'view' && showDangerZone && (
+          {/* {mode === 'view' && showDangerZone && (
             <Card className="border border-red-100 bg-red-50/30 overflow-hidden">
               <CardContent className="p-6 flex items-center justify-between">
                 <div>
@@ -559,7 +489,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                 </Button>
               </CardContent>
             </Card>
-          )}
+          )} */}
         </div>
       </div>
     </div>

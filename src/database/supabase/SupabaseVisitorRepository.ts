@@ -59,4 +59,78 @@ export class SupabaseVisitorRepository implements VisitorRepository {
 
     if (error) throw error;
   }
+
+  async getAllRegistros(): Promise<any[]> {
+    // Traemos los datos básicos primero
+    const { data: registros, error: regError } = await supabase
+      .from('registro_visitante')
+      .select('*, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
+      .order('creado_en', { ascending: false });
+
+    if (regError) throw regError;
+    if (!registros || registros.length === 0) return [];
+
+    // Obtenemos los IDs únicos de usuario
+    const userIds = [...new Set(registros.map(r => r.id_usuario))];
+
+    // Traemos los perfiles en una sola consulta
+    const { data: perfiles, error: perfError } = await supabase
+      .from('profiles')
+      .select('id, nombre_usuario, nombre, avatar_url')
+      .in('id', userIds);
+
+    if (perfError) {
+        console.error('Error al cargar perfiles:', perfError);
+        return registros;
+    }
+
+    // Mapeamos los perfiles por ID
+    const perfilesMap = perfiles.reduce((acc: any, p: any) => {
+        acc[p.id] = p;
+        return acc;
+    }, {});
+
+    // Unimos los datos
+    return registros.map(r => ({
+        ...r,
+        perfil: perfilesMap[r.id_usuario] || null
+    }));
+  }
+
+  async deleteRegistro(id: number): Promise<void> {
+    const { error } = await supabase
+      .from('registro_visitante')
+      .delete()
+      .eq('id_registro', id);
+
+    if (error) throw error;
+  }
+
+  async updateRegistro(id: number, cantidad: number): Promise<void> {
+    const { error } = await supabase
+      .from('registro_visitante')
+      .update({ cantidad })
+      .eq('id_registro', id);
+
+    if (error) throw error;
+  }
+
+  async getAllPaises(): Promise<Pais[]> {
+    const { data, error } = await supabase
+      .from('pais')
+      .select('id_pais, nombre_pais, codigo_iso')
+      .order('nombre_pais', { ascending: true });
+
+    if (error) throw error;
+
+    // Colocar España el primero de la lista por conveniencia
+    const paises = data || [];
+    const espIndex = paises.findIndex(p => p.nombre_pais === 'España');
+    if (espIndex > -1) {
+      const esp = paises.splice(espIndex, 1)[0];
+      paises.unshift(esp);
+    }
+
+    return paises;
+  }
 }
