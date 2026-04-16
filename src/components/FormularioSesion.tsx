@@ -41,7 +41,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
     try {
       await onLogin(email, password);
     } catch (err: any) {
-      setSubmissionError(err.message);
+      setSubmissionError('Correo electrónico o contraseña incorrectos.');
     }
   };
 

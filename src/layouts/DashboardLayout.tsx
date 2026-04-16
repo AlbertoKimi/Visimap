@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { AppSidebar } from '../components/app-sidebar';
-import { Bell } from 'lucide-react';
+import { NotificationBell } from '../components/ui/NotificationBell';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -58,10 +58,7 @@ export const DashboardLayout: React.FC = () => {
                         </Breadcrumb>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors relative">
-                            <Bell size={20} />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                        </button>
+                        <NotificationBell />
                     </div>
                 </header>
                 <div className="flex-1 overflow-auto p-4 bg-slate-50 relative">
