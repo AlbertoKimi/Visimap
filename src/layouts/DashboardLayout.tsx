@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { AppSidebar } from '../components/app-sidebar';
-import { NotificationBell } from '../components/ui/NotificationBell';
+import { AppSidebar } from "@/components/app/app-sidebar";
+import { NotificationBell } from "@/components/app/NotificationBell";
 import {
   Breadcrumb,
   BreadcrumbItem,

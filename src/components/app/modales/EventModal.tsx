@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { X, Trash2, Loader2, CheckCircle2, Plus, Edit3 } from 'lucide-react';
-import { supabase } from '../../supabase/client';
-import { PROVINCIAS, obtenerColor } from '../../constantes/appConstants';
-import { formatearRangoFechas } from '../../utils/utils';
-import Input from '../inputs/Input';
-import TextArea from '../inputs/TextArea';
-import Select from '../inputs/Select';
-import { Button } from '../button';
-import { TipoEvento, GrupoVisitante } from '../../interfaces/Evento';
-import { Pais } from '../../interfaces/Visitor';
-import { RepositoryFactory } from '../../database/RepositoryFactory';
+import { supabase } from "@/database/supabase/client";
+import { PROVINCIAS, obtenerColor } from "@/constantes/appConstants";
+import { formatearRangoFechas } from "@/utils/utils";
+import Input from "@/components/ui/input";
+import TextArea from "@/components/ui/TextArea";
+import Select from "@/components/ui/Select";
+import { Button } from "@/components/ui/button";
+import { TipoEvento, GrupoVisitante } from "@/interfaces/Evento";
+import { Pais } from "@/interfaces/Visitor";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 

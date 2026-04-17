@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { RepositoryFactory } from '../../database/RepositoryFactory';
-import { useAuthStore } from '../../stores/authStore';
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { useAuthStore } from "@/stores/authStore";
 
 interface Alerta {
   id: string;

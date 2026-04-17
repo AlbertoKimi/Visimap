@@ -12,14 +12,14 @@ import {
   Key,
   Loader2
 } from 'lucide-react';
-import { Button } from '../components/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/card';
-import Input from '../components/inputs/Input';
-import Select from '../components/inputs/Select';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { supabase } from '../supabase/client';
-import { Perfil } from '../interfaces/Perfil';
-import { Rol } from '../interfaces/Rol';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Input from "@/components/ui/input";
+import Select from "@/components/ui/Select";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { supabase } from "@/database/supabase/client";
+import { Perfil } from "@/interfaces/Perfil";
+import { Rol } from "@/interfaces/Rol";
 
 const userRepo = RepositoryFactory.getUserRepository();
 const authRepo = RepositoryFactory.getAuthRepository();

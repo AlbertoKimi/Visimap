@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { TipoEvento } from '../../interfaces/Evento';
+import { supabase } from './client';
+import { TipoEvento } from "@/interfaces/Evento";
 import { EventTypeRepository } from '../repositories/EventTypeRepository';
 
 export class SupabaseEventTypeRepository implements EventTypeRepository {

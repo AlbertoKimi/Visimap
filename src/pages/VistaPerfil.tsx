@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DetalleUsuario } from './DetalleUsuarioView';
-import { Perfil } from '../interfaces/Perfil';
-import { Rol } from '../interfaces/Rol';
-import { RepositoryFactory } from '../database/RepositoryFactory';
+import { Perfil } from "@/interfaces/Perfil";
+import { Rol } from "@/interfaces/Rol";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Snackbar, Alert } from '@mui/material';
 import { Loader2 } from 'lucide-react';
 

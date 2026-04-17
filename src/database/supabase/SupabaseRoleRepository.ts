@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { Rol } from '../../interfaces/Rol';
+import { supabase } from './client';
+import { Rol } from "@/interfaces/Rol";
 import { RoleRepository } from '../repositories/RoleRepository';
 
 export class SupabaseRoleRepository implements RoleRepository {

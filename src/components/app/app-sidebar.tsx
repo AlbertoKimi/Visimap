@@ -15,7 +15,7 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/stores/authStore"
-import { supabase } from "@/supabase/client"
+import { supabase } from "@/database/supabase/client"
 
 export function AppSidebar() {
   const { userProfile, clearSession } = useAuthStore()

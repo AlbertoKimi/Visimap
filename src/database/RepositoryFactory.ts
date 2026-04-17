@@ -1,10 +1,10 @@
-import { SupabaseAuthRepository } from './supabase/SupabaseAuthRepository';
-import { SupabaseVisitorRepository } from './supabase/SupabaseVisitorRepository';
-import { SupabaseUserRepository } from './supabase/SupabaseUserRepository';
-import { SupabaseRoleRepository } from './supabase/SupabaseRoleRepository';
-import { SupabaseEventRepository } from './supabase/SupabaseEventRepository';
-import { SupabaseEventTypeRepository } from './supabase/SupabaseEventTypeRepository';
-import { SupabaseNotaRepository } from './supabase/SupabaseNotaRepository';
+import { SupabaseAuthRepository } from "@/database/supabase/SupabaseAuthRepository";
+import { SupabaseVisitorRepository } from "@/database/supabase/SupabaseVisitorRepository";
+import { SupabaseUserRepository } from "@/database/supabase/SupabaseUserRepository";
+import { SupabaseRoleRepository } from "@/database/supabase/SupabaseRoleRepository";
+import { SupabaseEventRepository } from "@/database/supabase/SupabaseEventRepository";
+import { SupabaseEventTypeRepository } from "@/database/supabase/SupabaseEventTypeRepository";
+import { SupabaseNotaRepository } from "@/database/supabase/SupabaseNotaRepository";
 
 import { AuthRepository } from './repositories/AuthRepository';
 import { VisitorRepository } from './repositories/VisitorRepository';

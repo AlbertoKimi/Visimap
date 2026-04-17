@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, User } from 'lucide-react';
-import { Button } from './button';
-import Input from './inputs/Input';
-import TextArea from './inputs/TextArea';
-import Select from './inputs/Select';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { Pais } from '../interfaces/Visitor';
-import { PROVINCIAS } from '../constantes/appConstants';
+import { Button } from "@/components/ui/button";
+import Input from "@/components/ui/input";
+import TextArea from "@/components/ui/TextArea";
+import Select from "@/components/ui/Select";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { Pais } from "@/interfaces/Visitor";
+import { PROVINCIAS } from "@/constantes/appConstants";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 

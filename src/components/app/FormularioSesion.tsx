@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Input from './inputs/Input';
+import Input from "@/components/ui/input";
 
 interface FormularioSesionProps {
   onLogin: (email: string, pass: string) => Promise<void>;

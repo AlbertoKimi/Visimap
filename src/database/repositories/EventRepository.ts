@@ -1,9 +1,9 @@
-import { Evento, GrupoVisitante } from '../../interfaces/Evento';
+import { Evento, EventoFormData, GrupoVisitante } from "@/interfaces/Evento";
 
 export interface EventRepository {
   getAll(): Promise<Evento[]>;
-  create(event: any, groups?: GrupoVisitante[]): Promise<Evento>;
-  update(id: number, event: any, groups?: GrupoVisitante[]): Promise<void>;
+  create(event: EventoFormData, groups?: GrupoVisitante[]): Promise<Evento>;
+  update(id: number, event: Partial<EventoFormData>, groups?: GrupoVisitante[]): Promise<void>;
   delete(id: number): Promise<void>;
   toggleFinalizado(id: number, finalizado: boolean): Promise<void>;
   getAllGrupoVisitantes(): Promise<any[]>;

@@ -1,4 +1,4 @@
-import { Pais, Provincia, RegistroVisitante } from '../../interfaces/Visitor';
+import { Pais, Provincia, RegistroVisitante } from "@/interfaces/Visitor";
 
 export interface VisitorRepository {
   getPaisByName(name: string): Promise<Pais | null>;

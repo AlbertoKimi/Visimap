@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { Nota } from '../../interfaces/Nota';
+import { supabase } from './client';
+import { Nota } from "@/interfaces/Nota";
 import { NotaRepository } from '../repositories/NotaRepository';
 
 export class SupabaseNotaRepository implements NotaRepository {

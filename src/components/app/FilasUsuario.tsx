@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
-import { Perfil } from '../interfaces/Perfil';
-import { Rol } from '../interfaces/Rol';
+import { Perfil } from "@/interfaces/Perfil";
+import { Rol } from "@/interfaces/Rol";
 
 interface UserRowProps {
   profile: Perfil;

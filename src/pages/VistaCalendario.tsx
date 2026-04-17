@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Snackbar, Alert, Button } from '@mui/material';
-import { EventModal } from '../components/modales/EventModal';
-import { Calendario } from '../components/Calendario';
-import { obtenerColor } from '../constantes/appConstants';
-import { formatearFechaInput } from '../utils/utils';
-import { Button as CustomButton } from '../components/button';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { TipoEvento } from '../interfaces/Evento';
-import { useAuthStore } from '../stores/authStore';
+import { EventModal } from "@/components/app/modales/EventModal";
+import { Calendario } from "@/components/app/Calendario";
+import { obtenerColor } from "@/constantes/appConstants";
+import { formatearFechaInput } from "@/utils/utils";
+import { Button as CustomButton } from "@/components/ui/button";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { TipoEvento } from "@/interfaces/Evento";
+import { useAuthStore } from "@/stores/authStore";
 
 const eventRepo = RepositoryFactory.getEventRepository();
 const typeRepo = RepositoryFactory.getEventTypeRepository();

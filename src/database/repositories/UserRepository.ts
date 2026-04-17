@@ -1,4 +1,4 @@
-import { Perfil, UUID } from '../../interfaces/Perfil';
+import { Perfil, UUID } from "@/interfaces/Perfil";
 
 export interface UserStats {
   eventos: number;

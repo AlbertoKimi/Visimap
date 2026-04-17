@@ -1,30 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, RefreshCw, AlertCircle } from 'lucide-react';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { TablaRegistroMapa } from '../components/TablaRegistroMapa';
-import { TablaRegistroEventos } from '../components/TablaRegistroEventos';
-import { ModalConfirmacion } from '../components/modales/ModalConfirmacion';
-import { ModalEditarCantidad } from '../components/modales/ModalEditarCantidad';
-import { Toast } from '../components/Toast';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../components/ui/pagination";
-
-const ITEMS_PER_PAGE = 20;
+import React, { useState, useEffect } from 'react';
+import { RefreshCw, AlertCircle } from 'lucide-react';
+import { RepositoryFactory } from '@/database/RepositoryFactory';
+import { TablaRegistroMapa } from '@/components/app/TablaRegistroMapa';
+import { TablaRegistroEventos } from '@/components/app/TablaRegistroEventos';
+import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
+import { ModalEditarCantidad } from '@/components/app/modales/ModalEditarCantidad';
+import { Toast } from '@/components/ui/Toast';
 
 export const RegistroVisitante: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'mapa' | 'eventos'>('mapa');
-  const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
 
   // Modales
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -58,41 +45,13 @@ export const RegistroVisitante: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    setCurrentPage(1);
   }, [activeTab]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning') => {
     setToast({ message, type });
-
   };
 
-  const filteredData = useMemo(() => {
-    if (!searchQuery.trim()) return data;
-    const query = searchQuery.toLowerCase();
-
-    return data.filter(item => {
-      if (activeTab === 'mapa') {
-        const prov = item.provincia?.nombre_provincia?.toLowerCase() || '';
-        const pais = item.pais?.nombre_pais?.toLowerCase() || '';
-        return prov.includes(query) || pais.includes(query);
-      } else {
-        const origen = item.origen?.toLowerCase() || '';
-        const evento = item.evento?.nombre_evento?.toLowerCase() || '';
-        return origen.includes(query) || evento.includes(query);
-      }
-    });
-  }, [data, searchQuery, activeTab]);
-
-  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredData, currentPage]);
-
+  // ── Borrado individual (abre modal de confirmación) ──
   const handleDeleteRequest = (id: number) => {
     const item = data.find(i => (activeTab === 'mapa' ? i.id_registro : i.id_grupo) === id);
     setSelectedItem(item);
@@ -114,6 +73,23 @@ export const RegistroVisitante: React.FC = () => {
     }
   };
 
+  // ── Borrado masivo desde el checkbox ──
+  const handleDeleteSelected = async (ids: (string | number)[]) => {
+    if (!window.confirm(`¿Eliminar ${ids.length} registro(s) seleccionado(s)? Esta acción es permanente.`)) return;
+    try {
+      if (activeTab === 'mapa') {
+        await Promise.all(ids.map(id => visitorRepo.deleteRegistro(Number(id))));
+      } else {
+        await Promise.all(ids.map(id => eventRepo.deleteGrupoVisitante(Number(id))));
+      }
+      showToast(`${ids.length} registro(s) eliminados correctamente`, 'success');
+      fetchData();
+    } catch (err: any) {
+      showToast('No se pudieron eliminar los registros: ' + err.message, 'error');
+    }
+  };
+
+  // ── Edición ──
   const handleEditRequest = (item: any) => {
     setSelectedItem(item);
     setIsEditModalOpen(true);
@@ -137,7 +113,7 @@ export const RegistroVisitante: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header*/}
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 pb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Registro de Visitantes</h1>
@@ -146,50 +122,41 @@ export const RegistroVisitante: React.FC = () => {
           </p>
         </div>
 
-        <div className="inline-flex bg-slate-100/50 p-1 rounded-xl border border-slate-200/50">
+        <div className="flex items-center gap-3">
+          {/* Botón refrescar */}
           <button
-            onClick={() => setActiveTab('mapa')}
-            className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${activeTab === 'mapa'
-                ? 'bg-white text-blue-600 shadow-sm border border-slate-200/20'
-                : 'text-slate-500 hover:text-slate-800'
-              }`}
+            onClick={fetchData}
+            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+            disabled={loading}
+            title="Actualizar"
           >
-            Mapa
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
-          <button
-            onClick={() => setActiveTab('eventos')}
-            className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${activeTab === 'eventos'
-                ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/20'
-                : 'text-slate-500 hover:text-slate-800'
-              }`}
-          >
-            Eventos
-          </button>
-        </div>
-      </div>
 
-      {/* Buscador y Filtro */}
-      <div className="flex items-center gap-3 mb-8 max-w-md">
-        <div className="relative flex-1 group">
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-            <Search size={16} />
+          {/* Pestañas */}
+          <div className="inline-flex bg-slate-100/50 p-1 rounded-xl border border-slate-200/50">
+            <button
+              onClick={() => setActiveTab('mapa')}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                activeTab === 'mapa'
+                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200/20'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Mapa
+            </button>
+            <button
+              onClick={() => setActiveTab('eventos')}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                activeTab === 'eventos'
+                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/20'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Eventos
+            </button>
           </div>
-          <input
-            type="text"
-            placeholder="Buscar registro..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:outline-[3px] focus:outline-blue-500/10 focus:bg-white focus:border-blue-400 transition-all text-sm text-slate-700"
-          />
         </div>
-        <button
-          onClick={fetchData}
-          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all active:scale-95 disabled:opacity-50"
-          disabled={loading}
-          title="Actualizar"
-        >
-          <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-        </button>
       </div>
 
       {/* Datos */}
@@ -202,7 +169,7 @@ export const RegistroVisitante: React.FC = () => {
         )}
 
         {error && !loading && (
-          <div className="p-8 bg-red-50 border border-red-100 rounded-[2rem] flex items-center gap-4 text-red-600 mb-8 animate-in shake duration-500">
+          <div className="p-8 bg-red-50 border border-red-100 rounded-[2rem] flex items-center gap-4 text-red-600 mb-8">
             <AlertCircle size={24} />
             <p className="font-semibold">{error}</p>
           </div>
@@ -212,69 +179,18 @@ export const RegistroVisitante: React.FC = () => {
           <div className="animate-in fade-in duration-500">
             {activeTab === 'mapa' ? (
               <TablaRegistroMapa
-                registros={paginatedData}
+                registros={data}
                 onDelete={handleDeleteRequest}
                 onEdit={handleEditRequest}
+                onDeleteSelected={handleDeleteSelected}
               />
             ) : (
               <TablaRegistroEventos
-                registros={paginatedData}
+                registros={data}
                 onDelete={handleDeleteRequest}
                 onEdit={handleEditRequest}
+                onDeleteSelected={handleDeleteSelected}
               />
-            )}
-
-            {/* Paginación */}
-            {totalPages > 1 && (
-              <div className="mt-8 pb-8">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                      />
-                    </PaginationItem>
-
-                    {[...Array(totalPages)].map((_, i) => {
-                      const page = i + 1;
-                      // Mostrar siempre la primera, la última, la actual y una alrededor de la actual
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
-                      ) {
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationLink
-                              onClick={() => setCurrentPage(page)}
-                              isActive={currentPage === page}
-                            >
-                              {page}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      }
-                      // Puntos suspensivos
-                      if (page === currentPage - 2 || page === currentPage + 2) {
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationEllipsis />
-                          </PaginationItem>
-                        );
-                      }
-                      return null;
-                    })}
-
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
             )}
           </div>
         )}
@@ -298,7 +214,7 @@ export const RegistroVisitante: React.FC = () => {
         titulo="Modificar cantidad"
       />
 
-      {/* Toast Notification */}
+      {/* Toast */}
       <Toast
         open={!!toast}
         mensaje={toast?.message || ''}

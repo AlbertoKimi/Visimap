@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, ShieldCheck } from 'lucide-react';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
-import Input from '../components/inputs/Input';
-import { Button } from '../components/button';
-import { supabase } from '../supabase/client';
+import Input from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/database/supabase/client";
 import { Session } from '@supabase/supabase-js';
 
 interface EstablecerContrasenaProps {

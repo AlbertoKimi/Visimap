@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Button } from './button';
-import Input from './inputs/Input';
-import Select from './inputs/Select';
-import { RepositoryFactory } from '../database/RepositoryFactory';
+import { Button } from "@/components/ui/button";
+import Input from "@/components/ui/input";
+import Select from "@/components/ui/Select";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const authRepo = RepositoryFactory.getAuthRepository();
 

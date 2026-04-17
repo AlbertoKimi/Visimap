@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Session } from '@supabase/supabase-js';
-import { AuthState } from '../interfaces/Auth';
-import { Perfil } from '../interfaces/Perfil';
+import { AuthState } from "@/interfaces/Auth";
+import { Perfil } from "@/interfaces/Perfil";
 
 export const useAuthStore = create<AuthState>()(
   persist(

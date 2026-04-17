@@ -1,4 +1,4 @@
-import { supabase } from '../../supabase/client';
+import { supabase } from './client';
 import { AuthRepository } from '../repositories/AuthRepository';
 
 export class SupabaseAuthRepository implements AuthRepository {

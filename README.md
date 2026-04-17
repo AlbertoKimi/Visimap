@@ -173,6 +173,12 @@ La persistencia y seguridad de la información está delegada en Supabase (Postg
 - **24/02/2026** · **Elaboración de manuales**. Documentación exhaustiva en el manual técnico y el manual de proyecto: arquitectura, infraestructura, configuración y justificación de stack tecnológico.
 - **03/03/2026** · **Redacción de documentación de usuario**. Publicación de la guía de explotación operativa del sistema, orientada a formar a los operadores del museo en el uso del mapa, registros y agenda.
 
+### Tutorías
+> Sesiones de seguimiento técnico y validación de objetivos con el equipo docente.
+
+- **27/03/2026** · **Primera sesión de tutoría**. Revisión integral del estado del proyecto y definición de la hoja de ruta técnica. Se acordó la migración completa a **TypeScript** para mejorar la robustez del código, la reestructuración del sistema de archivos y el desarrollo de una arquitectura basada en **repositorios e interfaces** para los servicios de Supabase. Evaluación positiva del progreso general y recomendaciones sobre la integración de componentes reutilizables.
+- **16/04/2026** · **Segunda sesión de tutoría**. Presentación de los avances realizados, destacando la finalización de la migración a TypeScript y la implementación de las vistas de registro de visitantes y gestión de notas. Recepción de feedback sobre la optimización de la jerarquía de carpetas, la necesidad de implementar **filtrado y paginación** en las tablas de datos, y la importancia crítica de auditar las **políticas RLS** de la base de datos y el refinamiento del diseño **responsive**.
+
 <br>
 
 ## 👨‍💻 Autoría y Licencia

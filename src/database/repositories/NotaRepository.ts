@@ -1,4 +1,4 @@
-import { Nota } from '../../interfaces/Nota';
+import { Nota } from "@/interfaces/Nota";
 
 export interface NotaRepository {
   getNotasRecientes(): Promise<Nota[]>;

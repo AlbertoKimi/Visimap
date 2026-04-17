@@ -4,22 +4,22 @@ import {
   RouterProvider,
   Navigate
 } from 'react-router-dom';
-import { LandingPage } from './pages/LandingPage';
-import { MapaVisitantes } from './pages/MapaVisitantes';
-import { VistaUsuarios } from './pages/VistaUsuarios';
-import { VistaCalendario } from './pages/VistaCalendario';
-import { VistaPerfil } from './pages/VistaPerfil';
-import { Graficos } from './pages/Graficos';
-import { RegistroVisitante } from './pages/RegistroVisitante';
-import { Notas } from './pages/Notas';
-import { FormularioSesion } from './components/FormularioSesion';
-import { DashboardLayout } from './layouts/DashboardLayout';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { PublicRoute } from './components/PublicRoute';
-import { EstablecerContrasena } from './pages/EstablecerContrasena';
-import { useAuthStore } from './stores/authStore';
-import { supabase } from './supabase/client';
-import { RepositoryFactory } from './database/RepositoryFactory';
+import { LandingPage } from "@/pages/LandingPage";
+import { MapaVisitantes } from "@/pages/MapaVisitantes";
+import { VistaUsuarios } from "@/pages/VistaUsuarios";
+import { VistaCalendario } from "@/pages/VistaCalendario";
+import { VistaPerfil } from "@/pages/VistaPerfil";
+import { Graficos } from "@/pages/Graficos";
+import { RegistroVisitante } from "@/pages/RegistroVisitante";
+import { Notas } from "@/pages/Notas";
+import { FormularioSesion } from "@/components/app/FormularioSesion";
+import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { ProtectedRoute } from "@/rutas/ProtectedRoute";
+import { PublicRoute } from "@/rutas/PublicRoute";
+import { EstablecerContrasena } from "@/pages/EstablecerContrasena";
+import { useAuthStore } from "@/stores/authStore";
+import { supabase } from "@/database/supabase/client";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const logoUrl = "/src/assets/Logo-1.webp";
 

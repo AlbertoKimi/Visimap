@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Check, Clock, Trash2 } from 'lucide-react';
-import { Nota } from '../../interfaces/Nota';
-import { useAuthStore } from '../../stores/authStore';
-import { RepositoryFactory } from '../../database/RepositoryFactory';
+import { Nota } from "@/interfaces/Nota";
+import { useAuthStore } from "@/stores/authStore";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 interface NotaCardProps {
   nota: Nota;

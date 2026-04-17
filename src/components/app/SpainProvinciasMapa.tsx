@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { SpainProvincePaths } from '../utils/SpainProvinciasPaths';
-import { getColoresProvincia } from '../utils/ProvinciasColores';
-import { LeyendaColores } from './Leyenda';
+import { SpainProvincePaths } from "@/utils/SpainProvinciasPaths";
+import { getColoresProvincia } from "@/utils/ProvinciasColores";
+import { LeyendaColores } from "@/components/app/Leyenda";
 
 interface ProvinceInfo {
   id: string;

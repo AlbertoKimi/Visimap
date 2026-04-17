@@ -6,7 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import multiMonthPlugin from '@fullcalendar/multimonth';
 import esLocale from '@fullcalendar/core/locales/es';
-import { Card, CardContent } from './card';
+import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react';
 
 const PLUGINS = [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, multiMonthPlugin];

@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
-import { Button } from './button';
-import { useAuthStore } from '../stores/authStore';
-import { supabase } from '../supabase/client';
-import { Perfil } from '../interfaces/Perfil';
+import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/stores/authStore";
+import { supabase } from "@/database/supabase/client";
+import { Perfil } from "@/interfaces/Perfil";
 
 interface MenuLateralProps {
   userProfile: Perfil | null;

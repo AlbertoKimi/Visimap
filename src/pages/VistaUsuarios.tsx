@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Loader2, X } from 'lucide-react';
-import { Button } from '../components/button';
-import { Card, CardContent } from '../components/card';
-import { UsersTable } from '../components/TablaUsuarios';
-import { FormularioRegistroUsuario } from '../components/FormularioRegistroEquipo';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { UsersTable } from "@/components/app/TablaUsuarios";
+import { FormularioRegistroUsuario } from "@/components/app/FormularioRegistroEquipo";
 import { DetalleUsuario } from './DetalleUsuarioView';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Snackbar, Alert } from '@mui/material';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { Perfil } from '../interfaces/Perfil';
-import { Rol } from '../interfaces/Rol';
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { Perfil } from "@/interfaces/Perfil";
+import { Rol } from "@/interfaces/Rol";
 
 const userRepo = RepositoryFactory.getUserRepository();
 const roleRepo = RepositoryFactory.getRoleRepository();
@@ -110,6 +110,18 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
   const handleUpdateSuccess = () => {
     fetchProfiles();
     if (onRefreshProfile) onRefreshProfile();
+  };
+
+  const handleDeactivateSelected = async (ids: string[]) => {
+    if (!window.confirm(`¿Deseas marcar como inactivos a ${ids.length} usuario(s)?`)) return;
+    try {
+      await Promise.all(ids.map(id => userRepo.toggleStatus(id, false)));
+      mostrarNotificacion(`${ids.length} usuario(s) marcados como inactivos`, 'success');
+      fetchProfiles();
+      if (onRefreshProfile) onRefreshProfile();
+    } catch (err: any) {
+      mostrarNotificacion('Error al cambiar estado: ' + err.message, 'error');
+    }
   };
 
   if (viewState.mode === 'detail' && viewState.selectedUser) {
@@ -218,7 +230,12 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
               </button>
             </div>
           ) : (
-            <UsersTable users={profiles} roles={roles} onAction={handleAction} />
+            <UsersTable
+              users={profiles}
+              roles={roles}
+              onAction={handleAction}
+              onDeactivateSelected={handleDeactivateSelected}
+            />
           )}
         </CardContent>
       </Card>

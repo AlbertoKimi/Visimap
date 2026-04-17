@@ -27,3 +27,13 @@ export interface GrupoVisitante {
   origen: string;
   num_visitantes: number;
 }
+
+export interface EventoFormData {
+  nombre_evento: string;
+  descripcion?: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  id_tipo: number;
+  id_usuario: UUID;
+  finalizado?: boolean;
+}

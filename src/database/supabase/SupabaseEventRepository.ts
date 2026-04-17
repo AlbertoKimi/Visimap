@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { Evento, GrupoVisitante } from '../../interfaces/Evento';
+import { supabase } from './client';
+import { Evento, EventoFormData, GrupoVisitante } from "@/interfaces/Evento";
 import { EventRepository } from '../repositories/EventRepository';
 
 export class SupabaseEventRepository implements EventRepository {
@@ -24,7 +24,7 @@ export class SupabaseEventRepository implements EventRepository {
     return data || [];
   }
 
-  async create(event: any, groups: GrupoVisitante[] = []): Promise<Evento> {
+  async create(event: EventoFormData, groups: GrupoVisitante[] = []): Promise<Evento> {
     const { data, error } = await supabase
       .from('evento')
       .insert([event])
@@ -44,7 +44,7 @@ export class SupabaseEventRepository implements EventRepository {
     return data;
   }
 
-  async update(id: number, event: any, groups?: GrupoVisitante[]): Promise<void> {
+  async update(id: number, event: Partial<EventoFormData>, groups?: GrupoVisitante[]): Promise<void> {
     const { error } = await supabase
       .from('evento')
       .update(event)
@@ -108,7 +108,8 @@ export class SupabaseEventRepository implements EventRepository {
     }
 
     // Mapear perfiles por ID
-    const perfilesMap = perfiles.reduce((acc: any, p: any) => {
+    type PerfilBasico = { id: string; nombre_usuario: string; nombre: string; avatar_url: string };
+    const perfilesMap = (perfiles as PerfilBasico[]).reduce<Record<string, PerfilBasico>>((acc, p) => {
       acc[p.id] = p;
       return acc;
     }, {});

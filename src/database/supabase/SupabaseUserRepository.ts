@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { Perfil, UUID } from '../../interfaces/Perfil';
+import { supabase } from './client';
+import { Perfil, UUID } from "@/interfaces/Perfil";
 import { UserRepository, UserStats } from '../repositories/UserRepository';
 
 export class SupabaseUserRepository implements UserRepository {

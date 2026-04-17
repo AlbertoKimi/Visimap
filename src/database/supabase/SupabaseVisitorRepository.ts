@@ -1,5 +1,5 @@
-import { supabase } from '../../supabase/client';
-import { Pais, Provincia, RegistroVisitante } from '../../interfaces/Visitor';
+import { supabase } from './client';
+import { Pais, Provincia, RegistroVisitante } from "@/interfaces/Visitor";
 import { VisitorRepository } from '../repositories/VisitorRepository';
 
 export class SupabaseVisitorRepository implements VisitorRepository {

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
-import { Formulario } from '../components/Formulario';
-import SpainProvincesMap from '../components/SpainProvinciasMapa';
+import { Formulario } from "@/components/app/Formulario";
+import SpainProvincesMap from "@/components/app/SpainProvinciasMapa";
 import { Snackbar, Alert } from '@mui/material';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { useAuthStore } from '../stores/authStore';
-import { RegistroVisitante } from '../interfaces/Visitor';
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { useAuthStore } from "@/stores/authStore";
+import { RegistroVisitante } from "@/interfaces/Visitor";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 

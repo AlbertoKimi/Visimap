@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { Nota } from '../interfaces/Nota';
-import { RepositoryFactory } from '../database/RepositoryFactory';
-import { NotaCard } from '../components/notas/NotaCard';
-import { NotaModal } from '../components/notas/NotaModal';
-import { useAuthStore } from '../stores/authStore';
+import { Nota } from "@/interfaces/Nota";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { NotaCard } from "@/components/app/notas/NotaCard";
+import { NotaModal } from "@/components/app/notas/NotaModal";
+import { useAuthStore } from "@/stores/authStore";
 
 export const Notas: React.FC = () => {
   const [notas, setNotas] = useState<Nota[]>([]);

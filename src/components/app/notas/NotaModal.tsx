@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import Input from '../inputs/Input';
-import TextArea from '../inputs/TextArea';
-import Select from '../inputs/Select';
-import { useAuthStore } from '../../stores/authStore';
-import { RepositoryFactory } from '../../database/RepositoryFactory';
-import { Perfil } from '../../interfaces/Perfil';
+import Input from "@/components/ui/input";
+import TextArea from "@/components/ui/TextArea";
+import Select from "@/components/ui/Select";
+import { useAuthStore } from "@/stores/authStore";
+import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { Perfil } from "@/interfaces/Perfil";
 
 interface NotaModalProps {
   onClose: () => void;

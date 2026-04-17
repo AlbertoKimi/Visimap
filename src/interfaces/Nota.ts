@@ -17,5 +17,4 @@ export interface Nota {
     primer_apellido: string;
     avatar_url?: string;
   };
-  profiles?: any;
 }

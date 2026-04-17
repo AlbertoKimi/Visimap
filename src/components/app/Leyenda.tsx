@@ -1,5 +1,5 @@
 import React from 'react';
-import { datosLeyenda } from '../utils/ProvinciasColores';
+import { datosLeyenda } from "@/utils/ProvinciasColores";
 
 export const LeyendaColores: React.FC = () => {
   return (
