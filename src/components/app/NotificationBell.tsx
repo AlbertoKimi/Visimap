@@ -144,22 +144,19 @@ export const NotificationBell: React.FC = () => {
 
         const top10 = nuevasAlertas.slice(0, 10);
 
-        const lastReadStr = localStorage.getItem(`visimap_alerts_lastread_${userProfile?.id}`);
+        const storageKey = `visimap_alerts_read_ids_${userProfile?.id}`;
+        const readIdsRaw = localStorage.getItem(storageKey);
+        const readIds: Set<string> = new Set(readIdsRaw ? JSON.parse(readIdsRaw) : []);
         let unreadCount = false;
 
-        if (lastReadStr) {
-          const lastReadTime = new Date(lastReadStr).getTime();
-          top10.forEach(al => {
-            if (al.fechaDate.getTime() > lastReadTime) {
-              al.leido = false;
-              unreadCount = true;
-            } else {
-              al.leido = true;
-            }
-          });
-        } else {
-          if (top10.length > 0) unreadCount = true;
-        }
+        top10.forEach(al => {
+          if (readIds.has(al.id)) {
+            al.leido = true;
+          } else {
+            al.leido = false;
+            unreadCount = true;
+          }
+        });
 
         setAlertas(top10);
         setHasUnread(unreadCount);
@@ -181,7 +178,9 @@ export const NotificationBell: React.FC = () => {
     setIsOpen(newState);
 
     if (newState && hasUnread) {
-      localStorage.setItem(`visimap_alerts_lastread_${userProfile?.id}`, new Date().toISOString());
+      const storageKey = `visimap_alerts_read_ids_${userProfile?.id}`;
+      const allIds = alertas.map(a => a.id);
+      localStorage.setItem(storageKey, JSON.stringify(allIds));
       setHasUnread(false);
       setAlertas(prev => prev.map(a => ({ ...a, leido: true })));
     }
@@ -237,8 +236,12 @@ export const NotificationBell: React.FC = () => {
                       <button
                         key={alerta.id}
                         onClick={() => handleAlertClick(alerta.link)}
-                        className={`flex items-start gap-4 p-4 text-left transition-colors hover:bg-slate-50 group focus:outline-none focus:bg-slate-100 ${!alerta.leido ? 'bg-blue-50/30' : ''
-                          }`}
+                        title={alerta.mensaje}
+                        className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${
+                          !alerta.leido
+                            ? 'bg-blue-50 hover:bg-blue-100/70 border-l-4 border-blue-400'
+                            : 'hover:bg-slate-50 border-l-4 border-transparent'
+                        }`}
                       >
                         <div className={`p-2.5 rounded-full shrink-0 shadow-sm ${isSuccess
                           ? 'bg-green-100 text-green-700'
@@ -250,8 +253,9 @@ export const NotificationBell: React.FC = () => {
                         </div>
 
                         <div className="flex-1 min-w-0 pt-0.5">
-                          <p className={`text-sm truncate leading-tight mb-1 ${!alerta.leido ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
-                            }`}>
+                          <p className={`text-sm leading-snug mb-1 break-words ${
+                            !alerta.leido ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+                          }`}>
                             {alerta.mensaje}
                           </p>
                           <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
@@ -260,7 +264,7 @@ export const NotificationBell: React.FC = () => {
                         </div>
 
                         {!alerta.leido && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-blue-500/90 shadow-sm shrink-0 mt-1.5" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-blue-500/90 shadow-sm shrink-0 mt-1.5 animate-pulse" />
                         )}
                       </button>
                     );
