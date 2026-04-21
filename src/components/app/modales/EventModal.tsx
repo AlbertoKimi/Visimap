@@ -66,6 +66,24 @@ export const EventModal: React.FC<EventModalProps> = ({
     num_visitantes: 0
   });
 
+  // Bloquear el scroll del Layout principal al abrir el modal
+  useEffect(() => {
+    const mainScroll = document.getElementById('dashboard-scroll-container');
+    const originalBodyOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    if (mainScroll) {
+      mainScroll.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow || 'auto';
+      if (mainScroll) {
+        mainScroll.style.overflow = 'auto';
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const cargarPaises = async () => {
       try {
@@ -191,7 +209,7 @@ export const EventModal: React.FC<EventModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md"
       onClick={onClose}
     >
       <div

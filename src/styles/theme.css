@@ -71,6 +71,18 @@
     --color-info-light: #dbeafe;
     --color-info-border: #bfdbfe;
 
+    /* Colores para Gráficos (Distintos entre sí) */
+    --color-chart-1: #3b82f6; /* Azul claro */
+    --color-chart-2: #f97316; /* Naranja vibrante */
+    --color-chart-3: #10b981; /* Esmeralda */
+    --color-chart-4: #8b5cf6; /* Violeta */
+    --color-chart-5: #f43f5e; /* Rosa fuerte */
+    --color-chart-6: #06b6d4; /* Cyan */
+    --color-chart-7: #eab308; /* Amarillo */
+    --color-chart-8: #6366f1; /* Indigo */
+    --color-chart-9: #14b8a6; /* Teal */
+    --color-chart-10: #a855f7; /* Púrpura claro */
+
     /*Tipografía*/
     --font-titulos: 'Inter', system-ui, -apple-system, sans-serif;
     --font-texto: 'Inter', system-ui, -apple-system, sans-serif;

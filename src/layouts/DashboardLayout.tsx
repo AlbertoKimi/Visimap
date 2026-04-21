@@ -3,18 +3,18 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { NotificationBell } from "@/components/app/NotificationBell";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 export const DashboardLayout: React.FC = () => {
@@ -61,7 +61,7 @@ export const DashboardLayout: React.FC = () => {
                         <NotificationBell />
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto p-4 bg-slate-50 relative">
+                <div id="dashboard-scroll-container" className="flex-1 overflow-auto p-4 bg-slate-50 relative">
                     <Outlet />
                 </div>
             </SidebarInset>
