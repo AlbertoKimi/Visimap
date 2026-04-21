@@ -123,7 +123,10 @@ export const NotificationBell: React.FC = () => {
           // 3. Notificación al confirmar la finalización (para todos)
           if (evento.finalizado) {
             const timestampActualizado = (evento as any).updated_at || (evento as any).actualizado_en;
-            let fechaConfirmado = timestampActualizado ? new Date(timestampActualizado) : (fechaFin && fechaFin > fechaCrea ? fechaFin : fechaCrea);
+            // Si no hay timestamp de actualización, usamos la fecha de fin o creación, 
+            // pero nos aseguramos de que no sea superior a 'ahora' para evitar que salten al top erróneamente
+            const backupDate = (fechaFin && fechaFin < hoy) ? fechaFin : (fechaCrea < hoy ? fechaCrea : hoy);
+            const fechaConfirmado = timestampActualizado ? new Date(timestampActualizado) : backupDate;
 
             if (fechaConfirmado > tresDiasAtras) {
               nuevasAlertas.push({
@@ -173,17 +176,27 @@ export const NotificationBell: React.FC = () => {
     }
   }, [userProfile]);
 
-  const toggleOpen = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
+  const [wasOpen, setWasOpen] = useState(false);
 
-    if (newState && hasUnread) {
-      const storageKey = `visimap_alerts_read_ids_${userProfile?.id}`;
-      const allIds = alertas.map(a => a.id);
-      localStorage.setItem(storageKey, JSON.stringify(allIds));
-      setHasUnread(false);
-      setAlertas(prev => prev.map(a => ({ ...a, leido: true })));
+  useEffect(() => {
+    // Si el panel estaba abierto y ahora se cierra...
+    if (wasOpen && !isOpen) {
+      if (hasUnread && userProfile) {
+        const storageKey = `visimap_alerts_read_ids_${userProfile.id}`;
+        const allIds = alertas.map(a => a.id);
+        localStorage.setItem(storageKey, JSON.stringify(allIds));
+        setHasUnread(false);
+        setAlertas(prev => prev.map(a => ({ ...a, leido: true })));
+      }
+      setWasOpen(false);
+    } else if (isOpen && !wasOpen) {
+      // Si se acaba de abrir, guardamos el estado
+      setWasOpen(true);
     }
+  }, [isOpen, wasOpen, hasUnread, userProfile, alertas]);
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
   };
 
   const handleAlertClick = (link: string) => {
@@ -200,7 +213,7 @@ export const NotificationBell: React.FC = () => {
       >
         <Bell size={20} />
         {hasUnread && (
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse"></span>
+          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white shadow-sm animate-bounce"></span>
         )}
       </button>
 
@@ -253,12 +266,19 @@ export const NotificationBell: React.FC = () => {
                         </div>
 
                         <div className="flex-1 min-w-0 pt-0.5">
-                          <p className={`text-sm leading-snug mb-1 break-words ${
-                            !alerta.leido ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
-                          }`}>
-                            {alerta.mensaje}
-                          </p>
-                          <p className="text-[11px] font-medium text-slate-400 uppercase tracking-wide">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className={`text-sm leading-snug break-words ${
+                              !alerta.leido ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+                            }`}>
+                              {alerta.mensaje}
+                            </p>
+                            {!alerta.leido && (
+                              <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white shadow-sm uppercase tracking-wider animate-pulse">
+                                NUEVA
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded w-fit uppercase tracking-wide mt-0.5">
                             {alerta.fechaTexto}
                           </p>
                         </div>
