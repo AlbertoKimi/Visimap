@@ -1,53 +1,120 @@
-import React from 'react';
-import { BotMessageSquare, Sparkles, Construction } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { BotMessageSquare, Sparkles, Trash2 } from 'lucide-react';
+import { useChatIA, SUGERENCIAS } from '@/hooks/useChatIA';
+import { BurbujaMensaje } from './chat/BurbujaMensaje';
+import { InputMensaje } from './chat/InputMensaje';
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Estado vacío — pantalla de bienvenida con sugerencias
+// ──────────────────────────────────────────────────────────────────────────────
+
+interface EstadoVacioProps {
+  onSugerencia: (prompt: string) => void;
+}
+
+const EstadoVacio: React.FC<EstadoVacioProps> = ({ onSugerencia }) => (
+  <div className="chat-vacio">
+    <div className="chat-vacio-avatar">
+      <BotMessageSquare className="w-10 h-10 text-white" />
+    </div>
+    <div className="chat-vacio-textos">
+      <h3 className="chat-vacio-titulo">¿En qué puedo ayudarte hoy?</h3>
+      <p className="chat-vacio-subtitulo">
+        Puedo analizar datos del museo, generar gráficos, crear informes y responder cualquier pregunta.
+      </p>
+    </div>
+    <div className="chat-sugerencias-grid">
+      {SUGERENCIAS.map(s => (
+        <button
+          key={s.etiqueta}
+          className="chat-sugerencia"
+          onClick={() => onSugerencia(s.prompt)}
+          id={`sugerencia-${s.etiqueta.replace(/\s+/g, '-').toLowerCase()}`}
+        >
+          <span className="chat-sugerencia-icono">{s.icono}</span>
+          <span className="chat-sugerencia-texto">{s.etiqueta}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+// ──────────────────────────────────────────────────────────────────────────────
+// ChatIA — componente principal
+// ──────────────────────────────────────────────────────────────────────────────
 
 export const ChatIA: React.FC = () => {
+  const {
+    mensajes,
+    adjuntos,
+    isLoading,
+    ultimoMensajeRef,
+    enviarMensaje,
+    agregarArchivo,
+    eliminarArchivo,
+    limpiarChat,
+  } = useChatIA();
+
+  // Scroll al montaje si ya hay mensajes
+  useEffect(() => {
+    ultimoMensajeRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
+  }, []);
+
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
-      {/* Cabecera de la sección */}
-      <div className="p-5 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+    <div className="chat-ia-wrapper" id="chat-ia">
+
+      {/* ── Cabecera ──────────────────────────────────────────────────────── */}
+      <div className="chat-ia-header">
+        <div className="chat-ia-header-icono">
           <BotMessageSquare className="w-5 h-5 text-white" />
         </div>
-        <div>
-          <h3 className="text-white font-bold text-base leading-tight">Análisis con Inteligencia Artificial</h3>
-          <p className="text-blue-100 text-xs mt-0.5">Pide gráficos personalizados en lenguaje natural</p>
+        <div className="chat-ia-header-textos">
+          <h3 className="chat-ia-header-titulo">Análisis con Inteligencia Artificial</h3>
+          <p className="chat-ia-header-subtitulo">Consulta datos, genera gráficos y crea informes en lenguaje natural</p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          {mensajes.length > 0 && (
+            <button
+              onClick={limpiarChat}
+              className="chat-btn-limpiar"
+              title="Limpiar conversación"
+              aria-label="Limpiar chat"
+              id="btn-limpiar-chat"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Limpiar</span>
+            </button>
+          )}
           <Sparkles className="w-5 h-5 text-yellow-300" />
         </div>
       </div>
 
-      {/* Área del placeholder */}
-      <div className="p-8 flex flex-col items-center justify-center gap-5 min-h-[280px] bg-gradient-to-b from-slate-50 to-white">
-        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center shadow-inner">
-          <Construction className="w-10 h-10 text-slate-400" />
-        </div>
-
-        <div className="text-center max-w-md">
-          <p className="text-slate-700 font-semibold text-base">Sección en desarrollo</p>
-          <p className="text-slate-400 text-sm mt-1.5 leading-relaxed">
-            Aquí podrás escribir en lenguaje natural para obtener gráficos a medida.
-            Por ejemplo: <em className="text-blue-500">"Muéstrame los visitantes de Madrid los últimos 3 meses"</em>.
-          </p>
-        </div>
-
-        {/* Mockup de input (puramente visual) */}
-        <div className="w-full max-w-lg flex gap-2 opacity-40 pointer-events-none select-none">
-          <div className="flex-1 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-400 bg-white shadow-sm">
-            Escribe tu pregunta aquí...
+      {/* ── Área de mensajes ──────────────────────────────────────────────── */}
+      <div className="chat-mensajes-area custom-scrollbar" id="chat-mensajes-area">
+        {mensajes.length === 0 ? (
+          <EstadoVacio onSugerencia={enviarMensaje} />
+        ) : (
+          <div className="chat-mensajes-lista">
+            {mensajes.map(m => (
+              <BurbujaMensaje key={m.id} mensaje={m} />
+            ))}
+            {/* Ancla para el scroll automático */}
+            <div ref={ultimoMensajeRef} style={{ height: 1 }} />
           </div>
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold shadow">
-            Enviar
-          </button>
-        </div>
-
-        {/* Badge de estado */}
-        <span className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full">
-          <Construction className="w-3 h-3" />
-          Próximamente en otra rama
-        </span>
+        )}
       </div>
+
+      {/* ── Input inferior ────────────────────────────────────────────────── */}
+      <div className="chat-ia-footer">
+        <InputMensaje
+          onEnviar={enviarMensaje}
+          onAgregarArchivo={agregarArchivo}
+          onEliminarArchivo={eliminarArchivo}
+          adjuntos={adjuntos}
+          isLoading={isLoading}
+        />
+      </div>
+
     </div>
   );
 };

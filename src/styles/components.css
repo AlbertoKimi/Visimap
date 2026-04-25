@@ -211,3 +211,339 @@
 .grid-event-pill:active {
   transform: scale(0.98);
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/*  Chat IA                                                                    */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Wrapper principal ──────────────────────────────────────────────────── */
+
+.chat-ia-wrapper {
+  @apply bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden flex flex-col;
+  min-height: 520px;
+  max-height: 800px;
+}
+
+/* ── Cabecera ────────────────────────────────────────────────────────────── */
+
+.chat-ia-header {
+  @apply flex items-center gap-3 p-5 shrink-0;
+  background: var(--gradient-primary);
+}
+
+.chat-ia-header-icono {
+  @apply w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0;
+}
+
+.chat-ia-header-textos {
+  @apply flex flex-col min-w-0;
+}
+
+.chat-ia-header-titulo {
+  @apply text-white font-bold text-base leading-tight;
+}
+
+.chat-ia-header-subtitulo {
+  @apply text-blue-100 text-xs mt-0.5 truncate;
+}
+
+.chat-btn-limpiar {
+  @apply flex items-center gap-1.5 text-white/70 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200;
+}
+
+/* ── Área de mensajes ────────────────────────────────────────────────────── */
+
+.chat-mensajes-area {
+  @apply flex-1 overflow-y-auto;
+  padding: 1.25rem;
+  scroll-behavior: smooth;
+}
+
+.chat-mensajes-lista {
+  @apply flex flex-col gap-4;
+}
+
+/* ── Estado vacío / bienvenida ───────────────────────────────────────────── */
+
+.chat-vacio {
+  @apply flex flex-col items-center justify-center gap-5 h-full min-h-[320px] text-center px-4;
+}
+
+.chat-vacio-avatar {
+  @apply w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg;
+  background: var(--gradient-primary);
+}
+
+.chat-vacio-textos {
+  @apply flex flex-col gap-1.5 max-w-sm;
+}
+
+.chat-vacio-titulo {
+  @apply text-slate-800 font-bold text-xl;
+}
+
+.chat-vacio-subtitulo {
+  @apply text-slate-400 text-sm leading-relaxed;
+}
+
+.chat-sugerencias-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 gap-2.5 w-full max-w-xl;
+}
+
+.chat-sugerencia {
+  @apply flex flex-col items-center gap-1.5 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-200 hover:shadow-md text-left transition-all duration-200 cursor-pointer;
+}
+
+.chat-sugerencia-icono {
+  @apply text-2xl;
+}
+
+.chat-sugerencia-texto {
+  @apply text-xs font-semibold text-slate-600 text-center leading-tight;
+}
+
+/* ── Filas de burbuja ────────────────────────────────────────────────────── */
+
+.chat-burbuja-fila {
+  @apply flex items-start gap-2.5;
+}
+
+.chat-burbuja-fila--user {
+  @apply flex-row-reverse;
+}
+
+.chat-burbuja-fila--model {
+  @apply flex-row;
+}
+
+/* ── Avatares ────────────────────────────────────────────────────────────── */
+
+.chat-avatar {
+  @apply w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm;
+}
+
+.chat-avatar--model {
+  background: var(--gradient-primary);
+}
+
+.chat-avatar--user {
+  @apply bg-slate-700;
+}
+
+/* ── Contenido de burbuja ─────────────────────────────────────────────────── */
+
+.chat-burbuja-contenido {
+  @apply flex flex-col gap-1 max-w-[78%];
+}
+
+.chat-burbuja {
+  @apply rounded-2xl px-4 py-3 text-sm shadow-sm;
+}
+
+.chat-burbuja--user {
+  @apply rounded-tr-sm text-white;
+  background: var(--gradient-primary);
+}
+
+.chat-burbuja--model {
+  @apply bg-slate-50 border border-slate-100 text-slate-800 rounded-tl-sm;
+}
+
+.chat-burbuja--error {
+  @apply bg-red-50 border-red-200 text-red-800;
+}
+
+.chat-burbuja-texto {
+  @apply leading-relaxed;
+}
+
+.chat-burbuja-hora {
+  @apply text-[10px] text-slate-400 font-medium px-1;
+}
+
+/* ── Markdown ligero ─────────────────────────────────────────────────────── */
+
+.chat-md-p {
+  @apply mb-2 last:mb-0;
+}
+
+.chat-md-h2 {
+  @apply text-base font-bold text-slate-800 mt-3 mb-1;
+}
+
+.chat-md-h3 {
+  @apply text-sm font-bold text-slate-700 mt-2 mb-1;
+}
+
+.chat-md-h4 {
+  @apply text-sm font-semibold text-slate-700 mt-2 mb-1;
+}
+
+.chat-md-code {
+  @apply bg-slate-200 text-slate-700 rounded px-1.5 py-0.5 font-mono text-xs;
+}
+
+.chat-md-li {
+  @apply ml-4 list-disc mb-0.5;
+}
+
+.chat-md-hr {
+  @apply border-slate-200 my-2;
+}
+
+/* ── Archivos adjuntos en la burbuja del usuario ─────────────────────────── */
+
+.chat-archivos-grid {
+  @apply flex flex-wrap gap-2 mb-2;
+}
+
+.chat-archivo-chip {
+  @apply rounded-xl overflow-hidden border border-white/30;
+}
+
+.chat-archivo-img {
+  @apply w-24 h-20 object-cover rounded-xl;
+}
+
+.chat-archivo-icono {
+  @apply flex flex-col items-center gap-1 p-2 bg-white/10 rounded-xl min-w-[80px] max-w-[120px];
+}
+
+.chat-archivo-nombre {
+  @apply text-[10px] text-white/80 text-center truncate w-full leading-tight;
+}
+
+/* ── Gráficos incrustados bajo la burbuja ─────────────────────────────────── */
+
+.chat-graficos-lista {
+  @apply flex flex-col gap-3 w-full;
+}
+
+.chat-grafico-wrapper {
+  @apply bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden w-full;
+  min-width: 280px;
+}
+
+.chat-grafico-header {
+  @apply px-4 pt-3 pb-1;
+}
+
+.chat-grafico-titulo {
+  @apply text-sm font-bold text-slate-800;
+}
+
+.chat-grafico-subtitulo {
+  @apply text-xs text-slate-400 mt-0.5;
+}
+
+.chat-grafico-body {
+  @apply px-3 pb-3 pt-1;
+}
+
+.chat-grafico-tooltip {
+  @apply bg-white/90 backdrop-blur-md border border-slate-200/70 rounded-xl shadow-lg p-3 text-xs z-50;
+}
+
+.chat-grafico-tooltip-label {
+  @apply font-bold text-slate-800 mb-1.5 border-b border-slate-100 pb-1;
+}
+
+.chat-grafico-tooltip-row {
+  @apply flex items-center justify-between gap-3 font-semibold mt-1;
+}
+
+.chat-grafico-tooltip-dot {
+  @apply w-2 h-2 rounded-full inline-block mr-1;
+}
+
+.chat-grafico-tooltip-value {
+  @apply text-slate-900;
+}
+
+/* ── Typing dots ─────────────────────────────────────────────────────────── */
+
+.chat-typing-dots {
+  @apply flex items-center gap-1.5 py-1;
+}
+
+.chat-typing-dot {
+  @apply w-2 h-2 rounded-full bg-slate-400 inline-block;
+  animation: chatTypingBounce 0.9s infinite ease-in-out;
+}
+
+@keyframes chatTypingBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40%           { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── Footer / input container ────────────────────────────────────────────── */
+
+.chat-ia-footer {
+  @apply shrink-0 border-t border-slate-100 bg-slate-50/80 backdrop-blur-sm;
+  padding: 0.875rem 1rem 0.75rem;
+}
+
+.chat-input-wrapper {
+  @apply flex flex-col gap-2;
+}
+
+.chat-adjuntos-barra {
+  @apply flex flex-wrap gap-2 pb-1;
+}
+
+.chat-adjunto-chip {
+  @apply flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-600 shadow-sm max-w-[200px];
+}
+
+.chat-adjunto-nombre {
+  @apply truncate text-slate-700 font-medium max-w-[100px];
+}
+
+.chat-adjunto-tamaño {
+  @apply text-slate-400 shrink-0;
+}
+
+.chat-adjunto-eliminar {
+  @apply text-slate-400 hover:text-red-500 transition-colors shrink-0 p-0.5 rounded;
+}
+
+.chat-input-container {
+  @apply flex items-end gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-200;
+}
+
+.chat-btn-adjuntar {
+  @apply p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 shrink-0 disabled:opacity-40;
+}
+
+.chat-input-textarea {
+  @apply flex-1 resize-none text-sm text-slate-800 placeholder-slate-400 bg-transparent outline-none leading-relaxed py-0.5;
+  max-height: 180px;
+  min-height: 24px;
+}
+
+.chat-btn-enviar {
+  @apply flex items-center justify-center w-9 h-9 rounded-xl text-white shrink-0 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  background: var(--gradient-primary);
+}
+
+.chat-btn-enviar:not(:disabled):hover {
+  background: var(--gradient-primary-hover);
+  @apply shadow-md scale-105;
+}
+
+.chat-btn-enviar:not(:disabled):active {
+  @apply scale-95;
+}
+
+.chat-input-footer {
+  @apply flex items-center justify-between mt-1;
+}
+
+.chat-modelo-badge {
+  @apply inline-flex items-center gap-1 text-[10px] font-semibold text-purple-600 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full;
+}
+
+.chat-input-hint {
+  @apply text-[10px] text-slate-400;
+}
