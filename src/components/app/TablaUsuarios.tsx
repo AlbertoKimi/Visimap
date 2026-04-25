@@ -54,13 +54,22 @@ const ActionsCell: React.FC<{
             '& .MuiMenuItem-root': {
               fontSize: '0.9rem',
               gap: 1.5,
-              color: '#334155',
+              color: 'var(--menu-text)',
               borderRadius: '6px',
               mx: 0.5,
               my: 0.2,
-              '&:hover': { backgroundColor: '#f1f5f9' },
+              '&:hover': { backgroundColor: 'var(--menu-hover)' },
             },
           },
+        }}
+        sx={{
+          '& .MuiPaper-root': {
+            backgroundColor: 'var(--menu-bg)',
+            color: 'var(--menu-text)',
+            borderColor: 'var(--menu-border)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+          }
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -112,16 +121,16 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <img
                 src={profile.avatar_url}
                 alt={displayName}
-                className="w-9 h-9 rounded-full object-cover border border-white shadow-sm flex-shrink-0"
+                className="w-9 h-9 rounded-full object-cover border border-white dark:border-slate-700 shadow-sm flex-shrink-0"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-blue-700 font-bold border border-white shadow-sm flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold border border-white dark:border-slate-700 shadow-sm flex-shrink-0">
                 {initial}
               </div>
             )}
             <div>
-              <p className="font-semibold text-slate-800 text-sm">{displayName}</p>
-              <p className="text-xs text-slate-400">@{profile.nombre_usuario}</p>
+              <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{displayName}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">@{profile.nombre_usuario}</p>
             </div>
           </div>
         );
@@ -132,7 +141,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       header: 'Email',
       sortable: true,
       render: (profile) => (
-        <span className="text-sm text-slate-600">{profile.email || '—'}</span>
+        <span className="text-sm text-slate-600 dark:text-slate-400">{profile.email || '—'}</span>
       ),
     },
     {
@@ -142,7 +151,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       render: (profile) => {
         const role = roles.find(r => r.id === profile.role_id);
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border dark:border-slate-700">
             {role ? role.nombre : 'Sin rol'}
           </span>
         );
@@ -154,12 +163,12 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       sortable: true,
       render: (profile) =>
         profile.active !== false ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             Activo
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-500 border border-slate-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
             Inactivo
           </span>

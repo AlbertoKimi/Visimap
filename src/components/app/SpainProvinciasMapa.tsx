@@ -69,14 +69,14 @@ export default function SpainProvincesMap({
 
       {hoveredProvince && (
         <div
-          className="fixed bg-white/95 backdrop-blur px-4 py-2 rounded-lg shadow-xl border border-blue-100 z-50 pointer-events-none transition-opacity duration-150"
+          className="fixed bg-white/95 dark:bg-slate-900/95 backdrop-blur px-4 py-2 rounded-lg shadow-xl border border-blue-100 dark:border-slate-800 z-50 pointer-events-none transition-opacity duration-150"
           style={{
             left: cursorPosition.x + 15,
             top: cursorPosition.y + 15
           }}
         >
-          <p className="font-bold text-gray-800">{hoveredProvince.name}</p>
-          <p className="text-xs text-blue-500 font-medium">Click para seleccionar</p>
+          <p className="font-bold text-gray-800 dark:text-slate-100">{hoveredProvince.name}</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 font-medium">Click para seleccionar</p>
         </div>
       )}
     </div>

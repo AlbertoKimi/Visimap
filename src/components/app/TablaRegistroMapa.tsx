@@ -33,7 +33,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       header: 'Ubicación',
       sortable: true,
       render: (reg) => (
-        <span className="font-semibold text-slate-700">
+        <span className="font-semibold text-slate-700 dark:text-slate-200">
           {reg.provincia?.nombre_provincia || reg.pais?.nombre_pais || '—'}
         </span>
       ),
@@ -43,7 +43,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       header: 'Cantidad',
       sortable: true,
       render: (reg) => (
-        <span className="font-bold text-slate-800 text-base">{reg.cantidad}</span>
+        <span className="font-bold text-slate-800 dark:text-slate-100 text-base">{reg.cantidad}</span>
       ),
     },
     {
@@ -51,7 +51,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       header: 'Fecha',
       sortable: true,
       render: (reg) => (
-        <span className="text-sm text-slate-500">{formatearFecha(reg.creado_en)}</span>
+        <span className="text-sm text-slate-500 dark:text-slate-400">{formatearFecha(reg.creado_en)}</span>
       ),
     },
     {
@@ -62,8 +62,8 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
         <span
           className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase ${
             reg.tipo_visita === 'individual'
-              ? 'bg-amber-50 text-amber-600 border border-amber-100'
-              : 'bg-indigo-50 text-indigo-600 border border-indigo-100'
+              ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30'
+              : 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30'
           }`}
         >
           {reg.tipo_visita}
@@ -81,7 +81,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
               <img src={reg.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
             </div>
           )}
-          <span className="text-sm font-medium text-slate-600">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
             {reg.perfil?.nombre_usuario || reg.perfil?.nombre || 'Desconocido'}
           </span>
         </div>
@@ -94,14 +94,14 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
         <div className="flex justify-end gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(reg); }}
-            className="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-blue-200 active:scale-95"
+            className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-blue-200 dark:hover:shadow-none active:scale-95"
             title="Modificar"
           >
             <Edit3 size={16} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(reg.id_registro); }}
-            className="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 active:scale-95"
+            className="p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 dark:hover:shadow-none active:scale-95"
             title="Eliminar"
           >
             <Trash2 size={16} />
@@ -123,7 +123,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100 transition-all duration-300">
+    <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden border border-slate-100 dark:border-slate-800 transition-all duration-300">
       <TablaGenerica<RegistroMapa>
         data={registros}
         columns={columns}

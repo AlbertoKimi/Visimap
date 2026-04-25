@@ -126,6 +126,12 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Menús / Popovers */
+    --menu-bg: #ffffff;
+    --menu-text: #334155;
+    --menu-hover: #f1f5f9;
+    --menu-border: #e2e8f0;
   }
 
   .dark {
@@ -137,6 +143,18 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Menús / Popovers */
+    --menu-bg: #0f172a;
+    --menu-text: #f8fafc;
+    --menu-hover: #1e293b;
+    --menu-border: #334155;
   }
 
+  /* Estilos globales para modo oscuro si no hay Tailwind */
+  html.dark body {
+    background-color: #0f172a; /* neutral-900 */
+    color: #f8fafc; /* neutral-50 */
+    color-scheme: dark;
+  }
 }

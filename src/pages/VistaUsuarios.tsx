@@ -161,8 +161,8 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     <div className="h-full overflow-y-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pr-2">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Equipo de Trabajo</h2>
-          <p className="text-slate-500">Gestiona los permisos y el personal del museo.</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Equipo de Trabajo</h2>
+          <p className="text-slate-500 dark:text-slate-400">Gestiona los permisos y el personal del museo.</p>
         </div>
 
         <Button
@@ -186,18 +186,18 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full border dark:border-slate-800"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Nuevo Trabajador</h3>
-                      <p className="text-sm text-blue-600 font-medium">Registro de personal</p>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Trabajador</h3>
+                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Registro de personal</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <X className="w-5 h-5 text-gray-500" />
+                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
                   </button>
                 </div>
 
@@ -212,7 +212,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
         )}
       </AnimatePresence>
 
-      <Card className="border-none shadow-xl bg-white/80 backdrop-blur-sm overflow-hidden">
+      <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-slate-400">

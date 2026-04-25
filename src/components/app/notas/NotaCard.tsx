@@ -64,39 +64,39 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
   const getColorClasses = () => {
     switch (nota.estado) {
       case 'normal':
-        return 'bg-blue-100 hover:bg-blue-200 border-blue-200/50';
+        return 'bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-900/60 border-blue-200/50 dark:border-blue-800/50';
       case 'pendiente':
-        return 'bg-orange-100 hover:bg-orange-200 border-orange-200/50';
+        return 'bg-orange-100 dark:bg-orange-900/40 hover:bg-orange-200 dark:hover:bg-orange-900/60 border-orange-200/50 dark:border-orange-800/50';
       case 'finalizada':
-        return 'bg-green-100 hover:bg-green-200 border-green-200/50';
+        return 'bg-green-100 dark:bg-green-900/40 hover:bg-green-200 dark:hover:bg-green-900/60 border-green-200/50 dark:border-green-800/50';
       default:
-        return 'bg-slate-100 border-slate-200/50';
+        return 'bg-slate-100 dark:bg-slate-800/40 border-slate-200/50 dark:border-slate-700/50';
     }
   };
 
   return (
     <div className={`p-5 rounded-sm shadow-md border flex flex-col h-full transition-all duration-300 relative overflow-hidden ${getColorClasses()}`}>
       {/* Parte superior de la nota*/}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-3 bg-white/40 shadow-sm rounded-b-md"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-3 bg-white/40 dark:bg-slate-700/40 shadow-sm rounded-b-md"></div>
 
       <div className="flex justify-between items-start mb-2 gap-2 mt-2">
         <div className="flex flex-col gap-1 max-w-[70%]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-white/40 px-1.5 py-0.5 rounded w-fit">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 px-1.5 py-0.5 rounded w-fit">
             {asignadoTexto}
           </span>
-          <h3 className="font-semibold text-lg text-slate-800 break-words leading-tight">
+          <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 break-words leading-tight">
             {nota.titulo}
           </h3>
         </div>
 
-        <div className="flex gap-1 shrink-0 bg-white/50 rounded-lg p-1 items-center">
+        <div className="flex gap-1 shrink-0 bg-white/50 dark:bg-slate-800/50 rounded-lg p-1 items-center">
 
           {/* Botón Pendiente: Solo visible si está normal y tiene permiso */}
           {nota.estado === 'normal' && hasTogglePermission && (
             <button
               onClick={() => handleSetEstado('pendiente')}
               disabled={isProcessing}
-              className="p-1.5 rounded-md transition-colors tooltip bg-orange-200 text-orange-800 hover:bg-orange-300 font-medium scale-105"
+              className="p-1.5 rounded-md transition-colors tooltip bg-orange-200 dark:bg-orange-900 text-orange-800 dark:text-orange-100 hover:bg-orange-300 dark:hover:bg-orange-800 font-medium scale-105"
               title="Mover a Pendiente"
             >
               <Clock size={16} strokeWidth={2.5} />
@@ -108,7 +108,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
             <button
               onClick={() => handleSetEstado('finalizada')}
               disabled={isProcessing}
-              className="p-1.5 rounded-md transition-colors tooltip bg-green-300 text-green-900 hover:bg-green-400 font-medium scale-105"
+              className="p-1.5 rounded-md transition-colors tooltip bg-green-300 dark:bg-green-900 text-green-900 dark:text-green-100 hover:bg-green-400 dark:hover:bg-green-800 font-medium scale-105"
               title="Marcar como Finalizada"
             >
               <Check size={16} strokeWidth={2.5} />
@@ -119,12 +119,12 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
           {hasDeletePermission && (
             <>
               {(nota.estado === 'normal' || nota.estado === 'pendiente') && hasTogglePermission && (
-                <div className="w-px h-5 bg-black/10 mx-1"></div>
+                <div className="w-px h-5 bg-black/10 dark:bg-white/10 mx-1"></div>
               )}
               <button
                 onClick={handleDelete}
                 disabled={isProcessing}
-                className="p-1.5 rounded-md text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+                className="p-1.5 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
                 title="Borrar Nota"
               >
                 <Trash2 size={16} />
@@ -134,16 +134,16 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
         </div>
       </div>
 
-      <div className="flex-grow text-sm mb-4 mt-2 whitespace-pre-wrap text-slate-700 leading-relaxed font-medium">
+      <div className="flex-grow text-sm mb-4 mt-2 whitespace-pre-wrap text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
         {nota.contenido}
       </div>
 
-      <div className="flex items-center justify-between text-[11px] text-slate-600 mt-auto pt-3 border-t border-black/10">
+      <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 mt-auto pt-3 border-t border-black/10 dark:border-white/10">
         <div className="flex items-center gap-2">
           {autorBase?.avatar_url ? (
-            <img src={autorBase.avatar_url} alt="Avatar" className="w-5 h-5 rounded-full object-cover shadow-sm border border-white/50" />
+            <img src={autorBase.avatar_url} alt="Avatar" className="w-5 h-5 rounded-full object-cover shadow-sm border border-white/50 dark:border-slate-700" />
           ) : (
-            <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold bg-white/60 text-slate-700 shadow-sm">
+            <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold bg-white/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm">
               {autorBase?.nombre?.charAt(0) || '?'}
             </div>
           )}

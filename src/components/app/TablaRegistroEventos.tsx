@@ -35,7 +35,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       header: 'Nombre del Evento',
       sortable: true,
       render: (reg) => (
-        <span className="font-bold text-slate-700">
+        <span className="font-bold text-slate-700 dark:text-slate-200">
           {reg.evento?.nombre_evento || 'Evento sin nombre'}
         </span>
       ),
@@ -46,8 +46,8 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       sortable: true,
       render: (reg) => (
         <div className="flex items-center gap-2">
-          <span className="text-slate-600 font-medium">{reg.origen}</span>
-          <span className="text-[10px] uppercase font-bold text-slate-300 ml-1">{reg.tipo_origen}</span>
+          <span className="text-slate-600 dark:text-slate-400 font-medium">{reg.origen}</span>
+          <span className="text-[10px] uppercase font-bold text-slate-300 dark:text-slate-600 ml-1">{reg.tipo_origen}</span>
         </div>
       ),
     },
@@ -56,7 +56,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       header: 'Nº Visitantes',
       sortable: true,
       render: (reg) => (
-        <span className="font-bold text-slate-800 text-base">{reg.num_visitantes}</span>
+        <span className="font-bold text-slate-800 dark:text-slate-100 text-base">{reg.num_visitantes}</span>
       ),
     },
     {
@@ -64,7 +64,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       header: 'Fecha de Creación',
       sortable: true,
       render: (reg) => (
-        <span className="text-sm text-slate-500">{formatearFecha(reg.created_at)}</span>
+        <span className="text-sm text-slate-500 dark:text-slate-400">{formatearFecha(reg.created_at)}</span>
       ),
     },
     {
@@ -78,7 +78,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
               <img src={reg.evento.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
             </div>
           )}
-          <span className="text-sm font-medium text-slate-600">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
             {reg.evento?.perfil?.nombre_usuario || reg.evento?.perfil?.nombre || 'Desconocido'}
           </span>
         </div>
@@ -91,14 +91,14 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
         <div className="flex justify-end gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(reg); }}
-            className="p-2.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-indigo-200 active:scale-95"
+            className="p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-indigo-200 dark:hover:shadow-none active:scale-95"
             title="Modificar"
           >
             <Edit3 size={16} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(reg.id_grupo); }}
-            className="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 active:scale-95"
+            className="p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 dark:hover:shadow-none active:scale-95"
             title="Eliminar"
           >
             <Trash2 size={16} />
@@ -120,7 +120,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100 transition-all duration-300">
+    <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-none overflow-hidden border border-slate-100 dark:border-slate-800 transition-all duration-300">
       <TablaGenerica<RegistroEvento>
         data={registros}
         columns={columns}

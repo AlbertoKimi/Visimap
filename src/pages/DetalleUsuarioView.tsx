@@ -89,9 +89,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   }, [fetchStats]);
 
   const stats = [
-    { label: 'Eventos Creados', value: realStats.eventos, color: 'bg-blue-50 text-blue-600' },
-    { label: 'Última Actividad', value: realStats.ultimaActividad, color: 'bg-purple-50 text-purple-600' },
-    { label: 'Registros Totales', value: realStats.registros, color: 'bg-orange-50 text-orange-600' },
+    { label: 'Eventos Creados', value: realStats.eventos, color: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
+    { label: 'Última Actividad', value: realStats.ultimaActividad, color: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' },
+    { label: 'Registros Totales', value: realStats.registros, color: 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' },
   ];
 
   useEffect(() => {
@@ -227,7 +227,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         {!hideBack && (
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-medium"
+            className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium"
           >
             <ArrowLeft size={20} />
             Volver al listado
@@ -247,7 +247,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   {user.active === false ? 'Activar Usuario' : 'Desactivar Usuario'}
                 </Button>
               )}
-              <Button onClick={handleEdit} className="bg-slate-900 hover:bg-slate-800 text-white shadow-lg px-6">
+              <Button onClick={handleEdit} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-6 transition-all active:scale-95">
                 <Edit2 size={18} className="mr-2" /> {hideBack ? 'Editar mi Perfil' : 'Editar Perfil'}
               </Button>
             </>
@@ -275,10 +275,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     <img
                       src={previewUrl || user.avatar_url || ''}
                       alt="Avatar"
-                      className="w-32 h-32 rounded-3xl object-cover border-4 border-white shadow-2xl"
+                      className="w-32 h-32 rounded-3xl object-cover border-4 border-white dark:border-slate-800 shadow-2xl"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-3xl bg-white flex items-center justify-center text-4xl font-bold text-blue-600 border-4 border-white shadow-2xl">
+                    <div className="w-32 h-32 rounded-3xl bg-white dark:bg-slate-800 flex items-center justify-center text-4xl font-bold text-blue-600 border-4 border-white dark:border-slate-800 shadow-2xl">
                       {user.nombre?.charAt(0)}
                     </div>
                   )}
@@ -303,16 +303,16 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               </div>
             </div>
             <div className="pt-20 pb-8 px-6 text-center">
-              <h1 className="text-2xl font-bold text-slate-800">{fullName || user.nombre_usuario}</h1>
-              <p className="text-slate-600 font-medium">@{user.nombre_usuario}</p>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{fullName || user.nombre_usuario}</h1>
+              <p className="text-slate-600 dark:text-slate-400 font-medium">@{user.nombre_usuario}</p>
 
               <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100 uppercase">
+                <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 uppercase">
                   {getRoleName(user.role_id)}
                 </span>
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${user.active !== false
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                  : 'bg-slate-100 text-slate-600 border-slate-200'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-800'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                   }`}>
                   {user.active !== false ? 'Activo' : 'Inactivo'}
                 </span>
@@ -323,25 +323,25 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           {/* Infomación de contacto */}
           <Card className="border-none shadow-xl">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-slate-600 uppercase tracking-wider font-bold">Información de Contacto</CardTitle>
+              <CardTitle className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold">Información de Contacto</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+              <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Mail size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-600 font-medium">Email</p>
-                  <p className="text-sm font-semibold">{user.email || 'No disponible'}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-500 font-medium">Email</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{user.email || 'No disponible'}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400">
+              <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Phone size={16} />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-600 font-medium">Teléfono</p>
-                  <p className="text-sm font-semibold">{user.telefono || 'No disponible'}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-500 font-medium">Teléfono</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{user.telefono || 'No disponible'}</p>
                 </div>
               </div>
             </CardContent>
@@ -355,8 +355,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
             {stats.map((stat, i) => (
               <Card key={i} className="border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
                 <CardContent className="p-6">
-                  <p className="text-3xl font-black text-slate-800 tracking-tighter">{stat.value}</p>
-                  <p className="text-sm text-slate-600 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-3xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
                 </CardContent>
               </Card>
             ))}
@@ -364,8 +364,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
           {/* Información principal */}
           <Card className="border-none shadow-xl">
-            <CardHeader className="border-b border-slate-50">
-              <CardTitle>{mode === 'edit' ? (hideBack ? 'Editar mis datos' : 'Editar Información') : (hideBack ? 'Información de mi Cuenta' : 'Detalles del Perfil')}</CardTitle>
+            <CardHeader className="border-b border-slate-50 dark:border-slate-800">
+              <CardTitle className="text-slate-800 dark:text-slate-100">{mode === 'edit' ? (hideBack ? 'Editar mis datos' : 'Editar Información') : (hideBack ? 'Información de mi Cuenta' : 'Detalles del Perfil')}</CardTitle>
             </CardHeader>
             <CardContent className="p-8">
               {mode === 'edit' ? (
@@ -427,11 +427,11 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   </div>
 
                   {/* Sección de cambio de contraseña */}
-                  <div className="pt-6 border-t border-slate-100 space-y-4">
-                    <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                       <Key size={16} className="text-blue-500" /> Cambiar Contraseña
                     </h4>
-                    <p className="text-xs text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <Input
                         label="Nueva Contraseña"
@@ -498,7 +498,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
 const DetailItem = ({ label, value }: { label: string, value: React.ReactNode }) => (
   <div className="space-y-1.5">
-    <p className="text-[11px] font-black text-slate-900 uppercase tracking-wider">{label}</p>
-    <div className="text-slate-700 font-medium text-[15px]">{value || '-'}</div>
+    <p className="text-[11px] font-black text-slate-900 dark:text-slate-400 uppercase tracking-wider">{label}</p>
+    <div className="text-slate-700 dark:text-slate-200 font-medium text-[15px]">{value || '-'}</div>
   </div>
 );

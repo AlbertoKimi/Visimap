@@ -15,6 +15,7 @@ import {
   Clock,
   Activity
 } from 'lucide-react';
+import { ThemeToggle } from "@/components/app/ThemeToggle";
 
 const logoUrl = "/src/assets/Logo-1.webp";
 const logoModoOscuroUrl = "/src/assets/Logo-MO.webp";
@@ -29,16 +30,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const [theme, setTheme] = React.useState(() => localStorage.getItem('theme') || 'light');
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'dark' : 'light');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b z-50">
+    <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
+      <nav className="fixed top-0 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b dark:border-slate-800 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <img
-                src={logoUrl}
+                src={theme === 'dark' ? logoModoOscuroUrl : logoUrl}
                 alt="VisiMap Logo"
-                className="w-20 h-20 object-contain"
+                className="w-20 h-20 object-contain transition-opacity duration-300"
                 onError={(e: any) => {
                   e.target.style.display = 'none';
                   const parent = e.target.parentNode;
@@ -51,16 +63,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 }}
               />
             </div>
-            <Button onClick={onGetStarted} className=" text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-              Iniciar Sesión
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Button onClick={onGetStarted} className=" text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                Iniciar Sesión
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="flex items-center justify-center pt-44 pb-12 px-8 md:px-24 lg:px-48 bg-gradient-to-br from-blue-50 via-purple-50 to-white relative overflow-hidden">
+      <section className="flex items-center justify-center pt-44 pb-12 px-8 md:px-24 lg:px-48 bg-gradient-to-br from-blue-50 via-purple-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -72,7 +87,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-block mb-6 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm"
+              className="inline-block mb-6 px-4 py-2 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-full text-sm font-medium border dark:border-blue-500/30"
             >
               Sistema de Gestión de Visitantes
             </motion.div>
@@ -81,7 +96,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               Digitaliza la experiencia del Museo MUVI
             </h1>
 
-            <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
               VisiMap transforma la gestión de visitantes con tecnología avanzada,
               análisis en tiempo real y una experiencia digital completa.
             </p>
@@ -99,7 +114,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 onClick={() => scrollToSection('museo')}
                 variant="outline"
                 size="lg"
-                className="text-lg px-8"
+                className="text-lg px-8 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"
               >
                 Conocer Más
               </Button>
@@ -109,7 +124,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Sección de Museo MUVI */}
-      <section id="museo" className="py-24 px-8 md:px-24 lg:px-48 bg-white">
+      <section id="museo" className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -118,10 +133,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-5xl mb-6 font-bold">
+              <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
                 Sobre el Museo MUVI
               </h2>
-              <div className="space-y-4 text-gray-600 text-lg">
+              <div className="space-y-4 text-gray-600 dark:text-slate-400 text-lg">
                 <p>
                   El <strong>Museo Municipal de Villafranca de los Barros (MUVI)</strong> es un
                   espacio cultural dedicado a preservar y difundir el patrimonio histórico,
@@ -139,20 +154,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 </p>
               </div>
               <div className="mt-8 grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <Users className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-                  <p className="text-2xl text-blue-600 font-bold">+5K</p>
-                  <p className="text-sm text-gray-600">Visitantes/año</p>
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border dark:border-blue-900/30">
+                  <Users className="w-8 h-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
+                  <p className="text-2xl text-blue-600 dark:text-blue-400 font-bold">+5K</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Visitantes/año</p>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <Calendar className="w-8 h-8 mx-auto mb-2 text-purple-600" />
-                  <p className="text-2xl text-purple-600 font-bold">50+</p>
-                  <p className="text-sm text-gray-600">Eventos</p>
+                <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border dark:border-purple-900/30">
+                  <Calendar className="w-8 h-8 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
+                  <p className="text-2xl text-purple-600 dark:text-purple-400 font-bold">50+</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Eventos</p>
                 </div>
-                <div className="text-center p-4 bg-indigo-50 rounded-lg">
-                  <Globe className="w-8 h-8 mx-auto mb-2 text-indigo-600" />
-                  <p className="text-2xl text-indigo-600 font-bold">15+</p>
-                  <p className="text-sm text-gray-600">Países</p>
+                <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border dark:border-indigo-900/30">
+                  <Globe className="w-8 h-8 mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
+                  <p className="text-2xl text-indigo-600 dark:text-indigo-400 font-bold">15+</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400">Países</p>
                 </div>
               </div>
             </motion.div>
@@ -168,17 +183,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <img
                   src="/src/assets/muvi1.webp"
                   alt="Museo Fachada"
-                  className="rounded-lg shadow-lg col-span-2 w-full object-cover"
+                  className="rounded-lg shadow-lg col-span-2 w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
                 <img
                   src="/src/assets/muvihistoria.webp"
                   alt="Historia"
-                  className="rounded-lg shadow-lg w-full object-cover"
+                  className="rounded-lg shadow-lg w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
                 <img
                   src="/src/assets/muvicoche.webp"
                   alt="Visitantes"
-                  className="rounded-lg shadow-lg w-full object-cover"
+                  className="rounded-lg shadow-lg w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
               </div>
             </motion.div>
@@ -187,7 +202,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Características app */}
-      <section className="py-24 px-8 md:px-24 lg:px-48 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-24 px-8 md:px-24 lg:px-48 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-slate-900 dark:to-slate-950">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -196,10 +211,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl mb-4 font-bold">
+            <h2 className="text-4xl md:text-5xl mb-4 font-bold dark:text-white">
               Características de VisiMap
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
               Una plataforma completa diseñada para modernizar la gestión del museo
             </p>
           </motion.div>
@@ -250,13 +265,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200">
+                <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-blue-900/50">
                   <CardContent className="p-6">
-                    <div className={`w-16 h-16 bg-${feature.color}-100 rounded-lg flex items-center justify-center mb-4 text-${feature.color}-600`}>
+                    <div className={`w-16 h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-lg flex items-center justify-center mb-4 text-${feature.color}-600 dark:text-${feature.color}-400`}>
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl mb-3 font-bold">{feature.title}</h3>
-                    <p className="text-gray-600">{feature.description}</p>
+                    <h3 className="text-xl mb-3 font-bold dark:text-slate-100">{feature.title}</h3>
+                    <p className="text-gray-600 dark:text-slate-400">{feature.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -266,7 +281,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Beneficios de la Digitalización */}
-      <section className="py-24 px-8 md:px-24 lg:px-48 bg-white">
+      <section className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -278,7 +293,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               <img
                 src="/src/assets/Analisis.webp"
                 alt="Analytics"
-                className="rounded-lg shadow-2xl w-full"
+                className="rounded-lg shadow-2xl w-full dark:brightness-75 transition-all duration-500"
               />
             </motion.div>
 
@@ -288,7 +303,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-5xl mb-6 font-bold">
+              <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
                 Beneficios de la Digitalización
               </h2>
               <div className="space-y-4">
@@ -320,14 +335,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
-                    className="flex gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex gap-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-900 transition-colors"
                   >
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center text-blue-600">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
                       {benefit.icon}
                     </div>
                     <div>
-                      <h3 className="text-lg mb-1 font-bold">{benefit.title}</h3>
-                      <p className="text-gray-600">{benefit.description}</p>
+                      <h3 className="text-lg mb-1 font-bold dark:text-slate-100">{benefit.title}</h3>
+                      <p className="text-gray-600 dark:text-slate-400">{benefit.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -379,7 +394,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Sección para contactar */}
-      <section className="py-24 px-8 md:px-24 lg:px-48 bg-white">
+      <section className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -388,10 +403,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             transition={{ duration: 0.8 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="text-4xl md:text-5xl mb-6 font-bold">
+            <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
               Listo para Digitalizar tu Museo
             </h2>
-            <p className="text-xl text-gray-600 mb-10">
+            <p className="text-xl text-gray-600 dark:text-slate-400 mb-10">
               Únete a la transformación digital y lleva la gestión del Museo MUVI al siguiente nivel con VisiMap.
             </p>
             <Button

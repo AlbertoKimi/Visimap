@@ -23,7 +23,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   altura = 'h-72',
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-md border border-slate-100 p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-300">
       {/* Cabecera */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -33,15 +33,15 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
             </div>
           )}
           <div>
-            <h3 className="text-sm font-bold text-slate-800 leading-tight">{titulo}</h3>
-            {subtitulo && <p className="text-xs text-slate-400 mt-0.5">{subtitulo}</p>}
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight">{titulo}</h3>
+            {subtitulo && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{subtitulo}</p>}
           </div>
         </div>
         {onRefresh && (
           <button
             onClick={onRefresh}
             title="Actualizar gráfico"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-150"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
           >
             <RefreshCw className="w-4 h-4" />
           </button>

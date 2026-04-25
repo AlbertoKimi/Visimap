@@ -27,7 +27,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   return (
     <section className="flex flex-col gap-2 w-full" aria-labelledby={`${name}-label`}>
       {label && (
-        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 ml-1">
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 ml-1">
           {label}
         </label>
       )}
@@ -52,7 +52,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
           <option
             key={option.value}
             value={option.value}
-            className="text-slate-900"
+            className="text-slate-900 dark:bg-slate-900 dark:text-slate-200"
           >
             {option.label}
           </option>

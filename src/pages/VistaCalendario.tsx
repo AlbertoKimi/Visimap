@@ -267,8 +267,8 @@ export const VistaCalendario: React.FC = () => {
     <div className="h-full overflow-y-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 pr-2">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Calendario</h2>
-          <p className="text-slate-500">Programación de actividades y gestión del museo.</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Calendario</h2>
+          <p className="text-slate-500 dark:text-slate-400">Programación de actividades y gestión del museo.</p>
         </div>
         <CustomButton onClick={() => handleClicFecha({ dateStr: formatearFechaInput(new Date()) })} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
           <Plus className="w-4 h-4 mr-2" /> Nuevo Evento
@@ -296,11 +296,11 @@ export const VistaCalendario: React.FC = () => {
         />
 
         <div className="flex flex-col gap-4">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100">
-              <h3 className="font-bold text-slate-800 text-sm">Próximos eventos</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border dark:border-slate-800">
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="font-bold text-slate-800 dark:text-white text-sm">Próximos eventos</h3>
             </div>
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-50 dark:divide-slate-800">
               {proximosEventos.length === 0 ? (
                 <p className="text-center text-slate-400 text-xs py-8 px-4">No hay eventos próximos.</p>
               ) : (
@@ -308,14 +308,14 @@ export const VistaCalendario: React.FC = () => {
                   const color = obtenerColor(ev.extendedProps?.nombreTipo || '');
                   const fecha = new Date(ev.start);
                   return (
-                    <div key={ev.id} className="flex gap-3 items-start px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => handleAbrirModalEvento(ev)}>
+                    <div key={ev.id} className="flex gap-3 items-start px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => handleAbrirModalEvento(ev)}>
                       <div className="shrink-0 flex flex-col items-center justify-center w-12 h-12 rounded-xl font-bold text-center" style={{ backgroundColor: color.bg, color: color.text }}>
                         <span className="text-lg leading-none">{fecha.getDate()}</span>
                         <span className="text-[9px] uppercase tracking-wider">{fecha.toLocaleString('es-ES', { month: 'short' })}</span>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-slate-800 text-sm truncate">{ev.title}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm truncate">{ev.title}</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
                     </div>
                   );

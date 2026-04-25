@@ -56,17 +56,17 @@ export const Notas: React.FC = () => {
   const notasFinalizadas = notas.filter(n => n.estado === 'finalizada');
 
   return (
-    <div className="flex flex-col h-full bg-slate-50/50 p-6 sm:p-8 overflow-y-auto">
+    <div className="flex flex-col h-full bg-slate-50/50 dark:bg-transparent p-6 sm:p-8 overflow-y-auto">
       <div className="flex justify-between items-center mb-8 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Notas y Tareas</h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Notas y Tareas</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             Gestiona tus recordatorios. Las tareas finalizadas duran 7 días.
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium"
         >
           <Plus size={18} />
           Añadir nota
@@ -76,16 +76,16 @@ export const Notas: React.FC = () => {
       <div className="flex flex-col gap-8 pb-8">
         
         {/* Todas las Notas */}
-        <section className="bg-blue-50/30 p-5 rounded-2xl border border-blue-100/50">
-          <h2 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
+        <section className="bg-blue-50/30 dark:bg-blue-900/10 p-5 rounded-2xl border border-blue-100/50 dark:border-blue-900/30">
+          <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-400 mb-4 flex items-center gap-2">
             Todas las Notas
-            <span className="bg-blue-100 text-blue-700 text-xs py-0.5 px-2.5 rounded-full font-bold">
+            <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs py-0.5 px-2.5 rounded-full font-bold">
               {notasNormales.length}
             </span>
           </h2>
           {notasNormales.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-blue-200/50 rounded-xl bg-blue-50/50">
-              <p className="text-blue-600/70 text-sm font-medium">No hay notas nuevas. Pulsa en "Añadir nota" para crear una.</p>
+            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-blue-200/50 dark:border-blue-900/20 rounded-xl bg-blue-50/50 dark:bg-blue-900/5">
+              <p className="text-blue-600/70 dark:text-blue-400/50 text-sm font-medium">No hay notas nuevas. Pulsa en "Añadir nota" para crear una.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
@@ -97,16 +97,16 @@ export const Notas: React.FC = () => {
         </section>
 
         {/* Tareas Pendientes */}
-        <section className="bg-orange-50/30 p-5 rounded-2xl border border-orange-100/50">
-          <h2 className="text-lg font-semibold text-orange-900 mb-4 flex items-center gap-2">
+        <section className="bg-orange-50/30 dark:bg-orange-900/10 p-5 rounded-2xl border border-orange-100/50 dark:border-orange-900/30">
+          <h2 className="text-lg font-semibold text-orange-900 dark:text-orange-400 mb-4 flex items-center gap-2">
             Tareas Pendientes
-            <span className="bg-orange-100 text-orange-700 text-xs py-0.5 px-2.5 rounded-full font-bold">
+            <span className="bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 text-xs py-0.5 px-2.5 rounded-full font-bold">
               {notasPendientes.length}
             </span>
           </h2>
           {notasPendientes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-orange-200/50 rounded-xl bg-orange-50/50">
-              <p className="text-orange-600/70 text-sm font-medium">No hay ninguna tarea marcada como pendiente.</p>
+            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-orange-200/50 dark:border-orange-900/20 rounded-xl bg-orange-50/50 dark:bg-orange-900/5">
+              <p className="text-orange-600/70 dark:text-orange-400/50 text-sm font-medium">No hay ninguna tarea marcada como pendiente.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
@@ -118,16 +118,16 @@ export const Notas: React.FC = () => {
         </section>
 
         {/* Tareas Finalizadas */}
-        <section className="bg-green-50/30 p-5 rounded-2xl border border-green-100/50">
-          <h2 className="text-lg font-semibold text-green-900 mb-4 flex items-center gap-2">
+        <section className="bg-green-50/30 dark:bg-green-900/10 p-5 rounded-2xl border border-green-100/50 dark:border-green-900/30">
+          <h2 className="text-lg font-semibold text-green-900 dark:text-green-400 mb-4 flex items-center gap-2">
             Tareas Finalizadas
-            <span className="bg-green-100 text-green-700 text-xs py-0.5 px-2.5 rounded-full font-bold">
+            <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs py-0.5 px-2.5 rounded-full font-bold">
               {notasFinalizadas.length}
             </span>
           </h2>
           {notasFinalizadas.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-green-200/50 rounded-xl bg-green-50/50">
-              <p className="text-green-600/70 text-sm font-medium">Aún no hay tareas finalizadas esta semana.</p>
+            <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-green-200/50 dark:border-green-900/20 rounded-xl bg-green-50/50 dark:bg-green-900/5">
+              <p className="text-green-600/70 dark:text-green-400/50 text-sm font-medium">Aún no hay tareas finalizadas esta semana.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">

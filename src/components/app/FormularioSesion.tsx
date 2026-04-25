@@ -5,17 +5,29 @@ interface FormularioSesionProps {
   onLogin: (email: string, pass: string) => Promise<void>;
   onBack: () => void;
   logoUrl?: string;
+  logoModoOscuroUrl?: string;
 }
 
 export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   onLogin,
   onBack,
-  logoUrl
+  logoUrl,
+  logoModoOscuroUrl
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorStatus, setErrorStatus] = useState<Record<string, boolean>>({});
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+
+  React.useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setTheme(isDark ? 'dark' : 'light');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   const manejarCambioEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -47,16 +59,16 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6 bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-center justify-center p-6 bg-cover bg-center bg-no-repeat transition-colors duration-300"
       style={{ backgroundImage: "url('/src/assets/Fondo_Login.webp')" }}
     >
-      <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300">
+      <div className="bg-white dark:bg-slate-900/95 dark:backdrop-blur-md p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300 border dark:border-slate-800">
         <div className="justify-center text-center mb-8 space-y-4 items-center flex flex-col">
           {logoUrl && (
             <img
-              src={logoUrl}
+              src={theme === 'dark' ? (logoModoOscuroUrl || logoUrl) : logoUrl}
               alt="VisiMap Logo"
-              className="w-32 h-32 object-contain"
+              className="w-32 h-32 object-contain transition-opacity duration-300"
               onError={(e: any) => {
                 e.target.style.display = 'none';
                 const parent = e.target.parentNode;
@@ -69,8 +81,8 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
               }}
             />
           )}
-          <h2 className="text-3xl font-bold text-slate-800">Acceso Personal</h2>
-          <p className="text-slate-500 mt-2">Introduce tus credenciales para continuar</p>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Acceso Personal</h2>
+          <p className="text-slate-500 dark:text-slate-400 mt-2">Introduce tus credenciales para continuar</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -100,7 +112,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
           />
 
           {submissionError && (
-            <p className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100 animate-in shake-in duration-300">
+            <p className="text-red-500 dark:text-red-400 text-sm font-medium bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-900/30 animate-in shake-in duration-300">
               {submissionError}
             </p>
           )}
@@ -114,7 +126,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
         </form>
         <button
           onClick={onBack}
-          className="w-full text-slate-600 text-sm font-medium mt-6 hover:text-blue-700 hover:underline transition-all duration-200"
+          className="w-full text-slate-600 dark:text-slate-400 text-sm font-medium mt-6 hover:text-blue-700 dark:hover:text-blue-400 hover:underline transition-all duration-200"
         >
           ← Volver al inicio
         </button>

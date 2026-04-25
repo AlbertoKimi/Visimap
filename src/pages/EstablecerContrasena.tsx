@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, ShieldCheck } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,12 +30,26 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
         severity: 'success'
     });
 
+    const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
     useEffect(() => {
         if (session?.user) {
             const metaName = session.user.user_metadata?.username || session.user.user_metadata?.display_name || '';
             setUsername(metaName);
         }
     }, [session]);
+
+    useEffect(() => {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
+    }, [isDark]);
+
+    const toggleTheme = () => setIsDark(!isDark);
 
     const handleCloseNotification = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') return;
@@ -121,7 +135,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
     };
 
     return (
-        <div className="h-screen flex bg-slate-50 font-sans overflow-hidden">
+        <div className="h-screen flex bg-slate-50 dark:bg-slate-950 font-sans overflow-hidden transition-colors duration-300">
 
             {/* Panel izquierdo: Fachada Museo */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
@@ -179,18 +193,27 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
             </div>
 
             {/* Panel derecho: Formulario */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative overflow-hidden">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900 relative overflow-hidden transition-colors duration-300">
 
-                <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none" />
-                <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-indigo-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
+                <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
+                <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-indigo-50 dark:bg-indigo-900/10 rounded-full blur-3xl opacity-40 pointer-events-none" />
+
+                {/* Botón Theme Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-6 right-6 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90 z-20 shadow-sm border border-slate-200 dark:border-slate-700"
+                    title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                >
+                    {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                </button>
 
                 <div className="relative z-10 w-full max-w-md space-y-8">
                     {/* Encabezado del formulario */}
                     <div className="space-y-1">
-                        <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Configura tu perfil</h2>
-                        <p className="text-slate-500 text-sm">
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Configura tu perfil</h2>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                             Establece tu nombre de usuario y contraseña para acceder a{' '}
-                            <span className="font-semibold text-indigo-600">VisiMap</span>
+                            <span className="font-bold text-indigo-600 dark:text-blue-400">VisiMap</span>
                         </p>
                     </div>
 
@@ -233,7 +256,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-indigo-200 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
@@ -249,13 +272,13 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                     </form>
 
                     {/* Info seguridad */}
-                    <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100 flex gap-3 items-start">
-                        <div className="bg-blue-100 p-1.5 rounded-lg text-blue-600 mt-0.5 flex-shrink-0">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-100 dark:border-blue-800/50 flex gap-3 items-start">
+                        <div className="bg-blue-100 dark:bg-blue-800/50 p-1.5 rounded-lg text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0">
                             <ShieldCheck className="w-4 h-4" />
                         </div>
                         <div>
-                            <h4 className="font-semibold text-blue-900 text-sm">Cuenta segura</h4>
-                            <p className="text-blue-700/80 text-xs mt-0.5 leading-relaxed">
+                            <h4 className="font-bold text-blue-900 dark:text-blue-100 text-sm">Cuenta segura</h4>
+                            <p className="text-blue-700/80 dark:text-blue-400/70 text-xs mt-0.5 leading-relaxed font-medium">
                                 Tu contraseña será almacenada de forma segura siguiendo estándares modernos.
                             </p>
                         </div>

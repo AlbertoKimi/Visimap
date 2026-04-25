@@ -17,16 +17,16 @@ import {
 const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-slate-200/50 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 text-sm z-50">
-      {label && <p className="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">{label}</p>}
+    <div className="bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-800 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 text-sm z-50">
+      {label && <p className="font-bold text-slate-800 dark:text-slate-100 mb-2 border-b border-slate-100 dark:border-slate-800 pb-1">{label}</p>}
       <div className="flex flex-col gap-1.5">
         {payload.map((entry: { name: string; value: number; color: string }, i: number) => (
           <div key={i} className="flex items-center justify-between gap-4 font-semibold">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></span>
-              <span className="text-slate-600">{entry.name}:</span>
+              <span className="text-slate-600 dark:text-slate-400">{entry.name}:</span>
             </div>
-            <span className="text-slate-900">{entry.value?.toLocaleString('es-ES')}</span>
+            <span className="text-slate-900 dark:text-white">{entry.value?.toLocaleString('es-ES')}</span>
           </div>
         ))}
       </div>
@@ -68,6 +68,16 @@ const COLORES_PIE = [
 ];
 
 export const GraficosPanel: React.FC = () => {
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   const nombreMes = getNombreMesActual();
 
   const [loadingEspania, setLoadingEspania] = useState(true);
@@ -376,9 +386,9 @@ export const GraficosPanel: React.FC = () => {
         >
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={datosEvolucion} margin={{ top: 15, right: 30, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="4 4" stroke="var(--color-neutral-200)" vertical={false} />
-              <XAxis dataKey="dia" tick={{ fontSize: 12, fill: 'var(--color-neutral-500)' }} tickLine={false} axisLine={false} dy={10} minTickGap={20} />
-              <YAxis tick={{ fontSize: 12, fill: 'var(--color-neutral-500)' }} tickLine={false} axisLine={false} dx={-10} />
+              <CartesianGrid strokeDasharray="4 4" stroke={isDark ? '#334155' : '#e2e8f0'} vertical={false} />
+              <XAxis dataKey="dia" tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dy={10} minTickGap={20} />
+              <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dx={-10} />
               <Tooltip content={<TooltipPersonalizado />} />
               <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
               <Area
@@ -422,17 +432,17 @@ export const GraficosPanel: React.FC = () => {
                 layout="vertical"
                 margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="var(--color-neutral-100)" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={isDark ? '#1e293b' : '#f1f5f9'} />
                 <XAxis type="number" hide />
                 <YAxis
                   type="category"
                   dataKey="provincia"
-                  tick={{ fontSize: 12, fill: 'var(--color-neutral-700)', fontWeight: 500 }}
+                  tick={{ fontSize: 11, fill: isDark ? '#cbd5e1' : '#334155', fontWeight: 500 }}
                   axisLine={false}
                   tickLine={false}
                   width={100}
                 />
-                <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: 'var(--color-neutral-50)' }} />
+                <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
                 <Legend iconType="circle" wrapperStyle={{ paddingBottom: '10px' }} />
                 <Bar dataKey="visitantesNormales" name="Individuales" stackId="a" fill="var(--color-primary-400)" radius={[0, 0, 0, 0]} barSize={18} />
                 <Bar dataKey="visitantesEventos" name="Grupos/Eventos" stackId="a" fill="var(--color-secondary-400)" radius={[0, 6, 6, 0]} barSize={18} />
@@ -460,17 +470,17 @@ export const GraficosPanel: React.FC = () => {
                 layout="vertical"
                 margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
               >
-                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="var(--color-neutral-100)" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={isDark ? '#1e293b' : '#f1f5f9'} />
                 <XAxis type="number" hide />
                 <YAxis
                   type="category"
                   dataKey="nombre"
-                  tick={<CustomYAxisTick />}
+                  tick={{ fontSize: 11, fill: isDark ? '#cbd5e1' : '#334155', fontWeight: 500 }}
                   axisLine={false}
                   tickLine={false}
                   width={110}
                 />
-                <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: 'var(--color-neutral-50)' }} />
+                <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
                 <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
 
                 <Bar dataKey="registros" name="Registros (Ventanilla)" stackId="a" fill="var(--color-info)" barSize={28} radius={[0, 0, 0, 0]} />
@@ -492,10 +502,10 @@ export const GraficosPanel: React.FC = () => {
       >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={datosEspania} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-neutral-200)" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e2e8f0'} />
             <XAxis dataKey="name" hide />
-            <YAxis tick={{ fontSize: 12, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} dx={-10} />
-            <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: 'var(--color-neutral-50)' }} />
+            <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} axisLine={false} tickLine={false} dx={-10} />
+            <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
             <Legend iconType="circle" />
             <Bar dataKey="España" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} barSize={40} />
             <Bar dataKey="Resto del Mundo" fill="var(--color-secondary-500)" radius={[6, 6, 0, 0]} barSize={40} />

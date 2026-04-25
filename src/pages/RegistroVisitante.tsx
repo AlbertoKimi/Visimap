@@ -114,10 +114,10 @@ export const RegistroVisitante: React.FC = () => {
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 pb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Registro de Visitantes</h1>
-          <p className="text-slate-500 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Registro de Visitantes</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
             Control de flujo y actividad
           </p>
         </div>
@@ -126,7 +126,7 @@ export const RegistroVisitante: React.FC = () => {
           {/* Botón refrescar */}
           <button
             onClick={fetchData}
-            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+            className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
             disabled={loading}
             title="Actualizar"
           >
@@ -134,13 +134,13 @@ export const RegistroVisitante: React.FC = () => {
           </button>
 
           {/* Pestañas */}
-          <div className="inline-flex bg-slate-100/50 p-1 rounded-xl border border-slate-200/50">
+          <div className="inline-flex bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
             <button
               onClick={() => setActiveTab('mapa')}
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 activeTab === 'mapa'
-                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200/20'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/20 dark:border-slate-600'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               Mapa
@@ -149,8 +149,8 @@ export const RegistroVisitante: React.FC = () => {
               onClick={() => setActiveTab('eventos')}
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 activeTab === 'eventos'
-                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/20'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/20 dark:border-slate-600'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               Eventos

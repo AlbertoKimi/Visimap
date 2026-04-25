@@ -60,8 +60,8 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
   return (
     <div className="h-full overflow-y-auto animate-in fade-in slide-in-from-bottom-4 duration-500 pr-2">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Mi Perfil</h2>
-        <p className="text-slate-500">Administra tu información personal y visualiza tu actividad.</p>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Mi Perfil</h2>
+        <p className="text-slate-500 dark:text-slate-400">Administra tu información personal y visualiza tu actividad.</p>
       </div>
 
       <DetalleUsuario
@@ -71,7 +71,7 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
         onUpdate={() => onRefreshProfile?.()}
         mostrarNotificacion={mostrarNotificacion}
         hideBack={true}
-        showDangerZone={false}
+      // showDangerZone={false}
       />
 
       <Snackbar

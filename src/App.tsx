@@ -22,6 +22,7 @@ import { supabase } from "@/database/supabase/client";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const logoUrl = "/src/assets/Logo-1.webp";
+const logoModoOscuroUrl = "/src/assets/Logo-MO.webp";
 
 export default function App() {
   const {
@@ -109,6 +110,7 @@ export default function App() {
             onLogin={handleLogin}
             onBack={() => window.location.href = "/"}
             logoUrl={logoUrl}
+            logoModoOscuroUrl={logoModoOscuroUrl}
           />
         }
       ]
@@ -171,10 +173,10 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-500 font-medium">Iniciando Visimap...</p>
+          <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Iniciando Visimap...</p>
         </div>
       </div>
     );

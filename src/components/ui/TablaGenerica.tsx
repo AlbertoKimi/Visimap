@@ -195,22 +195,22 @@ export function TablaGenerica<T>({
   // Icono de ordenación según estado
   const SortIcon = ({ colKey }: { colKey: string }) => {
     if (sortKey !== colKey)
-      return <ChevronsUpDown size={14} className="text-slate-300 ml-1 flex-shrink-0" />;
+      return <ChevronsUpDown size={14} className="text-slate-300 dark:text-slate-600 ml-1 flex-shrink-0" />;
     if (sortDir === 'asc')
-      return <ChevronUp size={14} className="text-blue-500 ml-1 flex-shrink-0" />;
-    return <ChevronDown size={14} className="text-blue-500 ml-1 flex-shrink-0" />;
+      return <ChevronUp size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
+    return <ChevronDown size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
   };
 
   return (
     <>
       <div className="flex flex-col gap-0">
       {/* Barra de herramientas */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 border-b border-slate-100">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-800">
         {/* Búsqueda */}
         <div className="relative flex-1 group min-w-0">
           <Search
             size={15}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors pointer-events-none"
           />
           <input
             type="text"
@@ -260,20 +260,20 @@ export function TablaGenerica<T>({
         {paginated.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-16 text-center">
             {emptyIcon && (
-              <div className="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
+              <div className="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
                 {emptyIcon}
               </div>
             )}
-            <h3 className="text-lg font-semibold text-slate-700">{emptyMessage}</h3>
-            <p className="text-slate-400 text-sm mt-1 max-w-sm">{emptyDescription}</p>
+            <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200">{emptyMessage}</h3>
+            <p className="text-slate-400 dark:text-slate-500 text-sm mt-1 max-w-sm">{emptyDescription}</p>
           </div>
         ) : (
           <table className="w-full text-left border-separate border-spacing-0">
             <thead>
-              <tr className="bg-slate-50/80">
+              <tr className="bg-slate-50/80 dark:bg-slate-800/50">
                 {/* Checkbox seleccionar todos */}
                 {onDeleteSelected && (
-                  <th className="px-5 py-4 border-b border-slate-100 w-10">
+                  <th className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 w-10">
                     <input
                       type="checkbox"
                       className="checkbox-input"
@@ -288,7 +288,7 @@ export function TablaGenerica<T>({
                 {columns.map(col => (
                   <th
                     key={col.key}
-                    className={`px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 select-none ${col.sortable ? 'cursor-pointer hover:text-blue-600 hover:bg-blue-50/40 transition-colors' : ''}`}
+                    className={`px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 select-none ${col.sortable ? 'cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/40 dark:hover:bg-blue-900/20 transition-colors' : ''}`}
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
                   >
                     <span className="inline-flex items-center gap-0.5">
@@ -306,7 +306,7 @@ export function TablaGenerica<T>({
                 return (
                   <tr
                     key={id}
-                    className={`group transition-all duration-150 ${isSelected ? 'bg-blue-50/60' : 'hover:bg-slate-50/80'}`}
+                    className={`group transition-all duration-150 ${isSelected ? 'bg-blue-50/60 dark:bg-blue-900/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'}`}
                   >
                     {/* Checkbox fila */}
                     {onDeleteSelected && (
@@ -322,7 +322,7 @@ export function TablaGenerica<T>({
                       </td>
                     )}
                     {columns.map(col => (
-                      <td key={col.key} className="px-6 py-4 text-sm text-slate-700">
+                      <td key={col.key} className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
                         {col.render
                           ? col.render(row)
                           : String(getNestedValue(row, col.key) ?? '—')}
@@ -338,14 +338,14 @@ export function TablaGenerica<T>({
 
       {/* Paginación */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 bg-slate-50/50">
-          <p className="text-xs text-slate-400 order-2 sm:order-1">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <p className="text-xs text-slate-400 dark:text-slate-500 order-2 sm:order-1">
             Mostrando{' '}
-            <span className="font-semibold text-slate-600">
+            <span className="font-semibold text-slate-600 dark:text-slate-300">
               {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, sorted.length)}
             </span>{' '}
             de{' '}
-            <span className="font-semibold text-slate-600">{sorted.length}</span> registros
+            <span className="font-semibold text-slate-600 dark:text-slate-300">{sorted.length}</span> registros
           </p>
 
           <div className="order-1 sm:order-2">

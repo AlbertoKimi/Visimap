@@ -132,24 +132,24 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         initial={{ width: 0 }}
         animate={{ width: estaAbierto ? 400 : 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 200 }}
-        className="relative bg-white shadow-xl flex-shrink-0 z-40"
+        className="relative bg-white dark:bg-slate-900 shadow-xl flex-shrink-0 z-40"
       >
         <button
           onClick={() => setEstaAbierto(!estaAbierto)}
-          className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-white rounded-l-xl shadow-lg border-y border-l border-gray-200 text-gray-600 hover:text-blue-600 z-50 flex items-center justify-center w-10 h-14"
+          className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-white dark:bg-slate-900 rounded-l-xl shadow-lg border-y border-l border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-14"
         >
           {estaAbierto ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
 
-        <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100">
+        <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100 dark:border-slate-800">
           <div className="p-4 flex flex-col h-full">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none">Registro Internacional</h3>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Registro Internacional</h3>
 
               </div>
-              <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 rounded-full">
-                <X className="w-5 h-5" />
+              <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 dark:bg-slate-800 rounded-full">
+                <X className="w-5 h-5 dark:text-slate-400" />
               </button>
             </div>
 
@@ -178,18 +178,18 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden"
+              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden border dark:border-slate-800"
             >
-              <div className="overflow-y-auto flex-1 px-6 py-6 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300">
+              <div className="overflow-y-auto flex-1 px-6 py-6 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 dark:hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900 leading-none">Nuevo Visitante</h3>
-                      <p className="text-sm text-blue-600 font-medium mt-1">{selectedProvince?.name}</p>
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
+                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">{selectedProvince?.name}</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                    <X className="w-5 h-5 text-gray-500" />
+                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
                   </button>
                 </div>
 

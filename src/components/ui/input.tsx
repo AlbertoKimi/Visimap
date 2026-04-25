@@ -77,7 +77,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <section className="flex flex-col gap-1.5 w-full" aria-labelledby={`${name}-label`}>
       {label && (
-        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 ml-1">
+        <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 ml-1">
           {label}
         </label>
       )}
@@ -100,7 +100,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         {isPassword && (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
             onClick={() => setShowPassword(!showPassword)}
             tabIndex={-1}
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}

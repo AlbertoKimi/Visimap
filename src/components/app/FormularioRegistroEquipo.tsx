@@ -151,11 +151,11 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
               Cancelar
             </Button>
           )}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="flex-1 h-12 text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-200 hover:opacity-90 rounded-xl transition-all"
-          >
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 h-12 text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-200 dark:shadow-none hover:opacity-90 rounded-xl transition-all"
+            >
             {isLoading ? 'Invitando...' : 'Invitar Usuario'}
           </Button>
         </div>
