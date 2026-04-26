@@ -224,10 +224,10 @@ export const NotificationBell: React.FC = () => {
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
-            <div className="bg-slate-50 border-b border-slate-100 px-4 py-3 flex justify-between items-center">
-              <h3 className="font-semibold text-slate-800">Notificaciones</h3>
-              <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 bg-slate-200/60 px-2 py-0.5 rounded-md">
+          <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+            <div className="bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 px-4 py-3 flex justify-between items-center">
+              <h3 className="font-semibold text-slate-800 dark:text-white">Notificaciones</h3>
+              <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-700/60 px-2 py-0.5 rounded-md">
                 {alertas.length} Recientes
               </span>
             </div>
@@ -235,12 +235,12 @@ export const NotificationBell: React.FC = () => {
             <div className="max-h-[60vh] overflow-y-auto">
               {alertas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <Bell className="text-slate-300 mb-3" size={32} />
-                  <p className="text-sm font-medium text-slate-600">No hay avisos recientes</p>
-                  <p className="text-xs text-slate-400 mt-1 max-w-[200px]">Cuando haya nueva actividad en Notas o Eventos, aparecerá aquí.</p>
+                  <Bell className="text-slate-300 dark:text-slate-700 mb-3" size={32} />
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No hay avisos recientes</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px]">Cuando haya nueva actividad en Notas o Eventos, aparecerá aquí.</p>
                 </div>
               ) : (
-                <div className="flex flex-col divide-y divide-slate-100">
+                <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
                   {alertas.map(alerta => {
                     const Icon = alerta.icono;
                     const isSuccess = alerta.mensaje.toLowerCase().includes('finalizad');
@@ -252,15 +252,15 @@ export const NotificationBell: React.FC = () => {
                         title={alerta.mensaje}
                         className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${
                           !alerta.leido
-                            ? 'bg-blue-50 hover:bg-blue-100/70 border-l-4 border-blue-400'
-                            : 'hover:bg-slate-50 border-l-4 border-transparent'
+                            ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 border-l-4 border-blue-400'
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent'
                         }`}
                       >
                         <div className={`p-2.5 rounded-full shrink-0 shadow-sm ${isSuccess
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                           : alerta.tipo === 'nota'
-                            ? 'bg-cyan-100 text-cyan-700'
-                            : 'bg-indigo-100 text-indigo-700'
+                            ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400'
+                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
                           }`}>
                           <Icon size={18} strokeWidth={2.5} />
                         </div>
@@ -268,7 +268,7 @@ export const NotificationBell: React.FC = () => {
                         <div className="flex-1 min-w-0 pt-0.5">
                           <div className="flex items-center gap-2 mb-1">
                             <p className={`text-sm leading-snug break-words ${
-                              !alerta.leido ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+                              !alerta.leido ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'
                             }`}>
                               {alerta.mensaje}
                             </p>
@@ -278,7 +278,7 @@ export const NotificationBell: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded w-fit uppercase tracking-wide mt-0.5">
+                          <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded w-fit uppercase tracking-wide mt-0.5">
                             {alerta.fechaTexto}
                           </p>
                         </div>
@@ -294,8 +294,8 @@ export const NotificationBell: React.FC = () => {
             </div>
 
             {alertas.length > 0 && (
-              <div className="bg-slate-50/80 p-2.5 text-center border-t border-slate-100">
-                <span className="text-[11px] font-medium text-slate-400">Mostrando actividad de los últimos 3 días</span>
+              <div className="bg-slate-50/80 dark:bg-slate-800/80 p-2.5 text-center border-t border-slate-100 dark:border-slate-800">
+                <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">Mostrando actividad de los últimos 3 días</span>
               </div>
             )}
           </div>
