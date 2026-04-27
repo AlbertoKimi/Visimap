@@ -108,32 +108,31 @@ export const Calendario: React.FC<CalendarioProps> = ({
     <Card className="xl:col-span-3 border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden relative">
       <CardContent className="p-0 sm:p-4 h-full min-h-[800px]">
 
-        <div className="flex flex-col gap-6 mb-8 px-2">
-
+        <div className="flex flex-col gap-4 mb-4 sm:mb-8 px-1 sm:px-2">
+          
           <div className="flex justify-center w-full">
-            <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight bg-slate-50 dark:bg-slate-800 px-6 py-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <h2 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight bg-slate-50 dark:bg-slate-800 px-4 sm:px-6 py-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
               {fechaActual.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
             </h2>
           </div>
 
-
-          <div className="flex items-center justify-between">
-
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+            
+            <div className="flex items-center gap-2 w-full lg:w-auto justify-center">
               <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner border border-slate-200/50 dark:border-slate-700">
                 <button
                   onClick={() => navegar(-1)}
-                  className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
+                  className="p-1.5 sm:p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
                   title="Anterior"
                 >
-                  <ChevronLeft size={20} />
+                  <ChevronLeft size={18} />
                 </button>
                 <button
                   onClick={() => navegar(1)}
-                  className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
+                  className="p-1.5 sm:p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
                   title="Siguiente"
                 >
-                  <ChevronRight size={20} />
+                  <ChevronRight size={18} />
                 </button>
               </div>
               <button
@@ -144,19 +143,18 @@ export const Calendario: React.FC<CalendarioProps> = ({
                     setFechaActual(new Date());
                   }
                 }}
-                className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-all shadow-sm border border-blue-100 dark:border-blue-900/50"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-all shadow-sm border border-blue-100 dark:border-blue-900/50"
               >
                 Hoy
               </button>
             </div>
 
-
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner gap-1 border border-slate-200/50 dark:border-slate-700">
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner gap-0.5 sm:gap-1 border border-slate-200/50 dark:border-slate-700 w-full lg:w-auto overflow-x-auto no-scrollbar justify-start lg:justify-center">
               {(['año', 'mes', 'semana', 'dia', 'agenda'] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => setVista(v)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-bold capitalize transition-all ${vista === v ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-md scale-105' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
+                  className={`flex-1 lg:flex-none px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-sm font-bold capitalize transition-all whitespace-nowrap ${vista === v ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
                 >
                   {v}
                 </button>
@@ -172,7 +170,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
         )}
 
 
-        <div className={vista === 'mes' || vista === 'año' || vista === 'agenda' ? 'h-[750px] dark-calendar-wrapper' : 'hidden'}>
+        <div className={vista === 'mes' || vista === 'año' || vista === 'agenda' ? 'h-[600px] sm:h-[750px] dark-calendar-wrapper' : 'hidden'}>
           <FullCalendar
             key={vista}
             ref={calendarRef}
@@ -210,16 +208,16 @@ export const Calendario: React.FC<CalendarioProps> = ({
         </div>
 
 
-        <div className={vista === 'semana' || vista === 'dia' ? 'h-[750px] overflow-auto custom-scrollbar' : 'hidden'}>
-          <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900">
-            <table className="w-full table-fixed border-collapse">
+        <div className={vista === 'semana' || vista === 'dia' ? 'h-[600px] sm:h-[750px] overflow-auto custom-scrollbar' : 'hidden'}>
+          <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 min-w-full">
+            <table className="min-w-[600px] sm:w-full border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
                   <th className="w-20 p-2 text-[10px] font-black text-slate-400 uppercase">Hora</th>
                   {(vista === 'semana' ? diasSemana : [diasSemana.find(d => d.raw.toDateString() === fechaActual.toDateString()) || diasSemana[0]]).map((diaObj) => (
                     <th key={diaObj.id} className="p-3 text-center border-l border-slate-200 dark:border-slate-800">
                       <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{diaObj.label}</div>
-                      <div className={`text-lg font-black ${diaObj.raw.toDateString() === new Date().toDateString() ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
+                      <div className={`text-base sm:text-lg font-black ${diaObj.raw.toDateString() === new Date().toDateString() ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
                     </th>
                   ))}
                 </tr>

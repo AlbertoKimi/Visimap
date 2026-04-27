@@ -224,7 +224,7 @@ export const NotificationBell: React.FC = () => {
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+          <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] max-w-xs sm:w-96 sm:max-w-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
             <div className="bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 px-4 py-3 flex justify-between items-center">
               <h3 className="font-semibold text-slate-800 dark:text-white">Notificaciones</h3>
               <span className="text-[10px] font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-700/60 px-2 py-0.5 rounded-md">

@@ -4,9 +4,8 @@ import { useChatIA, SUGERENCIAS } from '@/hooks/useChatIA';
 import { BurbujaMensaje } from './chat/BurbujaMensaje';
 import { InputMensaje } from './chat/InputMensaje';
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Estado vacío — pantalla de bienvenida con sugerencias
-// ──────────────────────────────────────────────────────────────────────────────
+// Pantalla de bienvenida con sugerencias
+
 
 interface EstadoVacioProps {
   onSugerencia: (prompt: string) => void;
@@ -39,9 +38,7 @@ const EstadoVacio: React.FC<EstadoVacioProps> = ({ onSugerencia }) => (
   </div>
 );
 
-// ──────────────────────────────────────────────────────────────────────────────
 // ChatIA — componente principal
-// ──────────────────────────────────────────────────────────────────────────────
 
 export const ChatIA: React.FC = () => {
   const {
@@ -55,7 +52,7 @@ export const ChatIA: React.FC = () => {
     limpiarChat,
   } = useChatIA();
 
-  // Scroll al montaje si ya hay mensajes
+
   useEffect(() => {
     ultimoMensajeRef.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
   }, []);
@@ -98,7 +95,7 @@ export const ChatIA: React.FC = () => {
             {mensajes.map(m => (
               <BurbujaMensaje key={m.id} mensaje={m} />
             ))}
-            {/* Ancla para el scroll automático */}
+
             <div ref={ultimoMensajeRef} style={{ height: 1 }} />
           </div>
         )}

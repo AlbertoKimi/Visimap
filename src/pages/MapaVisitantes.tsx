@@ -119,48 +119,83 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
     if (success) setResetModalTrigger(prev => prev + 1);
   };
 
+  // Contenido del formulario para reutilizar en móvil y escritorio
+  const contenidoFormulario = (
+    <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
+      <div className="flex items-start justify-between mb-[var(--spacing-xs)] md:mb-[var(--spacing-sm)]">
+        <div className="w-full text-center md:text-left">
+          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">Registro Internacional</h3>
+          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5 opacity-80">Visitantes fuera de mapa</p>
+        </div>
+        {/* La X solo se muestra en escritorio */}
+        <button
+          onClick={() => setEstaAbierto(false)}
+          className="hidden md:flex p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="flex-1 min-h-0">
+        <Formulario
+          onSubmit={handleRegistroLateral}
+          mostrarObservaciones={true}
+          resetTrigger={resetLateralTrigger}
+        />
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex w-full relative overflow-hidden items-stretch h-full">
-      <div className="flex-1 min-w-0 relative transition-all duration-300 ease-in-out">
+    <div className="flex w-full relative overflow-hidden items-stretch h-full bg-slate-50 dark:bg-slate-950">
+      {/* Vista de Mapa - Solo en escritorio/tablet */}
+      <div className="hidden md:block flex-1 min-w-0 relative transition-all duration-300 ease-in-out">
         <SpainProvincesMap
           activeId={selectedProvince?.id}
           onProvinceClick={clickProvincia}
         />
       </div>
 
+      {/* Backdrop para Tablet (MD hasta LG) */}
+      <AnimatePresence>
+        {estaAbierto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setEstaAbierto(false)}
+            className="absolute inset-0 bg-black/30 backdrop-blur-[2px] z-30 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Vista de Formulario en MÓVIL */}
+      <div className="md:hidden w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 z-40 flex justify-center">
+        <div className="w-full max-w-[400px] bg-white dark:bg-slate-900 min-h-full shadow-2xl overflow-hidden">
+          {contenidoFormulario}
+        </div>
+      </div>
+
+      {/* Vista de Formulario en DESKTOP / TABLET (Panel Lateral) */}
       <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: estaAbierto ? 400 : 0 }}
+        initial={false}
+        animate={{ width: estaAbierto ? 'var(--panel-width)' : 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 200 }}
-        className="relative bg-white dark:bg-slate-900 shadow-xl flex-shrink-0 z-40"
+        className="hidden md:block absolute lg:relative right-0 top-0 bottom-0 bg-white dark:bg-slate-900 shadow-2xl flex-shrink-0 z-40 border-l border-slate-100 dark:border-slate-800 md:[--panel-width:350px] lg:[--panel-width:400px]"
       >
         <button
           onClick={() => setEstaAbierto(!estaAbierto)}
-          className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-white dark:bg-slate-900 rounded-l-xl shadow-lg border-y border-l border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-14"
+          className="absolute top-1/2 left-0 md:-left-4 lg:left-0 md:translate-x-0 lg:-translate-x-full -translate-y-1/2 p-2 bg-white dark:bg-slate-900 rounded-l-2xl md:rounded-r-2xl lg:rounded-l-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-16 group transition-all"
         >
-          {estaAbierto ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+          {estaAbierto ? (
+            <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
+          ) : (
+            <ChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
+          )}
         </button>
 
-        <div className="w-[400px] h-full overflow-y-auto border-l border-gray-100 dark:border-slate-800">
-          <div className="p-4 flex flex-col h-full">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Registro Internacional</h3>
-
-              </div>
-              <button onClick={() => setEstaAbierto(false)} className="md:hidden p-2 bg-gray-100 dark:bg-slate-800 rounded-full">
-                <X className="w-5 h-5 dark:text-slate-400" />
-              </button>
-            </div>
-
-            <div className="flex-1">
-              <Formulario
-                onSubmit={handleRegistroLateral}
-                mostrarObservaciones={true}
-                resetTrigger={resetLateralTrigger}
-              />
-            </div>
-          </div>
+        <div className="w-full lg:w-[400px] h-full overflow-hidden">
+          {contenidoFormulario}
         </div>
       </motion.div>
 
@@ -178,9 +213,9 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col overflow-hidden border dark:border-slate-800"
+              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] md:max-h-[95vh] flex flex-col overflow-hidden border dark:border-slate-800"
             >
-              <div className="overflow-y-auto flex-1 px-6 py-6 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 dark:hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
+              <div className="overflow-y-auto flex-1 px-6 md:px-5 py-6 md:py-4 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 dark:hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <div>

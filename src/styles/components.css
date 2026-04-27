@@ -627,3 +627,58 @@
 .dark .fc-multimonth-month {
   border-color: #334155;
 }
+
+/* Responsividad extra para FullCalendar en móviles pequeños */
+@media (max-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem !important;
+  }
+  
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.65rem !important;
+    padding: 2px 1px !important;
+    text-transform: uppercase;
+  }
+
+  .fc .fc-daygrid-day-number {
+    font-size: 0.7rem !important;
+    padding: 2px 4px !important;
+  }
+
+  .fc-event {
+    margin: 0 !important;
+    border-radius: 2px !important;
+  }
+
+  .fc-event-title {
+    font-size: 8px !important;
+    font-weight: 800 !important;
+  }
+
+  .fc .fc-daygrid-day-frame {
+    min-height: 40px !important;
+  }
+
+  .fc .fc-daygrid-more-link {
+    font-size: 8px !important;
+    font-weight: bold;
+  }
+  
+  /* Ajustes para la vista de lista */
+  .fc-list-event-time {
+    display: none !important;
+  }
+  
+  .fc-list-event-title {
+    font-size: 11px !important;
+  }
+}
+
+/* Ocultar barra de scroll pero mantener funcionalidad */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

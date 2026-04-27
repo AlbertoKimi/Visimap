@@ -15,10 +15,10 @@ interface SpainProvincesMapProps {
   className?: string;
 }
 
-export default function SpainProvincesMap({ 
-    activeId, 
-    onProvinceClick, 
-    className = "" 
+export default function SpainProvincesMap({
+  activeId,
+  onProvinceClick,
+  className = ""
 }: SpainProvincesMapProps) {
   const [hoveredProvince, setHoveredProvince] = useState<ProvinceInfo | null>(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -35,11 +35,14 @@ export default function SpainProvincesMap({
   }, []);
 
   return (
-    <div className={`flex justify-center items-center w-full h-full ${className}`}>
-      <div className="relative w-full max-w-[550px]">
+    <div className={`flex flex-col md:flex-row justify-center items-center w-full h-full gap-8 md:gap-4 lg:gap-0 ${className}`}>
+
+      <LeyendaColores className="hidden md:block lg:hidden shrink-0" />
+
+      <div className="relative w-full max-w-[550px] shrink-0">
         <svg
-          viewBox="0 -10 400 460"
-          className="w-full h-auto max-h-[83vh] drop-shadow-lg"
+          viewBox="-10 -20 440 500"
+          className="w-full h-auto max-h-[75vh] drop-shadow-2xl"
         >
           {Object.entries(SpainProvincePaths).map(([id, province]) => {
             const isSelected = activeId === id;
@@ -64,7 +67,8 @@ export default function SpainProvincesMap({
           })}
         </svg>
 
-        <LeyendaColores />
+        {/* Leyenda para Escritorio (LG+) */}
+        <LeyendaColores className="hidden lg:block absolute -left-36 top-1/2 -translate-y-1/2" />
       </div>
 
       {hoveredProvince && (

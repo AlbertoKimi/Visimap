@@ -1,4 +1,3 @@
-
 import { NavLink } from "react-router-dom"
 import { LogOut, Map, UserPlus, Users, Calendar, BarChart3, StickyNote, Settings } from "lucide-react"
 
@@ -13,12 +12,14 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/stores/authStore"
 import { supabase } from "@/database/supabase/client"
 
 export function AppSidebar() {
   const { userProfile, clearSession } = useAuthStore()
+  const { setOpenMobile, isMobile } = useSidebar()
   const isAdmin = userProfile?.role_id === 1
 
   const handleLogout = async () => {
@@ -26,12 +27,23 @@ export function AppSidebar() {
     clearSession()
   }
 
+  const handleNavClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
+  }
+
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild size="lg" className="h-auto py-3 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+            <SidebarMenuButton 
+              asChild 
+              size="lg" 
+              className="h-auto py-3 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              onClick={handleNavClick}
+            >
               <NavLink to="/dashboard/mapa">
                 {userProfile?.avatar_url ? (
                   <img
@@ -68,6 +80,7 @@ export function AppSidebar() {
                   asChild 
                   tooltip="Mapa Interactivo" 
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/mapa">
                     <Map />
@@ -82,6 +95,7 @@ export function AppSidebar() {
                     asChild 
                     tooltip="Registro Visitante" 
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                    onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/registro-visitante">
                       <UserPlus />
@@ -97,6 +111,7 @@ export function AppSidebar() {
                     asChild 
                     tooltip="Trabajadores" 
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                    onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/personal">
                       <Users />
@@ -111,6 +126,7 @@ export function AppSidebar() {
                   asChild 
                   tooltip="Eventos" 
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/eventos">
                     <Calendar />
@@ -125,6 +141,7 @@ export function AppSidebar() {
                     asChild 
                     tooltip="Gráficas" 
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                    onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/estadisticas">
                       <BarChart3 />
@@ -139,6 +156,7 @@ export function AppSidebar() {
                   asChild 
                   tooltip="Notas" 
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/notas">
                     <StickyNote />
@@ -159,6 +177,7 @@ export function AppSidebar() {
                   asChild 
                   tooltip="Editar Perfil" 
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/perfil">
                     <Settings />
@@ -175,7 +194,10 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={handleLogout}
+              onClick={() => {
+                handleLogout();
+                handleNavClick();
+              }}
               className="h-11 justify-center text-[15px] text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-900/20 font-medium"
             >
               <LogOut className="mr-2 size-5" />

@@ -113,7 +113,6 @@ export function TablaGenerica<T>({
     }
   }
 
-  // Ordenación
   const sorted = sortKey && sortDir
     ? [...filtered].sort((a, b) => {
       const va = toStr(getNestedValue(a, sortKey));
@@ -123,7 +122,6 @@ export function TablaGenerica<T>({
     })
     : filtered;
 
-  // Paginación
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
@@ -131,7 +129,6 @@ export function TablaGenerica<T>({
 
   const pageNumbers = calcularPaginas(totalPages, currentPage);
 
-  // Manejadores de eventos
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     setPage(1);
@@ -154,7 +151,6 @@ export function TablaGenerica<T>({
     }
   };
 
-  // Selección de filas
   const pageIds = paginated.map(row => getRowId(row));
   const allPageSelected = pageIds.length > 0 && pageIds.every(id => selected.has(id));
   const somePageSelected = pageIds.some(id => selected.has(id));
@@ -192,7 +188,6 @@ export function TablaGenerica<T>({
     }
   };
 
-  // Icono de ordenación según estado
   const SortIcon = ({ colKey }: { colKey: string }) => {
     if (sortKey !== colKey)
       return <ChevronsUpDown size={14} className="text-slate-300 dark:text-slate-600 ml-1 flex-shrink-0" />;
@@ -202,11 +197,8 @@ export function TablaGenerica<T>({
   };
 
   return (
-    <>
-      <div className="flex flex-col gap-0">
-      {/* Barra de herramientas */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-800">
-        {/* Búsqueda */}
+    <div className="flex flex-col gap-0">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-800">
         <div className="relative flex-1 group min-w-0">
           <Search
             size={15}
@@ -217,18 +209,17 @@ export function TablaGenerica<T>({
             value={search}
             onChange={handleSearch}
             placeholder={searchPlaceholder}
-            className="input-style-comun input-border-primario pl-9 max-w-xs"
+            className="input-style-comun input-border-primario pl-9 w-full sm:max-w-xs"
           />
         </div>
 
-        {/* Filtros desplegables */}
         <div className="flex flex-wrap items-center gap-2">
           {columnFilters.map(filter => (
             <select
               key={filter.key}
               value={filterValues[filter.key] || '__all__'}
               onChange={e => handleFilter(filter.key, e.target.value)}
-              className="input-style-comun select-responsive select-color-text w-auto min-w-[130px] py-2"
+              className="input-style-comun select-responsive select-color-text w-full sm:w-auto sm:min-w-[130px] py-2"
             >
               <option value="__all__">{filter.label}: Todos</option>
               {filter.options.map(opt => (
@@ -239,7 +230,6 @@ export function TablaGenerica<T>({
             </select>
           ))}
 
-          {/* Botón acción masiva */}
           {onDeleteSelected && selected.size > 0 && (
             <button
               onClick={() => setModalAbierto(true)}
@@ -255,8 +245,7 @@ export function TablaGenerica<T>({
         </div>
       </div>
 
-      {/* Tabla */}
-      <div className="overflow-x-auto">
+      <div className="overflow-visible lg:overflow-x-auto">
         {paginated.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-16 text-center">
             {emptyIcon && (
@@ -268,10 +257,9 @@ export function TablaGenerica<T>({
             <p className="text-slate-400 dark:text-slate-500 text-sm mt-1 max-w-sm">{emptyDescription}</p>
           </div>
         ) : (
-          <table className="w-full text-left border-separate border-spacing-0">
-            <thead>
+          <table className="w-full text-left border-separate border-spacing-0 lg:border-collapse">
+            <thead className="hidden lg:table-header-group">
               <tr className="bg-slate-50/80 dark:bg-slate-800/50">
-                {/* Checkbox seleccionar todos */}
                 {onDeleteSelected && (
                   <th className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 w-10">
                     <input
@@ -299,18 +287,18 @@ export function TablaGenerica<T>({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="flex flex-col gap-4 p-4 lg:p-0 lg:table-row-group">
               {paginated.map(row => {
                 const id = getRowId(row);
                 const isSelected = selected.has(id);
                 return (
                   <tr
                     key={id}
-                    className={`group transition-all duration-150 ${isSelected ? 'bg-blue-50/60 dark:bg-blue-900/20' : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'}`}
+                    className={`flex flex-col lg:table-row rounded-2xl lg:rounded-none border border-slate-100 dark:border-slate-800 lg:border-none shadow-sm lg:shadow-none p-4 lg:p-0 transition-all duration-150 bg-white dark:bg-slate-900/40 ${isSelected ? 'ring-2 ring-blue-500/50 bg-blue-50/30 dark:bg-blue-900/20' : 'hover:border-blue-200 dark:hover:border-blue-800 lg:hover:bg-slate-50/80 dark:lg:hover:bg-slate-800/40'}`}
                   >
-                    {/* Checkbox fila */}
                     {onDeleteSelected && (
-                      <td className="px-5 py-4">
+                      <td className="flex justify-between items-center lg:table-cell px-0 lg:px-5 py-2 lg:py-4 border-b border-slate-50 dark:border-slate-800/50 lg:border-none mb-2 lg:mb-0">
+                        <span className="lg:hidden text-[10px] font-black text-slate-400 uppercase tracking-wider">Seleccionar</span>
                         <input
                           type="checkbox"
                           className="checkbox-input"
@@ -322,10 +310,18 @@ export function TablaGenerica<T>({
                       </td>
                     )}
                     {columns.map(col => (
-                      <td key={col.key} className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
-                        {col.render
-                          ? col.render(row)
-                          : String(getNestedValue(row, col.key) ?? '—')}
+                      <td 
+                        key={col.key} 
+                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center lg:table-cell px-0 lg:px-6 py-2.5 lg:py-4 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-50 dark:border-slate-800/50 last:border-none lg:border-none break-words"
+                      >
+                        <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-4 mb-1 sm:mb-0">
+                          {col.header}
+                        </span>
+                        <div className="text-left sm:text-right lg:text-left flex-1 lg:flex-none w-full sm:w-auto">
+                          {col.render
+                            ? col.render(row)
+                            : String(getNestedValue(row, col.key) ?? '—')}
+                        </div>
                       </td>
                     ))}
                   </tr>
@@ -336,10 +332,9 @@ export function TablaGenerica<T>({
         )}
       </div>
 
-      {/* Paginación */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-          <p className="text-xs text-slate-400 dark:text-slate-500 order-2 sm:order-1">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <p className="text-xs text-slate-400 dark:text-slate-500 order-2 lg:order-1">
             Mostrando{' '}
             <span className="font-semibold text-slate-600 dark:text-slate-300">
               {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, sorted.length)}
@@ -347,10 +342,9 @@ export function TablaGenerica<T>({
             de{' '}
             <span className="font-semibold text-slate-600 dark:text-slate-300">{sorted.length}</span> registros
           </p>
-
-          <div className="order-1 sm:order-2">
-            <Pagination>
-              <PaginationContent>
+          <div className="order-1 lg:order-2 w-full lg:w-auto">
+            <Pagination className="justify-center lg:justify-end">
+              <PaginationContent className="gap-1 lg:gap-2">
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -358,22 +352,25 @@ export function TablaGenerica<T>({
                   />
                 </PaginationItem>
 
-                {pageNumbers.map((p, i) =>
-                  p === 'ellipsis' ? (
-                    <PaginationItem key={`ellipsis-${i}`}>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  ) : (
-                    <PaginationItem key={p}>
-                      <PaginationLink
-                        onClick={() => setPage(p)}
-                        isActive={p === currentPage}
-                      >
-                        {p}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                )}
+                <div className="flex items-center space-x-1">
+                  {pageNumbers.map((p, i) =>
+                    p === 'ellipsis' ? (
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={p}>
+                        <PaginationLink
+                          onClick={() => setPage(p)}
+                          isActive={p === currentPage}
+                          className="h-9 w-9 text-xs lg:text-sm"
+                        >
+                          {p}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+                </div>
 
                 <PaginationItem>
                   <PaginationNext
@@ -386,7 +383,6 @@ export function TablaGenerica<T>({
           </div>
         </div>
       )}
-    </div>
 
       <ModalConfirmacion
         isOpen={modalAbierto}
@@ -396,6 +392,6 @@ export function TablaGenerica<T>({
         mensaje={`Esta acción afectará a ${selected.size} elemento(s) seleccionado(s) y no se podrá deshacer.`}
         tipo="danger"
       />
-    </>
+    </div>
   );
 }

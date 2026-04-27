@@ -72,16 +72,26 @@
     --color-info-border: #bfdbfe;
 
     /* Colores para Gráficos (Distintos entre sí) */
-    --color-chart-1: #3b82f6; /* Azul claro */
-    --color-chart-2: #f97316; /* Naranja vibrante */
-    --color-chart-3: #10b981; /* Esmeralda */
-    --color-chart-4: #8b5cf6; /* Violeta */
-    --color-chart-5: #f43f5e; /* Rosa fuerte */
-    --color-chart-6: #06b6d4; /* Cyan */
-    --color-chart-7: #eab308; /* Amarillo */
-    --color-chart-8: #6366f1; /* Indigo */
-    --color-chart-9: #14b8a6; /* Teal */
-    --color-chart-10: #a855f7; /* Púrpura claro */
+    --color-chart-1: #3b82f6;
+    --color-chart-2: #f97316;
+    --color-chart-3: #10b981;
+    --color-chart-4: #8b5cf6;
+    --color-chart-5: #f43f5e;
+    --color-chart-6: #06b6d4;
+    --color-chart-7: #eab308;
+    --color-chart-8: #6366f1;
+    --color-chart-9: #14b8a6;
+    --color-chart-10: #a855f7;
+
+    /* Espaciado / Margins / Gaps */
+    --spacing-xs: 0.5rem;
+    /* 8px */
+    --spacing-sm: 1rem;
+    /* 16px */
+    --spacing-md: 1.5rem;
+    /* 24px */
+    --spacing-lg: 2rem;
+    /* 32px */
 
     /*Tipografía*/
     --font-titulos: 'Inter', system-ui, -apple-system, sans-serif;
@@ -153,8 +163,10 @@
 
   /* Estilos globales para modo oscuro si no hay Tailwind */
   html.dark body {
-    background-color: #0f172a; /* neutral-900 */
-    color: #f8fafc; /* neutral-50 */
+    background-color: #0f172a;
+    /* neutral-900 */
+    color: #f8fafc;
+    /* neutral-50 */
     color-scheme: dark;
   }
 }
