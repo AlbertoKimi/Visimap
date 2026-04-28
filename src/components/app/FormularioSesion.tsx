@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Input from "@/components/ui/input";
+import fondoLoginImg from "@/assets/Fondo_Login.webp";
 
 interface FormularioSesionProps {
   onLogin: (email: string, pass: string) => Promise<void>;
@@ -60,7 +61,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6 bg-cover bg-center bg-no-repeat transition-colors duration-300"
-      style={{ backgroundImage: "url('/src/assets/Fondo_Login.webp')" }}
+      style={{ backgroundImage: `url('${fondoLoginImg}')` }}
     >
       <div className="bg-white dark:bg-slate-900/95 dark:backdrop-blur-md p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300 border dark:border-slate-800">
         <div className="justify-center text-center mb-8 space-y-4 items-center flex flex-col">

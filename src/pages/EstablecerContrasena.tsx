@@ -5,6 +5,7 @@ import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/supabase/client";
 import { Session } from '@supabase/supabase-js';
+import fachadaMuviImg from "@/assets/Fachada_Muvi.webp";
 
 interface EstablecerContrasenaProps {
     session: Session | null;
@@ -141,7 +142,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
 
                 <img
-                    src="/src/assets/Fachada_Muvi.webp"
+                    src={fachadaMuviImg}
                     alt="Fachada Museo MUVI"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

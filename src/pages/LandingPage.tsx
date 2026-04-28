@@ -17,8 +17,15 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from "@/components/app/ThemeToggle";
 
-const logoUrl = "/src/assets/Logo-1.webp";
-const logoModoOscuroUrl = "/src/assets/Logo-MO.webp";
+import logoUrlImg from "@/assets/Logo-1.webp";
+import logoModoOscuroUrlImg from "@/assets/Logo-MO.webp";
+import muvi1Img from "@/assets/muvi1.webp";
+import muvihistoriaImg from "@/assets/muvihistoria.webp";
+import muvicocheImg from "@/assets/muvicoche.webp";
+import analisisImg from "@/assets/Analisis.webp";
+
+const logoUrl = logoUrlImg;
+const logoModoOscuroUrl = logoModoOscuroUrlImg;
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -181,17 +188,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             >
               <div className="grid grid-cols-2 gap-4">
                 <img
-                  src="/src/assets/muvi1.webp"
+                  src={muvi1Img}
                   alt="Museo Fachada"
                   className="rounded-lg shadow-lg col-span-2 w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
                 <img
-                  src="/src/assets/muvihistoria.webp"
+                  src={muvihistoriaImg}
                   alt="Historia"
                   className="rounded-lg shadow-lg w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
                 <img
-                  src="/src/assets/muvicoche.webp"
+                  src={muvicocheImg}
                   alt="Visitantes"
                   className="rounded-lg shadow-lg w-full object-cover dark:brightness-75 transition-all duration-500"
                 />
@@ -291,7 +298,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               transition={{ duration: 0.8 }}
             >
               <img
-                src="/src/assets/Analisis.webp"
+                src={analisisImg}
                 alt="Analytics"
                 className="rounded-lg shadow-2xl w-full dark:brightness-75 transition-all duration-500"
               />

@@ -21,8 +21,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/database/supabase/client";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 
-const logoUrl = "/src/assets/Logo-1.webp";
-const logoModoOscuroUrl = "/src/assets/Logo-MO.webp";
+import logoUrl from "@/assets/Logo-1.webp";
+import logoModoOscuroUrl from "@/assets/Logo-MO.webp";
 
 export default function App() {
   const {
