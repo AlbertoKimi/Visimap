@@ -119,10 +119,11 @@ visimap/
    ```
 
 3. **Configurar variables de entorno:**
-   Crear un archivo `.env` en la raíz del proyecto y definir las referencias al backend:
+   Crear un archivo `.env` en la raíz del proyecto y definir las referencias al backend y los servicios de IA:
    ```env
    VITE_SUPABASE_URL=tu_url_de_supabase
    VITE_SUPABASE_ANON_KEY=tu_anon_key
+   VITE_OPENAI_API_KEY=tu_api_key_de_openai
    ```
 
 4. **Ejecutar el entorno de desarrollo:**
