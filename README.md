@@ -61,6 +61,9 @@ La plataforma se fundamenta en un modelo de arquitectura moderna separando clara
 | **Frontend** | React, Vite | Construcción de interfaces dinámicas y alto rendimiento de compilación. |
 | **Estilos** | TailwindCSS | Sistema de diseño ágil mediante utilidades CSS corporativas y adaptativas. |
 | **Backend / BaaS** | Supabase | Proveedor de base de datos (PostgreSQL) y autenticación segura. |
+| **Gráficos** | Recharts | Visualización interactiva de datos y analíticas de los visitantes. |
+| **Inteligencia Artificial** | OpenAI / Gemini | Integración de IA para análisis de datos y generación de gráficos dinámicos. |
+| **Estado Global** | Zustand | Gestión ágil y centralizada del estado global de la aplicación. |
 | **UI e Iconos** | Lucide React | Biblioteca de iconografía vectorial estandarizada y minimalista. |
 | **Animaciones** | Framer Motion | Transiciones modulares y fluidas para el enriquecimiento visual de la interfaz. |
 
@@ -74,15 +77,25 @@ visimap/
 ├── docs/                 # Documentación técnica y manuales corporativos
 ├── public/               # Assets estáticos (imágenes, logos del museo)
 ├── src/
+│   ├── assets/           # Recursos estáticos internos (imágenes, fuentes)
 │   ├── components/       # Componentes atómicos e independientes (Inputs, Botones)
+│   ├── constantes/       # Valores y constantes globales
+│   ├── database/         # Configuración y servicios de acceso a datos (Supabase)
+│   ├── hooks/            # Custom hooks de React
+│   ├── interfaces/       # Definiciones de tipos e interfaces TypeScript
+│   ├── layouts/          # Estructuras de diseño base para las páginas
 │   ├── pages/            # Vistas principales y contenedores de ruta
-│   ├── utils/            # Configuración de clientes (Supabase) y lógicas de validación
-│   ├── App.jsx           # Enrutador principal y configuración de dependencias
-│   └── main.jsx          # Punto de entrada de la aplicación
+│   ├── rutas/            # Configuración de enrutamiento (React Router)
+│   ├── stores/           # Gestión del estado global de la aplicación (Zustand)
+│   ├── styles/           # Archivos de estilos globales y utilidades
+│   ├── utils/            # Utilidades generales y funciones de apoyo
+│   ├── App.tsx           # Enrutador principal y configuración de dependencias
+│   └── main.tsx          # Punto de entrada de la aplicación
 │
-├── .env                  # Variables de entorno seguras (Claves de Supabase)
+├── .env                  # Variables de entorno seguras (Claves de API y Supabase)
 ├── tailwind.config.js    # Definición del sistema de diseño (tokens)
-└── vite.config.js        # Configuración del empaquetador
+├── tsconfig.json         # Configuración del compilador TypeScript
+└── vite.config.ts        # Configuración del empaquetador
 ```
 
 <br>
@@ -178,6 +191,7 @@ La persistencia y seguridad de la información está delegada en Supabase (Postg
 
 - **27/03/2026** · **Primera sesión de tutoría**. Revisión integral del estado del proyecto y definición de la hoja de ruta técnica. Se acordó la migración completa a **TypeScript** para mejorar la robustez del código, la reestructuración del sistema de archivos y el desarrollo de una arquitectura basada en **repositorios e interfaces** para los servicios de Supabase. Evaluación positiva del progreso general y recomendaciones sobre la integración de componentes reutilizables.
 - **16/04/2026** · **Segunda sesión de tutoría**. Presentación de los avances realizados, destacando la finalización de la migración a TypeScript y la implementación de las vistas de registro de visitantes y gestión de notas. Recepción de feedback sobre la optimización de la jerarquía de carpetas, la necesidad de implementar **filtrado y paginación** en las tablas de datos, y la importancia crítica de auditar las **políticas RLS** de la base de datos y el refinamiento del diseño **responsive**.
+- **28/04/2026** · **Tercera sesión de tutoría**. Evaluación de los ajustes de diseño en el **modo responsive** y la correcta implementación de la gestión de **cookies**. Revisión de la nueva sección interactiva de **Gráficos e Inteligencia Artificial**, así como la validación del flujo para la **creación de credenciales para los profesores del tribunal** evaluador.
 
 <br>
 
