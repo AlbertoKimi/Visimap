@@ -18,3 +18,14 @@ export interface RegistroVisitante {
   observaciones: string | null;
   created_at?: string;
 }
+
+export interface RegistroMapa {
+  id_registro: number;
+  cantidad: number;
+  tipo_visita: 'individual' | 'grupo';
+  creado_en: string;
+  provincia?: { nombre_provincia: string };
+  pais?: { nombre_pais: string };
+  perfil?: { nombre_usuario?: string; nombre?: string; avatar_url?: string };
+  [key: string]: unknown;
+}

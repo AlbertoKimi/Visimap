@@ -26,3 +26,17 @@ export const obtenerColor = (tipo?: string) => {
   const bg = COLORES_TIPO[tipo?.toLowerCase() || ''] || FONDO_DEFECTO;
   return { bg, text: COLOR_TEXTO, border: bg };
 };
+
+export const COLORES_PIE = [
+  'var(--color-chart-1)',
+  'var(--color-chart-2)',
+  'var(--color-chart-3)',
+  'var(--color-chart-4)',
+  'var(--color-chart-5)',
+  'var(--color-chart-6)',
+  'var(--color-chart-7)',
+  'var(--color-chart-8)',
+  'var(--color-chart-9)',
+  'var(--color-chart-10)'
+];
+

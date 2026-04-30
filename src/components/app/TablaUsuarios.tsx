@@ -1,17 +1,12 @@
 import React from 'react';
 import { UserX, Eye, Edit, Trash2 } from 'lucide-react';
 import { Perfil } from '@/interfaces/Perfil';
-import { Rol } from '@/interfaces/Rol';
 import { TablaGenerica, ColumnDef, ColumnFilter } from '@/components/ui/TablaGenerica';
 import { Menu, MenuItem } from '@mui/material';
 import { MoreVertical } from 'lucide-react';
+import { UsersTableProps } from '@/interfaces/components';
 
-interface UsersTableProps {
-  users: Perfil[];
-  roles: Rol[];
-  onAction: (action: string, profile: Perfil) => void;
-  onDeactivateSelected?: (ids: string[]) => void;
-}
+
 
 const ActionsCell: React.FC<{
   profile: Perfil;

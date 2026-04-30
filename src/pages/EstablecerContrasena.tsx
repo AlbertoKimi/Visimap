@@ -4,13 +4,8 @@ import { Snackbar, Alert, AlertColor } from '@mui/material';
 import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/supabase/client";
-import { Session } from '@supabase/supabase-js';
 import fachadaMuviImg from "@/assets/Fachada_Muvi.webp";
-
-interface EstablecerContrasenaProps {
-    session: Session | null;
-    onComplete?: () => void;
-}
+import { EstablecerContrasenaProps } from "@/interfaces/components";
 
 export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ session, onComplete }) => {
     const [passwords, setPasswords] = useState({
@@ -257,7 +252,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`btn-gradient-auth ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">

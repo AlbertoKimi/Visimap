@@ -7,27 +7,10 @@ import TextArea from "@/components/ui/TextArea";
 import Select from "@/components/ui/Select";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Pais } from "@/interfaces/Visitor";
+import { FormData, FormularioProps } from "@/interfaces/components";
 // import { PROVINCIAS } from "@/constantes/appConstants";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
-
-interface FormData {
-  provincia: string;
-  tipoVisita: 'individual' | 'grupo';
-  numPersonas: number;
-  pais: string;
-  observaciones: string;
-}
-
-interface FormularioProps {
-  provinciaInicial?: string;
-  paisInicial?: string;
-  onSubmit?: (data: FormData) => void;
-  onCancel?: () => void;
-  mostrarObservaciones?: boolean;
-  bloquearProvincia?: boolean;
-  resetTrigger?: number;
-}
 
 export function Formulario({
   provinciaInicial = '',

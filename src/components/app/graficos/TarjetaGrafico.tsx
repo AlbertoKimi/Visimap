@@ -1,16 +1,6 @@
 import React from 'react';
 import { Loader2, RefreshCw } from 'lucide-react';
-
-interface TarjetaGraficoProps {
-  titulo: string;
-  subtitulo?: string;
-  icono?: React.ReactNode;
-  colorIcono?: string;
-  children: React.ReactNode;
-  isLoading?: boolean;
-  onRefresh?: () => void;
-  altura?: string;
-}
+import { TarjetaGraficoProps } from "@/interfaces/components";
 
 export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   titulo,

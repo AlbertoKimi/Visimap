@@ -1,10 +1,7 @@
 import React from 'react';
 import { datosLeyenda } from "@/utils/ProvinciasColores";
 import { cn } from "@/utils";
-
-interface LeyendaColoresProps {
-  className?: string;
-}
+import { LeyendaColoresProps } from "@/interfaces/components";
 
 export const LeyendaColores: React.FC<LeyendaColoresProps> = ({ className }) => {
   return (

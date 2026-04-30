@@ -19,20 +19,11 @@ import Select from "@/components/ui/Select";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { supabase } from "@/database/supabase/client";
 import { Perfil } from "@/interfaces/Perfil";
-import { Rol } from "@/interfaces/Rol";
+import { formatearFecha } from "@/utils/utils";
 
 const userRepo = RepositoryFactory.getUserRepository();
 const authRepo = RepositoryFactory.getAuthRepository();
-
-interface DetalleUsuarioProps {
-  user: Perfil;
-  initialMode?: string;
-  roles: Rol[];
-  onBack: () => void;
-  onUpdate: () => void;
-  mostrarNotificacion: (mensaje: string, tipo?: 'success' | 'error' | 'warning' | 'info') => void;
-  hideBack?: boolean;
-}
+import { DetalleUsuarioProps } from "@/interfaces/components";
 
 export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   user: initialUser,
@@ -470,7 +461,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       </span>
                     }
                   />
-                  <DetailItem label="Fecha de Registro" value={user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'} />
+                  <DetailItem label="Fecha de Registro" value={formatearFecha(user.created_at)} />
                 </div>
               )}
             </CardContent>

@@ -8,6 +8,7 @@ import multiMonthPlugin from '@fullcalendar/multimonth';
 import esLocale from '@fullcalendar/core/locales/es';
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react';
+import { CalendarioProps } from '@/interfaces/components';
 
 const PLUGINS = [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, multiMonthPlugin];
 const LOCALE = esLocale;
@@ -39,13 +40,7 @@ const renderEventContent = (arg: any) => {
   );
 };
 
-interface CalendarioProps {
-  eventos: any[];
-  cargando?: boolean;
-  onDateClick?: (arg: any) => void;
-  onEventClick?: (arg: any) => void;
-  onEventChange?: (arg: any) => void;
-}
+
 
 export const Calendario: React.FC<CalendarioProps> = ({
   eventos,

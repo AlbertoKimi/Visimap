@@ -2,26 +2,8 @@ import React from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
 import { formatearFecha } from '@/utils/utils';
 import { TablaGenerica, ColumnDef, ColumnFilter } from '@/components/ui/TablaGenerica';
-
-interface RegistroEvento {
-  id_grupo: number;
-  origen: string;
-  tipo_origen: 'provincia' | 'pais';
-  num_visitantes: number;
-  created_at: string;
-  evento?: {
-    nombre_evento: string;
-    perfil?: { nombre_usuario?: string; nombre?: string; avatar_url?: string };
-  };
-  [key: string]: unknown;
-}
-
-interface TablaRegistroEventosProps {
-  registros: RegistroEvento[];
-  onDelete: (id: number) => void;
-  onEdit: (registro: RegistroEvento) => void;
-  onDeleteSelected?: (ids: (string | number)[]) => void;
-}
+import { RegistroEvento } from '@/interfaces/Evento';
+import { TablaRegistroEventosProps } from '@/interfaces/components';
 
 export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
   registros,

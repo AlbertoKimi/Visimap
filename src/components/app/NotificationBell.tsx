@@ -3,17 +3,9 @@ import { Bell, StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { useAuthStore } from "@/stores/authStore";
+import { Alerta } from "@/interfaces/components";
 
-interface Alerta {
-  id: string;
-  tipo: 'nota' | 'evento';
-  mensaje: string;
-  fechaDate: Date;
-  fechaTexto: string;
-  link: string;
-  leido: boolean;
-  icono: React.ElementType;
-}
+
 
 export const NotificationBell: React.FC = () => {
   const [alertas, setAlertas] = useState<Alerta[]>([]);

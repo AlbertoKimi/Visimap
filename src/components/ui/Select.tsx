@@ -1,16 +1,7 @@
-import { type SelectHTMLAttributes, forwardRef } from "react";
+import { forwardRef } from "react";
+import { SelectProps } from "@/interfaces/ui";
 
-export interface Option {
-  value: string | number;
-  label: string;
-}
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string;
-  options: Option[];
-  variant?: "primario" | "info";
-  manejarCambio: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(({
   label,
@@ -38,9 +29,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         ref={ref}
         value={value}
         disabled={disabled}
-        className={`input-style-comun select-responsive select-color-text ${
-          disabled ? "input-disabled" : `${colorClass}`
-        }`}
+        className={`input-style-comun select-responsive select-color-text ${disabled ? "input-disabled" : `${colorClass}`
+          }`}
         {...props}
         onChange={manejarCambio}
       >

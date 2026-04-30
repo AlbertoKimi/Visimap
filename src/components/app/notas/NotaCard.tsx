@@ -52,7 +52,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
     day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
   });
 
-  const autorBase = nota.creador || nota.profiles;
+  const autorBase = nota.creador;
   const autorNombre = autorBase
     ? `${autorBase.nombre} ${autorBase.primer_apellido}`
     : 'Usuario Desconocido';

@@ -1,12 +1,5 @@
-import { useState, type ChangeEvent, type TextareaHTMLAttributes, forwardRef } from "react";
-
-interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string;
-  mensajeError?: string;
-  variant?: "primario" | "info";
-  manejarCambio: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  manejarError?: (nombre: string, error: boolean) => void;
-}
+import { useState, forwardRef } from "react";
+import { TextAreaProps } from "@/interfaces/ui";
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
   label,
@@ -36,8 +29,8 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (touched) {
-        const isError = !!(props.required && e.target.value.trim() === "");
-        setErrorLocal(isError);
+      const isError = !!(props.required && e.target.value.trim() === "");
+      setErrorLocal(isError);
     }
     manejarCambio(e);
   };
@@ -57,9 +50,8 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
         disabled={disabled}
         aria-invalid={!!errorLocal}
         aria-describedby={errorLocal ? `${name}-error` : undefined}
-        className={`input-style-comun textarea-style ${
-          disabled ? "input-disabled" : `${colorClass}`
-        }`}
+        className={`input-style-comun textarea-style ${disabled ? "input-disabled" : `${colorClass}`
+          }`}
         {...props}
         onChange={handleChange}
         onBlur={handleBlur}

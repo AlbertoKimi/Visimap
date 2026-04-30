@@ -4,12 +4,7 @@ import { LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/database/supabase/client";
-import { Perfil } from "@/interfaces/Perfil";
-
-interface MenuLateralProps {
-  userProfile: Perfil | null;
-  logoUrl?: string;
-}
+import { MenuLateralProps } from "@/interfaces/components";
 
 export const MenuLateral: React.FC<MenuLateralProps> = ({
   userProfile
@@ -23,11 +18,10 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({
 
   const isAdmin = userProfile?.role_id === 1;
 
-  const navLinkClasses = ({ isActive }: { isActive: boolean }) => 
-    `w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-      isActive
-        ? 'bg-blue-50 text-blue-700 shadow-sm'
-        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+  const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
+    `w-full flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+      ? 'bg-blue-50 text-blue-700 shadow-sm'
+      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
     }`;
 
   return (
@@ -62,7 +56,7 @@ export const MenuLateral: React.FC<MenuLateralProps> = ({
         <NavLink to="/dashboard/mapa" className={navLinkClasses}>
           Mapa Interactivo
         </NavLink>
-        
+
         {isAdmin && (
           <NavLink to="/dashboard/registro-visitante" className={navLinkClasses}>
             Registro Visitante

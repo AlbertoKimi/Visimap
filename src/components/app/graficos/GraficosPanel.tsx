@@ -34,38 +34,8 @@ const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; pa
   );
 };
 
-const CustomYAxisTick = ({ y, payload }: { x?: number; y?: number; payload?: { value: string } }) => {
-  return (
-    <text x={10} y={y} dy={4} textAnchor="start" fill="var(--color-neutral-700)" fontSize={13} fontWeight={500}>
-      {payload?.value}
-    </text>
-  );
-};
-
-const mesActualRango = () => {
-  const now = new Date();
-  const inicio = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const fin = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
-  return { inicio, fin };
-};
-
-const getNombreMesActual = () => {
-  const mes = new Date().toLocaleDateString('es-ES', { month: 'long' });
-  return mes.charAt(0).toUpperCase() + mes.slice(1);
-};
-
-const COLORES_PIE = [
-  'var(--color-chart-1)',
-  'var(--color-chart-2)',
-  'var(--color-chart-3)',
-  'var(--color-chart-4)',
-  'var(--color-chart-5)',
-  'var(--color-chart-6)',
-  'var(--color-chart-7)',
-  'var(--color-chart-8)',
-  'var(--color-chart-9)',
-  'var(--color-chart-10)'
-];
+import { COLORES_PIE } from '@/constantes/appConstants';
+import { mesActualRango, getNombreMesActual } from '@/utils/utils';
 
 export const GraficosPanel: React.FC = () => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));

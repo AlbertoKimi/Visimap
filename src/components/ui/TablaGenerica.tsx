@@ -10,67 +10,11 @@ import {
 } from '@/components/ui/pagination';
 import { Search, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
-
-export interface ColumnDef<T> {
-  key: string;
-  header: string;
-  sortable?: boolean;
-  render?: (row: T) => React.ReactNode;
-}
-
-export interface FilterOption {
-  label: string;
-  value: string;
-}
-
-export interface ColumnFilter<T = any> {
-  key: string;
-  label: string;
-  options: FilterOption[];
-  filterFn?: (row: T, value: string) => boolean;
-}
-
-export interface TablaGenericaProps<T> {
-  data: T[];
-  columns: ColumnDef<T>[];
-  getRowId: (row: T) => string | number;
-  columnFilters?: ColumnFilter<T>[];
-  searchPlaceholder?: string;
-  searchKeys?: string[];
-  onDeleteSelected?: (ids: (string | number)[]) => void;
-  deleteSelectedLabel?: string;
-  pageSize?: number;
-  emptyMessage?: string;
-  emptyDescription?: string;
-  emptyIcon?: React.ReactNode;
-}
+import { TablaGenericaProps } from '@/interfaces/ui';
+import { getNestedValue, toStr, calcularPaginas } from '@/utils/utils';
 
 type SortDir = 'asc' | 'desc' | null;
 
-function getNestedValue(obj: any, path: string): any {
-  return path.split('.').reduce((acc: any, key: string) => acc?.[key], obj);
-}
-
-function toStr(val: any): string {
-  if (val == null) return '';
-  return String(val).toLowerCase();
-}
-
-function calcularPaginas(totalPages: number, currentPage: number): (number | 'ellipsis')[] {
-  const pages: (number | 'ellipsis')[] = [];
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
-  } else {
-    pages.push(1);
-    if (currentPage > 3) pages.push('ellipsis');
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-      pages.push(i);
-    }
-    if (currentPage < totalPages - 2) pages.push('ellipsis');
-    pages.push(totalPages);
-  }
-  return pages;
-}
 
 export function TablaGenerica<T>({
   data,
@@ -310,8 +254,8 @@ export function TablaGenerica<T>({
                       </td>
                     )}
                     {columns.map(col => (
-                      <td 
-                        key={col.key} 
+                      <td
+                        key={col.key}
                         className="flex flex-col sm:flex-row justify-between items-start sm:items-center lg:table-cell px-0 lg:px-6 py-2.5 lg:py-4 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-50 dark:border-slate-800/50 last:border-none lg:border-none break-words"
                       >
                         <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-4 mb-1 sm:mb-0">

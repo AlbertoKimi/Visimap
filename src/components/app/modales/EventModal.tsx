@@ -8,26 +8,12 @@ import Input from "@/components/ui/input";
 import TextArea from "@/components/ui/TextArea";
 import Select from "@/components/ui/Select";
 import { Button } from "@/components/ui/button";
-import { TipoEvento, GrupoVisitante } from "@/interfaces/Evento";
+import { GrupoExtendio } from "@/interfaces/Evento";
+import { EventModalProps } from "@/interfaces/components";
 import { Pais } from "@/interfaces/Visitor";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
-
-interface EventModalProps {
-  event: any;
-  isNew: boolean;
-  onClose: () => void;
-  onSave: (form: any) => void;
-  onDelete: (event: any) => void;
-  onFinalized: (id: number) => void;
-  onShowError: (msg: string) => void;
-  tiposEvento: TipoEvento[];
-}
-
-interface GrupoExtendio extends GrupoVisitante {
-  _key: number;
-}
 
 export const EventModal: React.FC<EventModalProps> = ({
   event,

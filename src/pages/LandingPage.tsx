@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { LandingPageProps } from "@/interfaces/components";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -27,9 +28,6 @@ import analisisImg from "@/assets/Analisis.webp";
 const logoUrl = logoUrlImg;
 const logoModoOscuroUrl = logoModoOscuroUrlImg;
 
-interface LandingPageProps {
-  onGetStarted: () => void;
-}
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const scrollToSection = (id: string) => {
@@ -72,7 +70,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             </div>
             <div className="flex items-center gap-4">
               <ThemeToggle />
-              <Button onClick={onGetStarted} className=" text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Button onClick={onGetStarted} className="btn-gradient-landing">
                 Iniciar Sesión
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -112,7 +110,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               <Button
                 onClick={onGetStarted}
                 size="lg"
-                className="text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8"
+                className="btn-gradient-landing text-lg px-8"
               >
                 Comenzar Ahora
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -419,7 +417,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             <Button
               onClick={onGetStarted}
               size="lg"
-              className="text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-12 py-6"
+              className="btn-gradient-landing text-lg px-12 py-6"
             >
               Comenzar Ahora
               <ArrowRight className="ml-2 h-5 w-5" />

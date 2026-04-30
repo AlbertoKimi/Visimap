@@ -1,10 +1,6 @@
-import { type InputHTMLAttributes, forwardRef } from "react";
+import { forwardRef } from "react";
+import { CheckboxProps } from "@/interfaces/ui";
 
-interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  manejarCambio: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mensajeError?: string;
-}
 
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
   label,
@@ -23,9 +19,8 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
           name={name}
           ref={ref}
           disabled={disabled}
-          className={`checkbox-input checkbox-responsive ${
-            disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-          }`}
+          className={`checkbox-input checkbox-responsive ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            }`}
           aria-disabled={disabled}
           aria-invalid={!!mensajeError}
           aria-describedby={mensajeError ? `${name}-error` : undefined}
@@ -35,9 +30,8 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(({
 
         <label
           htmlFor={name}
-          className={`text-sm font-medium text-slate-700 select-none cursor-pointer transition-colors ${
-            disabled ? "opacity-50 cursor-not-allowed" : "group-hover:text-blue-600"
-          }`}
+          className={`text-sm font-medium text-slate-700 select-none cursor-pointer transition-colors ${disabled ? "opacity-50 cursor-not-allowed" : "group-hover:text-blue-600"
+            }`}
         >
           {label}
         </label>

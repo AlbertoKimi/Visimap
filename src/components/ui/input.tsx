@@ -1,15 +1,6 @@
-import { useState, type InputHTMLAttributes, forwardRef } from "react";
+import { useState, forwardRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  variant?: "primario" | "info";
-  regex?: RegExp;
-  name?: string;
-  manejarCambio?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  manejarError?: (nombre: string, error: boolean) => void;
-}
+import { InputProps } from "@/interfaces/ui";
 
 const Input = forwardRef<HTMLInputElement, InputProps>(({
   manejarCambio,

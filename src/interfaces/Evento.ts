@@ -28,6 +28,10 @@ export interface GrupoVisitante {
   num_visitantes: number;
 }
 
+export interface GrupoExtendio extends GrupoVisitante {
+  _key: number;
+}
+
 export interface EventoFormData {
   nombre_evento: string;
   descripcion?: string;
@@ -36,4 +40,17 @@ export interface EventoFormData {
   id_tipo: number;
   id_usuario: UUID;
   finalizado?: boolean;
+}
+
+export interface RegistroEvento {
+  id_grupo: number;
+  origen: string;
+  tipo_origen: 'provincia' | 'pais';
+  num_visitantes: number;
+  created_at: string;
+  evento?: {
+    nombre_evento: string;
+    perfil?: { nombre_usuario?: string; nombre?: string; avatar_url?: string };
+  };
+  [key: string]: unknown;
 }

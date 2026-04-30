@@ -5,11 +5,7 @@ import { BurbujaMensaje } from './chat/BurbujaMensaje';
 import { InputMensaje } from './chat/InputMensaje';
 
 // Pantalla de bienvenida con sugerencias
-
-
-interface EstadoVacioProps {
-  onSugerencia: (prompt: string) => void;
-}
+import { EstadoVacioProps } from "@/interfaces/components";
 
 const EstadoVacio: React.FC<EstadoVacioProps> = ({ onSugerencia }) => (
   <div className="chat-vacio">

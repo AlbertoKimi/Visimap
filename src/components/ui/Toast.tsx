@@ -1,18 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
-
-export type ToastTipo = 'success' | 'error' | 'warning' | 'info';
-
-export interface ToastProps {
-  open: boolean;
-  mensaje: string;
-  tipo?: ToastTipo;
-  duracion?: number;
-  onClose: () => void;
-}
+import { ToastProps, ToastTipo } from '@/interfaces/ui';
 
 const CONFIG: Record<ToastTipo, {
-  icono: React.ReactNode;
+  icono: ReactNode;
   clases: string;
 }> = {
   success: {
@@ -67,19 +58,3 @@ export function Toast({ open, mensaje, tipo = 'info', duracion = 4000, onClose }
   );
 }
 
-
-export function useToast() {
-  const [toast, setToast] = React.useState<{
-    open: boolean;
-    mensaje: string;
-    tipo: ToastTipo;
-  }>({ open: false, mensaje: '', tipo: 'info' });
-
-  const mostrar = (mensaje: string, tipo: ToastTipo = 'info') => {
-    setToast({ open: true, mensaje, tipo });
-  };
-
-  const cerrar = () => setToast(prev => ({ ...prev, open: false }));
-
-  return { toast, mostrar, cerrar };
-}

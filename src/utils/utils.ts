@@ -7,14 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 // Utilidades de eventos
 
-export function formatearFechaInput(date: string | Date | null): string {
+export function formatearFechaInput(date: string | Date | null | undefined): string {
   if (!date) return '';
   const d = new Date(date);
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function formatearRangoFechas(inicio: string | Date | null, fin: string | Date | null): string {
+export function formatearRangoFechas(inicio: string | Date | null | undefined, fin: string | Date | null | undefined): string {
   if (!inicio) return '';
   const opciones: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
   const strInicio = new Date(inicio).toLocaleString('es-ES', opciones);
@@ -22,7 +22,45 @@ export function formatearRangoFechas(inicio: string | Date | null, fin: string |
   return strFin ? `${strInicio} → ${strFin}` : strInicio;
 }
 
-export function formatearFecha(date: string | Date | null): string {
+export function formatearFecha(date: string | Date | null | undefined): string {
   if (!date) return '';
   return new Date(date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+export const mesActualRango = () => {
+  const now = new Date();
+  const inicio = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const fin = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  return { inicio, fin };
+};
+
+export const getNombreMesActual = () => {
+  const mes = new Date().toLocaleDateString('es-ES', { month: 'long' });
+  return mes.charAt(0).toUpperCase() + mes.slice(1);
+};
+
+// Utilidades de tabla
+export function getNestedValue(obj: any, path: string): any {
+  return path.split('.').reduce((acc: any, key: string) => acc?.[key], obj);
+}
+
+export function toStr(val: any): string {
+  if (val == null) return '';
+  return String(val).toLowerCase();
+}
+
+export function calcularPaginas(totalPages: number, currentPage: number): (number | 'ellipsis')[] {
+  const pages: (number | 'ellipsis')[] = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (currentPage > 3) pages.push('ellipsis');
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      pages.push(i);
+    }
+    if (currentPage < totalPages - 2) pages.push('ellipsis');
+    pages.push(totalPages);
+  }
+  return pages;
 }

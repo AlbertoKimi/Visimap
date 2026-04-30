@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import Input from "@/components/ui/input";
 import fondoLoginImg from "@/assets/Fondo_Login.webp";
-
-interface FormularioSesionProps {
-  onLogin: (email: string, pass: string) => Promise<void>;
-  onBack: () => void;
-  logoUrl?: string;
-  logoModoOscuroUrl?: string;
-}
+import { FormularioSesionProps } from "@/interfaces/components";
 
 export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   onLogin,

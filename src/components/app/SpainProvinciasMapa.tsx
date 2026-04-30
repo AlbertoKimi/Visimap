@@ -2,18 +2,7 @@ import { useState, useEffect } from 'react';
 import { SpainProvincePaths } from "@/utils/SpainProvinciasPaths";
 import { getColoresProvincia } from "@/utils/ProvinciasColores";
 import { LeyendaColores } from "@/components/app/Leyenda";
-
-interface ProvinceInfo {
-  id: string;
-  name: string;
-  path: string;
-}
-
-interface SpainProvincesMapProps {
-  activeId?: string | null;
-  onProvinceClick?: (province: ProvinceInfo) => void;
-  className?: string;
-}
+import { ProvinceInfo, SpainProvincesMapProps } from "@/interfaces/components";
 
 export default function SpainProvincesMap({
   activeId,

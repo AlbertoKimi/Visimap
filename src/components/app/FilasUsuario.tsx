@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
-import { Perfil } from "@/interfaces/Perfil";
-import { Rol } from "@/interfaces/Rol";
-
-interface UserRowProps {
-  profile: Perfil;
-  roles: Rol[];
-  onAction: (action: string, profile: Perfil) => void;
-}
+import { UserRowProps } from "@/interfaces/components";
 
 export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -41,7 +34,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <tr 
+    <tr
       onClick={() => onAction('view', profile)}
       className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors group cursor-pointer"
     >

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-
-interface ModalEditarCantidadProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (nuevaCantidad: number) => void;
-  cantidadActual: number;
-  titulo: string;
-}
+import { ModalEditarCantidadProps } from '@/interfaces/components';
 
 export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
   isOpen,
@@ -29,14 +22,14 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl w-full max-w-sm overflow-hidden transform animate-in zoom-in-95 duration-200 border border-slate-100 dark:border-slate-800">
         <div className="p-8">
           <div className="flex justify-end items-start mb-2">
-            <button 
+            <button
               onClick={onClose}
               className="p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
             >
               <X size={20} />
             </button>
           </div>
-          
+
           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">{titulo}</h3>
           <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">
             Modifica el número de visitantes registrados para este registro.
@@ -58,7 +51,7 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
             </div>
           </div>
         </div>
-        
+
         <div className="p-6 bg-slate-50/50 dark:bg-slate-800/50 flex gap-3 border-t border-slate-100 dark:border-slate-800">
           <button
             onClick={onClose}
