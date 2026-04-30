@@ -31,7 +31,7 @@ export default function SpainProvincesMap({
       <div className="relative w-full max-w-[550px] shrink-0">
         <svg
           viewBox="-10 -20 440 500"
-          className="w-full h-auto max-h-[75vh] drop-shadow-2xl"
+          className="w-full h-auto max-h-[75vh] mapa-shadow"
         >
           {Object.entries(SpainProvincePaths).map(([id, province]) => {
             const isSelected = activeId === id;

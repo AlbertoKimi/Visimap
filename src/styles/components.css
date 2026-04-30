@@ -520,8 +520,18 @@
 }
 
 @keyframes chatTypingBounce {
-  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
-  40%           { transform: translateY(-6px); opacity: 1; }
+
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
 }
 
 /* ── Footer / input container ────────────────────────────────────────────── */
@@ -627,7 +637,7 @@
   background-color: #1e293b !important;
 }
 
-.dark .fc-theme-standard td, 
+.dark .fc-theme-standard td,
 .dark .fc-theme-standard th {
   border-color: #334155;
 }
@@ -641,7 +651,7 @@
   .fc .fc-toolbar-title {
     font-size: 0.9rem !important;
   }
-  
+
   .fc .fc-col-header-cell-cushion {
     font-size: 0.65rem !important;
     padding: 2px 1px !important;
@@ -671,12 +681,12 @@
     font-size: 8px !important;
     font-weight: bold;
   }
-  
+
   /* Ajustes para la vista de lista */
   .fc-list-event-time {
     display: none !important;
   }
-  
+
   .fc-list-event-title {
     font-size: 11px !important;
   }
@@ -686,7 +696,19 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+
+/* ── Drop-shadow del mapa ────────────────────────────────────────────────── */
+
+.mapa-shadow {
+  filter: drop-shadow(2px 4px 1px black);
+}
+
+.dark .mapa-shadow {
+  filter: drop-shadow(2px 4px 1px white);
 }
