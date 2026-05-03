@@ -58,6 +58,23 @@
   @apply max-w-full;
 }
 
+/* Clase para login en iphone */
+
+.login-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-color 0.3s;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
 .textarea-style {
   @apply min-h-[90px] resize-y leading-relaxed;
 }
