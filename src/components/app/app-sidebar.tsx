@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { LogOut, Map, UserPlus, Users, Calendar, BarChart3, StickyNote, Settings } from "lucide-react"
+import { LogOut, Map, UserPlus, Users, Calendar, BarChart3, StickyNote, Settings, Sparkles, History } from "lucide-react"
 
 import {
   Sidebar,
@@ -38,9 +38,9 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton 
-              asChild 
-              size="lg" 
+            <SidebarMenuButton
+              asChild
+              size="lg"
               className="h-auto py-3 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               onClick={handleNavClick}
             >
@@ -76,9 +76,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip="Mapa Interactivo" 
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Mapa Interactivo"
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                   onClick={handleNavClick}
                 >
@@ -91,9 +91,9 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild 
-                    tooltip="Registro Visitante" 
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Registro Visitante"
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                     onClick={handleNavClick}
                   >
@@ -107,9 +107,9 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild 
-                    tooltip="Trabajadores" 
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Trabajadores"
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                     onClick={handleNavClick}
                   >
@@ -122,9 +122,9 @@ export function AppSidebar() {
               )}
 
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip="Eventos" 
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Eventos"
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                   onClick={handleNavClick}
                 >
@@ -137,9 +137,9 @@ export function AppSidebar() {
 
               {isAdmin && (
                 <SidebarMenuItem>
-                  <SidebarMenuButton 
-                    asChild 
-                    tooltip="Gráficas" 
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Gráficas"
                     className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                     onClick={handleNavClick}
                   >
@@ -151,10 +151,40 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               )}
 
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Historial"
+                    className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                    onClick={handleNavClick}
+                  >
+                    <NavLink to="/dashboard/historial">
+                      <History />
+                      <span>Historial</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip="Notas" 
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Asistente"
+                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                  onClick={handleNavClick}
+                >
+                  <NavLink to="/dashboard/asistente">
+                    <Sparkles />
+                    <span>Asistente</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Notas"
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                   onClick={handleNavClick}
                 >
@@ -168,14 +198,14 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-4">
+        <SidebarGroup className="mt-0 pb-4">
           <SidebarGroupLabel className="text-sm pb-2">Cuenta</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip="Editar Perfil" 
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Editar Perfil"
                   className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
                   onClick={handleNavClick}
                 >

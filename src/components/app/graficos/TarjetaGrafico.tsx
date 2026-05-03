@@ -1,6 +1,7 @@
-import React from 'react';
-import { Loader2, RefreshCw } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Loader2, RefreshCw, Download } from 'lucide-react';
 import { TarjetaGraficoProps } from "@/interfaces/components";
+import html2canvas from 'html2canvas';
 
 export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   titulo,
@@ -12,8 +13,31 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   onRefresh,
   altura = 'h-72',
 }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
+        scale: 2,
+        logging: false,
+        useCORS: true
+      });
+      const link = document.createElement('a');
+      link.download = `grafico-${titulo.toLowerCase().replace(/\s+/g, '-')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Error al exportar imagen:', err);
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-300">
+    <div
+      ref={cardRef}
+      className="bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800 p-5 flex flex-col gap-3 hover:shadow-lg transition-shadow duration-300"
+    >
       {/* Cabecera */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -27,15 +51,24 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
             {subtitulo && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{subtitulo}</p>}
           </div>
         </div>
-        {onRefresh && (
+        <div className="flex items-center gap-1">
           <button
-            onClick={onRefresh}
-            title="Actualizar gráfico"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
+            onClick={handleDownload}
+            title="Descargar como imagen"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
           >
-            <RefreshCw className="w-4 h-4" />
+            <Download className="w-4 h-4" />
           </button>
-        )}
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              title="Actualizar gráfico"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Contenido */}

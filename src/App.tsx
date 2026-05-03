@@ -12,6 +12,8 @@ import { VistaPerfil } from "@/pages/VistaPerfil";
 import { Graficos } from "@/pages/Graficos";
 import { RegistroVisitante } from "@/pages/RegistroVisitante";
 import { Notas } from "@/pages/Notas";
+import { Asistente } from "@/pages/Asistente";
+import { Historial } from "@/pages/Historial";
 import { FormularioSesion } from "@/components/app/FormularioSesion";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { ProtectedRoute } from "@/rutas/ProtectedRoute";
@@ -153,6 +155,14 @@ export default function App() {
             {
               path: "notas",
               element: <Notas />
+            },
+            {
+              path: "asistente",
+              element: <Asistente />
+            },
+            {
+              path: "historial",
+              element: <Historial />
             },
             {
               path: "perfil",

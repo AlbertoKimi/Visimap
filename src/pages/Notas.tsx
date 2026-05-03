@@ -56,12 +56,12 @@ export const Notas: React.FC = () => {
   const notasFinalizadas = notas.filter(n => n.estado === 'finalizada');
 
   return (
-    <div className="flex flex-col h-full bg-slate-50/50 dark:bg-transparent p-6 sm:p-8 overflow-y-auto">
-      <div className="flex justify-between items-center mb-8 shrink-0">
+    <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">Notas y Tareas</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Gestiona tus recordatorios. Las tareas finalizadas duran 7 días.
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+            Gestiona tus recordatorios y tareas del museo
           </p>
         </div>
         <button
@@ -69,7 +69,7 @@ export const Notas: React.FC = () => {
           className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium"
         >
           <Plus size={18} />
-          Añadir nota
+          <span className="text-sm">Añadir nota</span>
         </button>
       </div>
 

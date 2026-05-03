@@ -29,14 +29,22 @@ export function formatearFecha(date: string | Date | null | undefined): string {
 
 export const mesActualRango = () => {
   const now = new Date();
-  const inicio = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const fin = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+  return getRangoPeriodo(now.getMonth(), now.getFullYear());
+};
+
+export const getRangoPeriodo = (mes: number, anio: number) => {
+  const inicio = new Date(anio, mes, 1).toISOString();
+  const fin = new Date(anio, mes + 1, 0, 23, 59, 59).toISOString();
   return { inicio, fin };
 };
 
 export const getNombreMesActual = () => {
-  const mes = new Date().toLocaleDateString('es-ES', { month: 'long' });
-  return mes.charAt(0).toUpperCase() + mes.slice(1);
+  return getNombreMes(new Date().getMonth());
+};
+
+export const getNombreMes = (mes: number) => {
+  const nombre = new Date(2024, mes, 1).toLocaleDateString('es-ES', { month: 'long' });
+  return nombre.charAt(0).toUpperCase() + nombre.slice(1);
 };
 
 // Utilidades de tabla

@@ -264,14 +264,20 @@ export const VistaCalendario: React.FC = () => {
   }, [eventos, ahora]);
 
   return (
-    <div className="h-full overflow-y-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 pr-2">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Calendario</h2>
-          <p className="text-slate-500 dark:text-slate-400">Programación de actividades y gestión del museo.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Calendario de Eventos</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+            Programación de actividades y gestión del museo
+          </p>
         </div>
-        <CustomButton onClick={() => handleClicFecha({ dateStr: formatearFechaInput(new Date()) })} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-          <Plus className="w-4 h-4 mr-2" /> Nuevo Evento
+        <CustomButton
+          onClick={() => handleClicFecha({ dateStr: formatearFechaInput(new Date()) })}
+          className="bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium h-10 px-4"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          <span className="text-sm">Nuevo Evento</span>
         </CustomButton>
       </div>
 

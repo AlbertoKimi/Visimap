@@ -119,7 +119,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
     if (success) setResetModalTrigger(prev => prev + 1);
   };
 
-  // Contenido del formulario para reutilizar en móvil y escritorio
+  // Contenido del formulario en móvil y escritorio
   const contenidoFormulario = (
     <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
       <div className="flex items-start justify-between mb-[var(--spacing-xs)] md:mb-[var(--spacing-sm)]">
