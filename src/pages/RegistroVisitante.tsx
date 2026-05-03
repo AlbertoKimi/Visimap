@@ -5,6 +5,7 @@ import { TablaRegistroMapa } from '@/components/app/TablaRegistroMapa';
 import { TablaRegistroEventos } from '@/components/app/TablaRegistroEventos';
 import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
 import { ModalEditarCantidad } from '@/components/app/modales/ModalEditarCantidad';
+import { ModalDetalleRegistro } from '@/components/app/modales/ModalDetalleRegistro';
 import { Toast } from '@/components/ui/Toast';
 
 export const RegistroVisitante: React.FC = () => {
@@ -16,6 +17,7 @@ export const RegistroVisitante: React.FC = () => {
   // Modales
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   // Toast
@@ -111,6 +113,12 @@ export const RegistroVisitante: React.FC = () => {
     }
   };
 
+  // ── Detalle ──
+  const handleRowClick = (item: any) => {
+    setSelectedItem(item);
+    setIsDetailModalOpen(true);
+  };
+
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
@@ -183,6 +191,7 @@ export const RegistroVisitante: React.FC = () => {
                 onDelete={handleDeleteRequest}
                 onEdit={handleEditRequest}
                 onDeleteSelected={handleDeleteSelected}
+                onRowClick={handleRowClick}
               />
             ) : (
               <TablaRegistroEventos
@@ -190,6 +199,7 @@ export const RegistroVisitante: React.FC = () => {
                 onDelete={handleDeleteRequest}
                 onEdit={handleEditRequest}
                 onDeleteSelected={handleDeleteSelected}
+                onRowClick={handleRowClick}
               />
             )}
           </div>
@@ -210,8 +220,15 @@ export const RegistroVisitante: React.FC = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveQuantity}
-        cantidadActual={activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes}
+        cantidadActual={(activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes) || 0}
         titulo="Modificar cantidad"
+      />
+
+      <ModalDetalleRegistro
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        data={selectedItem}
+        tipo={activeTab}
       />
 
       {/* Toast */}

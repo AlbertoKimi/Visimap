@@ -9,4 +9,5 @@ export interface EventRepository {
   getAllGrupoVisitantes(): Promise<any[]>;
   deleteGrupoVisitante(id: number): Promise<void>;
   updateGrupoVisitante(id: number, num_visitantes: number): Promise<void>;
+  getGruposByEvento(id_evento: number): Promise<GrupoVisitante[]>;
 }

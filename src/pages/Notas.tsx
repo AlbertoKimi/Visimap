@@ -85,7 +85,7 @@ export const Notas: React.FC = () => {
           </h2>
           {notasNormales.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-blue-200/50 dark:border-blue-900/20 rounded-xl bg-blue-50/50 dark:bg-blue-900/5">
-              <p className="text-blue-600/70 dark:text-blue-400/50 text-sm font-medium">No hay notas nuevas. Pulsa en "Añadir nota" para crear una.</p>
+              <p className="text-blue-600/70 dark:text-slate-400 text-sm font-medium">No hay notas nuevas. Pulsa en "Añadir nota" para crear una.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
@@ -106,7 +106,7 @@ export const Notas: React.FC = () => {
           </h2>
           {notasPendientes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-orange-200/50 dark:border-orange-900/20 rounded-xl bg-orange-50/50 dark:bg-orange-900/5">
-              <p className="text-orange-600/70 dark:text-orange-400/50 text-sm font-medium">No hay ninguna tarea marcada como pendiente.</p>
+              <p className="text-orange-600/70 dark:text-slate-400 text-sm font-medium">No hay ninguna tarea marcada como pendiente.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
@@ -127,7 +127,7 @@ export const Notas: React.FC = () => {
           </h2>
           {notasFinalizadas.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 px-4 border-2 border-dashed border-green-200/50 dark:border-green-900/20 rounded-xl bg-green-50/50 dark:bg-green-900/5">
-              <p className="text-green-600/70 dark:text-green-400/50 text-sm font-medium">Aún no hay tareas finalizadas esta semana.</p>
+              <p className="text-green-600/70 dark:text-slate-400 text-sm font-medium">Aún no hay tareas finalizadas esta semana.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">

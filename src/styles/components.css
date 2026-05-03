@@ -28,7 +28,7 @@
 
 
 .input-style-comun {
-  @apply w-full px-4 py-2.5 border rounded-xl text-sm font-medium transition-all duration-200 outline-none dark:bg-slate-900 dark:text-slate-200;
+  @apply w-full px-4 py-2.5 border rounded-xl text-base lg:text-sm font-medium transition-all duration-200 outline-none dark:bg-slate-900 dark:text-slate-200;
 }
 
 

@@ -88,6 +88,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
             value={email}
             placeholder="ejemplo@muvi.es"
             required
+            autoComplete="email"
             regex={/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/}
             error="Introduce un email válido (ej: usuario@empresa.com)"
             manejarCambio={manejarCambioEmail}
@@ -101,6 +102,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
             value={password}
             placeholder="••••••••"
             required
+            autoComplete="current-password"
             error="La contraseña es obligatoria"
             manejarCambio={manejarCambioPassword}
             manejarError={manejarError}

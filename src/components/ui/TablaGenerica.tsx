@@ -11,7 +11,7 @@ import {
 import { Search, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
 import { TablaGenericaProps } from '@/interfaces/ui';
-import { getNestedValue, toStr, calcularPaginas } from '@/utils/utils';
+import { getNestedValue, toStr, calcularPaginas, cn } from '@/utils/utils';
 
 type SortDir = 'asc' | 'desc' | null;
 
@@ -29,6 +29,7 @@ export function TablaGenerica<T>({
   emptyMessage = 'No hay registros',
   emptyDescription = 'No se encontraron resultados para los filtros aplicados.',
   emptyIcon,
+  onRowClick,
 }: TablaGenericaProps<T>) {
   const [search, setSearch] = useState('');
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
@@ -238,25 +239,36 @@ export function TablaGenerica<T>({
                 return (
                   <tr
                     key={id}
-                    className={`flex flex-col lg:table-row rounded-2xl lg:rounded-none border border-slate-100 dark:border-slate-800 lg:border-none shadow-sm lg:shadow-none p-4 lg:p-0 transition-all duration-150 bg-white dark:bg-slate-900/40 ${isSelected ? 'ring-2 ring-blue-500/50 bg-blue-50/30 dark:bg-blue-900/20' : 'hover:border-blue-200 dark:hover:border-blue-800 lg:hover:bg-slate-50/80 dark:lg:hover:bg-slate-800/40'}`}
+                    onClick={() => onRowClick && onRowClick(row)}
+                    className={`flex flex-col lg:table-row rounded-2xl lg:rounded-none border border-slate-100 dark:border-slate-800 lg:border-none shadow-sm lg:shadow-none p-4 lg:p-0 transition-all duration-150 bg-white dark:bg-slate-900/40 ${onRowClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60' : ''} ${isSelected ? 'ring-2 ring-blue-500/50 bg-blue-50/30 dark:bg-blue-900/20' : 'hover:border-blue-200 dark:hover:border-blue-800 lg:hover:bg-slate-50/80 dark:lg:hover:bg-slate-800/40'}`}
                   >
                     {onDeleteSelected && (
-                      <td className="flex justify-between items-center lg:table-cell px-0 lg:px-5 py-2 lg:py-4 border-b border-slate-50 dark:border-slate-800/50 lg:border-none mb-2 lg:mb-0">
-                        <span className="lg:hidden text-[10px] font-black text-slate-400 uppercase tracking-wider">Seleccionar</span>
-                        <input
-                          type="checkbox"
-                          className="checkbox-input"
-                          checked={isSelected}
-                          onChange={() => toggleRow(id)}
-                          aria-label={`Seleccionar fila ${id}`}
-                          onClick={e => e.stopPropagation()}
-                        />
+                      <td className="flex justify-between items-center lg:table-cell px-0 lg:px-5 py-2 lg:py-4 border-b border-slate-50 dark:border-slate-800/50 lg:border-none mb-4 lg:mb-0">
+                        <div className="flex items-center gap-4">
+                          <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Seleccionar</span>
+                          <input
+                            type="checkbox"
+                            className="checkbox-input"
+                            checked={isSelected}
+                            onChange={() => toggleRow(id)}
+                            aria-label={`Seleccionar fila ${id}`}
+                            onClick={e => e.stopPropagation()}
+                          />
+                        </div>
+                        
+                        {/* Acciones en móvil (arriba a la derecha) */}
+                        <div className="lg:hidden ml-4">
+                          {columns.find(c => c.key === '_actions')?.render?.(row)}
+                        </div>
                       </td>
                     )}
                     {columns.map(col => (
                       <td
                         key={col.key}
-                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center lg:table-cell px-0 lg:px-6 py-2.5 lg:py-4 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-50 dark:border-slate-800/50 last:border-none lg:border-none break-words"
+                        className={cn(
+                          "flex flex-col sm:flex-row justify-between items-start sm:items-center lg:table-cell px-0 lg:px-6 py-2.5 lg:py-4 text-sm text-slate-700 dark:text-slate-300 border-b border-slate-50 dark:border-slate-800/50 last:border-none lg:border-none break-words",
+                          col.key === '_actions' && "hidden lg:table-cell"
+                        )}
                       >
                         <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-4 mb-1 sm:mb-0">
                           {col.header}
@@ -333,7 +345,7 @@ export function TablaGenerica<T>({
         onClose={() => setModalAbierto(false)}
         onConfirm={handleDeleteSelected}
         titulo={deleteSelectedLabel}
-        mensaje={`Esta acción afectará a ${selected.size} elemento(s) seleccionado(s) y no se podrá deshacer.`}
+        mensaje={`Esta acción afectará a ${selected.size} ${selected.size === 1 ? 'elemento seleccionado' : 'elementos seleccionados'} y no se podrá deshacer.`}
         tipo="danger"
       />
     </div>

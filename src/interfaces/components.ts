@@ -71,6 +71,7 @@ export interface TablaRegistroMapaProps {
   onDelete: (id: number) => void;
   onEdit: (registro: RegistroMapa) => void;
   onDeleteSelected?: (ids: (string | number)[]) => void;
+  onRowClick?: (registro: RegistroMapa) => void;
 }
 
 import { RegistroEvento, TipoEvento } from "@/interfaces/Evento";
@@ -80,6 +81,14 @@ export interface TablaRegistroEventosProps {
   onDelete: (id: number) => void;
   onEdit: (registro: RegistroEvento) => void;
   onDeleteSelected?: (ids: (string | number)[]) => void;
+  onRowClick?: (registro: RegistroEvento) => void;
+}
+
+export interface ModalDetalleRegistroProps {
+  isOpen: boolean;
+  onClose: () => void;
+  data: any;
+  tipo: 'mapa' | 'evento' | 'eventos';
 }
 
 export interface EventModalProps {

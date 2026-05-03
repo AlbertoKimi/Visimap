@@ -87,7 +87,7 @@ export class SupabaseEventRepository implements EventRepository {
     // Obtener grupos con los datos básicos del evento
     const { data: grupos, error: grupoError } = await supabase
       .from('grupo_visitante')
-      .select('*, evento:id_evento(nombre_evento, id_usuario)')
+      .select('*, evento:id_evento(nombre_evento, id_usuario, descripcion)')
       .order('created_at', { ascending: false });
 
     if (grupoError) throw grupoError;
@@ -139,5 +139,16 @@ export class SupabaseEventRepository implements EventRepository {
       .eq('id_grupo', id);
 
     if (error) throw error;
+  }
+
+  async getGruposByEvento(id_evento: number): Promise<GrupoVisitante[]> {
+    const { data, error } = await supabase
+      .from('grupo_visitante')
+      .select('*')
+      .eq('id_evento', id_evento)
+      .order('id_grupo');
+
+    if (error) throw error;
+    return data || [];
   }
 }

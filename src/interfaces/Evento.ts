@@ -50,6 +50,7 @@ export interface RegistroEvento {
   created_at: string;
   evento?: {
     nombre_evento: string;
+    descripcion?: string;
     perfil?: { nombre_usuario?: string; nombre?: string; avatar_url?: string };
   };
   [key: string]: unknown;

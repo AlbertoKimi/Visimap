@@ -1,7 +1,8 @@
 import React from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
 import { formatearFecha } from '@/utils/utils';
-import { TablaGenerica, ColumnDef, ColumnFilter } from '@/components/ui/TablaGenerica';
+import { TablaGenerica } from '@/components/ui/TablaGenerica';
+import { ColumnDef, ColumnFilter } from '@/interfaces/ui';
 import { RegistroMapa } from '@/interfaces/Visitor';
 import { TablaRegistroMapaProps } from '@/interfaces/components';
 
@@ -11,6 +12,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
   onDelete,
   onEdit,
   onDeleteSelected,
+  onRowClick,
 }) => {
   const columns: ColumnDef<RegistroMapa>[] = [
     {
@@ -78,14 +80,14 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
         <div className="flex justify-end gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(reg); }}
-            className="p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-blue-200 dark:hover:shadow-none active:scale-95"
+            className="p-1.5 lg:p-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-blue-200 dark:hover:shadow-none active:scale-95"
             title="Modificar"
           >
             <Edit3 size={16} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(reg.id_registro); }}
-            className="p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 dark:hover:shadow-none active:scale-95"
+            className="p-1.5 lg:p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 dark:hover:shadow-none active:scale-95"
             title="Eliminar"
           >
             <Trash2 size={16} />
@@ -112,6 +114,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
         data={registros}
         columns={columns}
         getRowId={(reg) => reg.id_registro}
+        onRowClick={onRowClick}
         columnFilters={columnFilters}
         searchPlaceholder="Buscar por ubicación o usuario..."
         searchKeys={[

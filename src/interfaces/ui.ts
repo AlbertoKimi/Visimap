@@ -1,4 +1,4 @@
-import { TextareaHTMLAttributes, SelectHTMLAttributes, InputHTMLAttributes } from "react";
+import React, { TextareaHTMLAttributes, SelectHTMLAttributes, InputHTMLAttributes } from "react";
 
 // Toast.tsx
 export type ToastTipo = 'success' | 'error' | 'warning' | 'info';
@@ -9,6 +9,19 @@ export interface ToastProps {
   tipo?: ToastTipo;
   duracion?: number;
   onClose: () => void;
+}
+
+// Modal.tsx
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  size?: ModalSize;
+  showCloseButton?: boolean;
 }
 
 // TextArea.tsx
@@ -53,6 +66,7 @@ export interface TablaGenericaProps<T> {
   emptyMessage?: string;
   emptyDescription?: string;
   emptyIcon?: React.ReactNode;
+  onRowClick?: (row: T) => void;
 }
 
 // Select.tsx
