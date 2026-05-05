@@ -1,9 +1,9 @@
 import React from 'react';
-import { UserX, Eye, Edit, Trash2 } from 'lucide-react';
+import { UserX, Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
 import { Perfil } from '@/interfaces/Perfil';
-import { TablaGenerica, ColumnDef, ColumnFilter } from '@/components/ui/TablaGenerica';
+import { TablaGenerica } from '@/components/ui/TablaGenerica';
+import { ColumnDef, ColumnFilter } from '@/interfaces/ui';
 import { Menu, MenuItem } from '@mui/material';
-import { MoreVertical } from 'lucide-react';
 import { UsersTableProps } from '@/interfaces/components';
 
 
@@ -29,7 +29,7 @@ const ActionsCell: React.FC<{
     <div className="flex justify-end">
       <button
         onClick={handleClick}
-        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
+        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
         data-state={open ? 'open' : 'closed'}
       >
         <MoreVertical className="w-5 h-5" />
