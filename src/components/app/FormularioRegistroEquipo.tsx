@@ -58,6 +58,7 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
         apellido1: apellido1,
         apellido2: apellido2,
         telefono: formData.telefono,
+        rol: formData.rol,
         role_id: formData.rol === 'admin' ? 1 : 2
       });
 
