@@ -107,9 +107,10 @@ export class SupabaseVisitorRepository implements VisitorRepository {
   }
 
   async updateRegistro(id: number, cantidad: number): Promise<void> {
+    const tipo_visita = cantidad > 1 ? 'grupo' : 'individual';
     const { error } = await supabase
       .from('registro_visitante')
-      .update({ cantidad })
+      .update({ cantidad, tipo_visita })
       .eq('id_registro', id);
 
     if (error) throw error;
