@@ -43,7 +43,10 @@ export class SupabaseAuthRepository implements AuthRepository {
     const { error } = await supabase.functions.invoke('invite-user', {
       body: {
         email,
-        options: { data: metadata }
+        options: { 
+          data: metadata,
+          redirectTo: window.location.origin
+        }
       }
     });
     if (error) throw error;
