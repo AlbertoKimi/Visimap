@@ -108,7 +108,7 @@ export interface ModalConfirmacionProps {
   onConfirm: () => void;
   titulo: string;
   mensaje: string;
-  tipo?: 'danger' | 'warning' | 'info';
+  tipo?: 'danger' | 'warning' | 'info' | 'success';
 }
 
 export interface ModalEditarCantidadProps {
@@ -173,4 +173,6 @@ export interface UsersTableProps {
   roles: Rol[];
   onAction: (action: string, profile: Perfil) => void;
   onDeactivateSelected?: (ids: string[]) => void;
+  onActivateSelected?: (ids: string[]) => void;
+  currentUserId?: string;
 }

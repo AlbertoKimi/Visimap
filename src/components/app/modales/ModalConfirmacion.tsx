@@ -12,6 +12,7 @@ export const ModalConfirmacion: React.FC<ModalConfirmacionProps> = ({
 }) => {
   const btnClass = tipo === 'danger' ? 'bg-red-600 hover:bg-red-700 shadow-red-200' :
     tipo === 'warning' ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-200' :
+    tipo === 'success' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200' :
       'bg-blue-600 hover:bg-blue-700 shadow-blue-200';
 
   const footer = (

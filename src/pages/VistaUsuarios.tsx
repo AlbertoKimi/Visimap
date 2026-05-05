@@ -10,11 +10,13 @@ import { Snackbar, Alert } from '@mui/material';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Perfil } from "@/interfaces/Perfil";
 import { Rol } from "@/interfaces/Rol";
+import { useAuthStore } from "@/stores/authStore";
 
 const userRepo = RepositoryFactory.getUserRepository();
 const roleRepo = RepositoryFactory.getRoleRepository();
 
 export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onRefreshProfile }) => {
+  const { userProfile } = useAuthStore();
   const [profiles, setProfiles] = useState<Perfil[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -45,20 +47,21 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     setNotificacion({ open: true, mensaje, tipo });
   };
 
-  const fetchProfiles = async () => {
+  const fetchProfiles = async (showLoading = true) => {
     try {
-      setIsLoading(true);
+      if (showLoading) setIsLoading(true);
       const [profilesData, rolesData] = await Promise.all([
         userRepo.getAll(),
         roleRepo.getAll()
       ]);
       setProfiles(profilesData);
       setRoles(rolesData);
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as Error;
       console.error('Error cargando usuarios:', err.message);
       setError('No se ha podido cargar el equipo. Por favor, comprueba tu conexión e inténtalo de nuevo.');
     } finally {
-      setIsLoading(false);
+      if (showLoading) setIsLoading(false);
     }
   };
 
@@ -72,11 +75,15 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
   const handleRegisterSuccess = () => {
     setShowForm(false);
-    fetchProfiles();
+    fetchProfiles(false);
     mostrarNotificacion('Usuario registrado correctamente', 'success');
+    if (onRefreshProfile) onRefreshProfile();
   };
 
   const handleAction = async (action: string, user: Perfil) => {
+    // Bloquear cualquier acción sobre la propia cuenta
+    if (user.id === userProfile?.id) return;
+
     if (action === 'toggle_status') {
       const currentStatus = user.active !== false;
       const newStatus = !currentStatus;
@@ -94,11 +101,11 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
   const handleToggleUserStatus = async (user: Perfil, newStatus: boolean) => {
     try {
       await userRepo.toggleStatus(user.id, newStatus);
-      mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'} correctamente`, 'success');
-      fetchProfiles();
+      mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'inactivo'} correctamente`, 'success');
+      fetchProfiles(false);
       if (onRefreshProfile) onRefreshProfile();
-    } catch (err: any) {
-      console.error("Error al cambiar estado:", err);
+    } catch (error) {
+      console.error("Error al cambiar estado:", error);
       mostrarNotificacion('No se pudo cambiar el estado del usuario. Inténtalo de nuevo.', 'error');
     }
   };
@@ -107,19 +114,39 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     setViewState({ mode: 'list', selectedUser: null, initialMode: 'view' });
   };
 
+
+
   const handleUpdateSuccess = () => {
-    fetchProfiles();
+    fetchProfiles(false);
     if (onRefreshProfile) onRefreshProfile();
   };
 
   const handleDeactivateSelected = async (ids: string[]) => {
-    if (!window.confirm(`¿Deseas marcar como inactivos a ${ids.length} usuario(s)?`)) return;
+    // Evitar que el usuario se inactivee a sí mismo
+    const safeIds = ids.filter(id => id !== userProfile?.id);
+
+    if (safeIds.length === 0) {
+      mostrarNotificacion('No puedes inactivarte a ti mismo.', 'warning');
+      return;
+    }
+
     try {
-      await Promise.all(ids.map(id => userRepo.toggleStatus(id, false)));
-      mostrarNotificacion(`${ids.length} usuario(s) marcados como inactivos`, 'success');
-      fetchProfiles();
+      await Promise.all(safeIds.map(id => userRepo.toggleStatus(id, false)));
+      mostrarNotificacion(`${safeIds.length} usuario(s) marcados como inactivos`, 'success');
+      fetchProfiles(false);
       if (onRefreshProfile) onRefreshProfile();
-    } catch (err: any) {
+    } catch (error) {
+      mostrarNotificacion('No se pudo cambiar el estado de algunos usuarios. Inténtalo de nuevo.', 'error');
+    }
+  };
+
+  const handleActivateSelected = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map(id => userRepo.toggleStatus(id, true)));
+      mostrarNotificacion(`${ids.length} usuario(s) marcados como activos`, 'success');
+      fetchProfiles(false);
+      if (onRefreshProfile) onRefreshProfile();
+    } catch (error) {
       mostrarNotificacion('No se pudo cambiar el estado de algunos usuarios. Inténtalo de nuevo.', 'error');
     }
   };
@@ -227,7 +254,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
             <div className="p-12 text-center text-red-500 bg-red-50">
               <p>Ocurrió un error al cargar los usuarios: {error}</p>
               <button
-                onClick={fetchProfiles}
+                onClick={() => fetchProfiles()}
                 className="mt-4 text-sm underline hover:text-red-700"
               >
                 Intentar de nuevo
@@ -239,6 +266,8 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
               roles={roles}
               onAction={handleAction}
               onDeactivateSelected={handleDeactivateSelected}
+              onActivateSelected={handleActivateSelected}
+              currentUserId={userProfile?.id}
             />
           )}
         </CardContent>

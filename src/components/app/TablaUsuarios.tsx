@@ -11,7 +11,10 @@ import { UsersTableProps } from '@/interfaces/components';
 const ActionsCell: React.FC<{
   profile: Perfil;
   onAction: (action: string, profile: Perfil) => void;
-}> = ({ profile, onAction }) => {
+  currentUserId?: string;
+}> = ({ profile, onAction, currentUserId }) => {
+  // Si este perfil es el usuario conectado, no mostramos acciones
+  if (profile.id === currentUserId) return null;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -96,6 +99,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
   roles,
   onAction,
   onDeactivateSelected,
+  onActivateSelected,
+  currentUserId,
 }) => {
   // Columnas
   const columns: ColumnDef<Perfil>[] = [
@@ -163,8 +168,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             Activo
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-900/40">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400" />
             Inactivo
           </span>
         ),
@@ -173,7 +178,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       key: '_actions',
       header: 'Acciones',
       render: (profile) => (
-        <ActionsCell profile={profile} onAction={onAction} />
+        <ActionsCell profile={profile} onAction={onAction} currentUserId={currentUserId} />
       ),
     },
   ];
@@ -211,6 +216,13 @@ export const UsersTable: React.FC<UsersTableProps> = ({
           ? (ids) => onDeactivateSelected(ids as string[])
           : undefined
       }
+      onActivateSelected={
+        onActivateSelected
+          ? (ids) => onActivateSelected(ids as string[])
+          : undefined
+      }
+      activateSelectedLabel="Marcar activos"
+      getRowActiveState={(profile) => profile.active !== false}
       deleteSelectedLabel="Marcar inactivos"
       pageSize={10}
       emptyMessage="No hay usuarios registrados"

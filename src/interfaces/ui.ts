@@ -62,6 +62,9 @@ export interface TablaGenericaProps<T> {
   searchKeys?: string[];
   onDeleteSelected?: (ids: (string | number)[]) => void;
   deleteSelectedLabel?: string;
+  onActivateSelected?: (ids: (string | number)[]) => void;
+  activateSelectedLabel?: string;
+  getRowActiveState?: (row: T) => boolean;
   pageSize?: number;
   emptyMessage?: string;
   emptyDescription?: string;

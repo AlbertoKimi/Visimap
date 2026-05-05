@@ -8,7 +8,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Search, Trash2, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { Search, Trash2, ChevronUp, ChevronDown, ChevronsUpDown, CheckCircle2 } from 'lucide-react';
 import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
 import { TablaGenericaProps } from '@/interfaces/ui';
 import { getNestedValue, toStr, calcularPaginas, cn } from '@/utils/utils';
@@ -25,6 +25,9 @@ export function TablaGenerica<T>({
   searchKeys = [],
   onDeleteSelected,
   deleteSelectedLabel = 'Marcar inactivos',
+  onActivateSelected,
+  activateSelectedLabel = 'Marcar activos',
+  getRowActiveState,
   pageSize = 10,
   emptyMessage = 'No hay registros',
   emptyDescription = 'No se encontraron resultados para los filtros aplicados.',
@@ -37,7 +40,7 @@ export function TablaGenerica<T>({
   const [sortDir, setSortDir] = useState<SortDir>(null);
   const [selected, setSelected] = useState<Set<string | number>>(new Set());
   const [page, setPage] = useState(1);
-  const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalAccion, setModalAccion] = useState<'delete' | 'activate' | null>(null);
 
   let filtered = [...data];
 
@@ -125,11 +128,37 @@ export function TablaGenerica<T>({
     });
   };
 
+  // IDs seleccionados separados por estado
+  const selectedActiveIds = getRowActiveState
+    ? sorted.filter(r => selected.has(getRowId(r)) && getRowActiveState(r)).map(r => getRowId(r))
+    : Array.from(selected);
+  const selectedInactiveIds = getRowActiveState
+    ? sorted.filter(r => selected.has(getRowId(r)) && !getRowActiveState(r)).map(r => getRowId(r))
+    : [];
+
   const handleDeleteSelected = () => {
-    if (onDeleteSelected && selected.size > 0) {
-      onDeleteSelected(Array.from(selected));
-      setSelected(new Set());
-      setModalAbierto(false);
+    if (onDeleteSelected && selectedActiveIds.length > 0) {
+      onDeleteSelected(selectedActiveIds);
+
+      // Mantener seleccionados solo los que no se han procesado de inactivos
+      const newSelected = new Set(selected);
+      selectedActiveIds.forEach(id => newSelected.delete(id));
+      setSelected(newSelected);
+
+      setModalAccion(null);
+    }
+  };
+
+  const handleActivateSelected = () => {
+    if (onActivateSelected && selectedInactiveIds.length > 0) {
+      onActivateSelected(selectedInactiveIds);
+
+      // Mantener seleccionados solo los que no se han procesado de activos
+      const newSelected = new Set(selected);
+      selectedInactiveIds.forEach(id => newSelected.delete(id));
+      setSelected(newSelected);
+
+      setModalAccion(null);
     }
   };
 
@@ -175,15 +204,30 @@ export function TablaGenerica<T>({
             </select>
           ))}
 
-          {onDeleteSelected && selected.size > 0 && (
+          {/* Botón Marcar inactivos: solo si hay activos seleccionados */}
+          {onDeleteSelected && selectedActiveIds.length > 0 && (
             <button
-              onClick={() => setModalAbierto(true)}
+              onClick={() => setModalAccion('delete')}
               className="btn-danger flex items-center gap-1.5 whitespace-nowrap animate-in fade-in duration-200"
             >
               <Trash2 size={15} />
               {deleteSelectedLabel}
               <span className="ml-1 bg-white/20 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">
-                {selected.size}
+                {selectedActiveIds.length}
+              </span>
+            </button>
+          )}
+
+          {/* Botón Marcar activos: solo si hay inactivos seleccionados */}
+          {onActivateSelected && selectedInactiveIds.length > 0 && (
+            <button
+              onClick={() => setModalAccion('activate')}
+              className="flex items-center gap-1.5 whitespace-nowrap animate-in fade-in duration-200 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm"
+            >
+              <CheckCircle2 size={15} />
+              {activateSelectedLabel}
+              <span className="ml-1 bg-white/20 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">
+                {selectedInactiveIds.length}
               </span>
             </button>
           )}
@@ -255,7 +299,7 @@ export function TablaGenerica<T>({
                             onClick={e => e.stopPropagation()}
                           />
                         </div>
-                        
+
                         {/* Acciones en móvil (arriba a la derecha) */}
                         <div className="lg:hidden ml-4">
                           {columns.find(c => c.key === '_actions')?.render?.(row)}
@@ -341,12 +385,16 @@ export function TablaGenerica<T>({
       )}
 
       <ModalConfirmacion
-        isOpen={modalAbierto}
-        onClose={() => setModalAbierto(false)}
-        onConfirm={handleDeleteSelected}
-        titulo={deleteSelectedLabel}
-        mensaje={`Esta acción afectará a ${selected.size} ${selected.size === 1 ? 'elemento seleccionado' : 'elementos seleccionados'} y no se podrá deshacer.`}
-        tipo="danger"
+        isOpen={modalAccion !== null}
+        onClose={() => setModalAccion(null)}
+        onConfirm={modalAccion === 'delete' ? handleDeleteSelected : handleActivateSelected}
+        titulo={modalAccion === 'delete' ? deleteSelectedLabel : activateSelectedLabel}
+        mensaje={
+          modalAccion === 'delete'
+            ? `Esta acción afectará a ${selectedActiveIds.length} ${selectedActiveIds.length === 1 ? 'elemento seleccionado' : 'elementos seleccionados'} y no se podrá deshacer.`
+            : `Esta acción afectará a ${selectedInactiveIds.length} ${selectedInactiveIds.length === 1 ? 'elemento seleccionado' : 'elementos seleccionados'} y no se podrá deshacer.`
+        }
+        tipo={modalAccion === 'delete' ? "danger" : "success"}
       />
     </div>
   );
