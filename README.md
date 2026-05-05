@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/assets/Logo-1.png" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
+  <img src="src/assets/Logo-1.webp" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
 
   # Visimap
   **Plataforma Integral de Gestión de Visitantes y Personal**
@@ -75,27 +75,29 @@ Organización modular de los directorios siguiendo las mejores prácticas de des
 ```bash
 visimap/
 ├── docs/                 # Documentación técnica y manuales corporativos
-├── public/               # Assets estáticos (imágenes, logos del museo)
+├── public/               # Assets estáticos y recursos públicos
 ├── src/
-│   ├── assets/           # Recursos estáticos internos (imágenes, fuentes)
-│   ├── components/       # Componentes atómicos e independientes (Inputs, Botones)
-│   ├── constantes/       # Valores y constantes globales
-│   ├── database/         # Configuración y servicios de acceso a datos (Supabase)
-│   ├── hooks/            # Custom hooks de React
+│   ├── assets/           # Recursos multimedia (imágenes, logos, SVGs)
+│   ├── components/       # Componentes React (divididos en app/ y ui/)
+│   ├── constantes/       # Constantes y valores globales del sistema
+│   ├── database/         # Servicios de datos, repositorios y config de Supabase/OpenAI
+│   ├── hooks/            # Hooks personalizados de React
 │   ├── interfaces/       # Definiciones de tipos e interfaces TypeScript
-│   ├── layouts/          # Estructuras de diseño base para las páginas
-│   ├── pages/            # Vistas principales y contenedores de ruta
-│   ├── rutas/            # Configuración de enrutamiento (React Router)
-│   ├── stores/           # Gestión del estado global de la aplicación (Zustand)
-│   ├── styles/           # Archivos de estilos globales y utilidades
-│   ├── utils/            # Utilidades generales y funciones de apoyo
-│   ├── App.tsx           # Enrutador principal y configuración de dependencias
-│   └── main.tsx          # Punto de entrada de la aplicación
-│
-├── .env                  # Variables de entorno seguras (Claves de API y Supabase)
-├── tailwind.config.js    # Definición del sistema de diseño (tokens)
-├── tsconfig.json         # Configuración del compilador TypeScript
-└── vite.config.ts        # Configuración del empaquetador
+│   ├── layouts/          # Plantillas de diseño y envoltorios de página
+│   ├── pages/            # Componentes de página (vistas principales)
+│   ├── rutas/            # Configuración y definición de rutas (React Router)
+│   ├── stores/           # Gestión de estado global con Zustand
+│   ├── styles/           # Configuración de estilos globales y Tailwind
+│   ├── utils/            # Funciones de utilidad y lógica compartida
+│   ├── App.tsx           # Componente raíz y configuración de proveedores
+│   └── main.tsx          # Punto de entrada principal de la aplicación
+├── .env                  # Variables de entorno (no incluir en control de versiones)
+├── index.html            # Plantilla HTML de entrada para Vite
+├── package.json          # Dependencias y scripts del proyecto
+├── tailwind.config.js    # Configuración de los tokens de diseño de Tailwind
+├── tsconfig.json         # Configuración base de TypeScript
+├── vercel.json           # Configuración para el despliegue en Vercel
+└── vite.config.ts        # Configuración del entorno de compilación de Vite
 ```
 
 <br>
@@ -153,9 +155,10 @@ La persistencia y seguridad de la información está delegada en Supabase (Postg
 
 | Entidad | Descripción |
 | :--- | :--- |
-| `profiles` | Gestión centralizada de la identidad del personal. Almacena nombres, roles corporativos, estados de sesión y avatares. |
-| `visitas` | Entidad transaccional para el registro de accesos y procedencia geográfica de los visitantes del museo. |
-| `eventos` | Registro temporal y descriptivo de la planificación del calendario interno. |
+| `profiles` | Gestión centralizada de la identidad del personal (nombres, roles, estados y avatares). |
+| `visitas` | Entidad transaccional para el registro de accesos y procedencia geográfica de los visitantes. |
+| `eventos` | Planificación y registro descriptivo de la agenda corporativa y eventos del museo. |
+| `notas` | Sistema de comunicación, avisos y anotaciones internas entre el personal. |
 
 <br>
 
@@ -201,7 +204,7 @@ La persistencia y seguridad de la información está delegada en Supabase (Postg
 <img src="https://img.shields.io/badge/Proyecto-Intermodular-004481?style=flat-square&logo=react&logoColor=white" align="right" />
 
 **Desarrollado por:**
-* **Desarrollador Principal** — *Alumno de Desarrollo de Aplicaciones Web (DAW)*
+* **Desarrollador Principal** — *Alberto Vera Mateos*
 
 <br>
 
