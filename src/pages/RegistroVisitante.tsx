@@ -38,7 +38,7 @@ export const RegistroVisitante: React.FC = () => {
       }
       setData(results);
     } catch (err: any) {
-      setError('Error al cargar la información: ' + (err.message || 'Error del servidor'));
+      setError('No se han podido cargar los datos. Por favor, comprueba tu conexión e inténtalo de nuevo.');
       showToast('No se pudieron cargar los datos', 'error');
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ export const RegistroVisitante: React.FC = () => {
       showToast('Registro eliminado correctamente', 'success');
       fetchData();
     } catch (err: any) {
-      showToast('No se pudo eliminar el registro: ' + err.message, 'error');
+      showToast('No se pudo eliminar el registro. Es posible que ya haya sido eliminado o no tengas permisos suficientes.', 'error');
     }
   };
 
@@ -87,7 +87,7 @@ export const RegistroVisitante: React.FC = () => {
       showToast(`${ids.length} registro(s) eliminados correctamente`, 'success');
       fetchData();
     } catch (err: any) {
-      showToast('No se pudieron eliminar los registros: ' + err.message, 'error');
+      showToast('No se pudieron eliminar algunos registros. Es posible que ya hayan sido eliminados o no tengas permisos suficientes.', 'error');
     }
   };
 
@@ -109,7 +109,7 @@ export const RegistroVisitante: React.FC = () => {
       fetchData();
       setIsEditModalOpen(false);
     } catch (err: any) {
-      showToast('No se pudo actualizar la cantidad: ' + err.message, 'error');
+      showToast('No se pudo actualizar la cantidad. El registro puede haber sido eliminado o no tienes permisos para modificarlo.', 'error');
     }
   };
 

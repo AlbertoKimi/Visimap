@@ -56,7 +56,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
       setRoles(rolesData);
     } catch (err: any) {
       console.error('Error cargando usuarios:', err.message);
-      setError(err.message);
+      setError('No se ha podido cargar el equipo. Por favor, comprueba tu conexión e inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +99,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
       if (onRefreshProfile) onRefreshProfile();
     } catch (err: any) {
       console.error("Error al cambiar estado:", err);
-      mostrarNotificacion('Error al cambiar estado: ' + err.message, 'error');
+      mostrarNotificacion('No se pudo cambiar el estado del usuario. Inténtalo de nuevo.', 'error');
     }
   };
 
@@ -120,7 +120,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
       fetchProfiles();
       if (onRefreshProfile) onRefreshProfile();
     } catch (err: any) {
-      mostrarNotificacion('Error al cambiar estado: ' + err.message, 'error');
+      mostrarNotificacion('No se pudo cambiar el estado de algunos usuarios. Inténtalo de nuevo.', 'error');
     }
   };
 

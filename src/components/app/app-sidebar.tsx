@@ -228,7 +228,7 @@ export function AppSidebar() {
                 handleLogout();
                 handleNavClick();
               }}
-              className="h-11 justify-center text-[15px] text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-900/20 font-medium"
+              className="h-11 justify-center text-[15px] text-red-600 dark:text-[--color-danger-dark] hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-900/20 font-medium"
             >
               <LogOut className="mr-2 size-5" />
               <span>Cerrar Sesión</span>

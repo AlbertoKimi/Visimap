@@ -159,6 +159,9 @@
     --menu-text: #f8fafc;
     --menu-hover: #1e293b;
     --menu-border: #334155;
+
+    /* Rojo para el modo oscuro */
+    --color-danger-dark: #f87171;
   }
 
   /* Estilos globales para modo oscuro si no hay Tailwind */

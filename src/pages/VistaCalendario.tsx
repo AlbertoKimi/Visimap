@@ -94,9 +94,8 @@ export const VistaCalendario: React.FC = () => {
         };
       });
       setEventos(mappedEvents);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      mostrarNotificacion('Error al cargar datos: ' + message, 'error');
+    } catch {
+      mostrarNotificacion('No se han podido cargar los eventos. Por favor, comprueba tu conexión e inténtalo de nuevo.', 'error');
     } finally {
       setCargando(false);
     }
@@ -181,9 +180,8 @@ export const VistaCalendario: React.FC = () => {
       fetchInitialData();
       setModal(null);
       mostrarNotificacion('¡Evento creado correctamente!', 'success');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      mostrarNotificacion(`Error al guardar: ${message}`, 'error');
+    } catch {
+      mostrarNotificacion('No se pudo crear el evento. Comprueba los datos e inténtalo de nuevo.', 'error');
     }
   };
 
@@ -207,9 +205,8 @@ export const VistaCalendario: React.FC = () => {
         setModal(null);
         mostrarNotificacion('Evento actualizado correctamente.', 'success');
       }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      mostrarNotificacion(`Error al actualizar: ${message}`, 'error');
+    } catch {
+      mostrarNotificacion('No se pudo actualizar el evento. Es posible que ya no exista o no tengas permisos suficientes.', 'error');
     }
   };
 
@@ -225,9 +222,8 @@ export const VistaCalendario: React.FC = () => {
       fetchInitialData();
       setModal(null);
       mostrarNotificacion('Evento eliminado.', 'info');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      mostrarNotificacion(`Error al eliminar: ${message}`, 'error');
+    } catch {
+      mostrarNotificacion('No se pudo eliminar el evento. Es posible que ya haya sido eliminado o no tengas permisos suficientes.', 'error');
     }
   };
 
