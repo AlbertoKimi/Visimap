@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Loader2, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Modal } from "@/components/ui/Modal";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { UsersTable } from "@/components/app/TablaUsuarios";
 import { FormularioRegistroUsuario } from "@/components/app/FormularioRegistroEquipo";
 import { DetalleUsuario } from './DetalleUsuarioView';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Snackbar, Alert } from '@mui/material';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Perfil } from "@/interfaces/Perfil";
@@ -27,6 +28,12 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     selectedUser: Perfil | null;
     initialMode: string;
   }>({ mode: 'list', selectedUser: null, initialMode: 'view' });
+
+  const [confirmacion, setConfirmacion] = useState<{
+    isOpen: boolean;
+    user: Perfil | null;
+    newStatus: boolean;
+  }>({ isOpen: false, user: null, newStatus: false });
 
   const [notificacion, setNotificacion] = useState<{
     open: boolean;
@@ -87,11 +94,12 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     if (action === 'toggle_status') {
       const currentStatus = user.active !== false;
       const newStatus = !currentStatus;
-      const actionVerb = newStatus ? 'activar' : 'desactivar';
-
-      if (window.confirm(`¿Estás seguro de que deseas ${actionVerb} a ${user.nombre || 'este usuario'}?`)) {
-        await handleToggleUserStatus(user, newStatus);
-      }
+      
+      setConfirmacion({
+        isOpen: true,
+        user,
+        newStatus
+      });
       return;
     }
 
@@ -203,45 +211,23 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
         </Button>
       </div>
 
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={() => setShowForm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full border dark:border-slate-800"
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Trabajador</h3>
-                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Registro de personal</p>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                    <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
-                  </button>
-                </div>
-
-                <FormularioRegistroUsuario
-                  onSuccess={handleRegisterSuccess}
-                  onCancel={() => setShowForm(false)}
-                  mostrarNotificacion={mostrarNotificacion}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        size="md"
+        title={
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Trabajador</h3>
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Registro de personal</p>
+          </div>
+        }
+      >
+        <FormularioRegistroUsuario
+          onSuccess={handleRegisterSuccess}
+          onCancel={() => setShowForm(false)}
+          mostrarNotificacion={mostrarNotificacion}
+        />
+      </Modal>
 
       <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm overflow-hidden">
         <CardContent className="p-0">
@@ -294,6 +280,19 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
           {notificacion.mensaje}
         </Alert>
       </Snackbar>
+
+      <ModalConfirmacion
+        isOpen={confirmacion.isOpen}
+        onClose={() => setConfirmacion({ ...confirmacion, isOpen: false })}
+        onConfirm={() => {
+          if (confirmacion.user) {
+            handleToggleUserStatus(confirmacion.user, confirmacion.newStatus);
+          }
+        }}
+        titulo={confirmacion.newStatus ? 'Activar Trabajador' : 'Desactivar Trabajador'}
+        mensaje={`¿Estás seguro de que deseas ${confirmacion.newStatus ? 'activar' : 'desactivar'} a ${confirmacion.user?.nombre || 'este usuario'}?`}
+        tipo={confirmacion.newStatus ? "success" : "danger"}
+      />
     </div>
   );
 };

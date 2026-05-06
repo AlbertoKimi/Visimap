@@ -89,6 +89,7 @@ export interface ModalDetalleRegistroProps {
   onClose: () => void;
   data: any;
   tipo: 'mapa' | 'evento' | 'eventos';
+  onEdit?: () => void;
 }
 
 export interface EventModalProps {
@@ -114,8 +115,9 @@ export interface ModalConfirmacionProps {
 export interface ModalEditarCantidadProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (nuevaCantidad: number) => void;
+  onSave: (nuevaCantidad: number, nuevasObservaciones?: string) => void;
   cantidadActual: number;
+  observacionesActuales?: string;
   titulo: string;
 }
 

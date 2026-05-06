@@ -97,13 +97,13 @@ export const RegistroVisitante: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveQuantity = async (nuevaCantidad: number) => {
+  const handleSaveQuantity = async (nuevaCantidad: number, nuevasObservaciones?: string) => {
     if (!selectedItem) return;
     try {
       if (activeTab === 'mapa') {
-        await visitorRepo.updateRegistro(selectedItem.id_registro, nuevaCantidad);
+        await visitorRepo.updateRegistro(selectedItem.id_registro, nuevaCantidad, nuevasObservaciones);
       } else {
-        await eventRepo.updateGrupoVisitante(selectedItem.id_grupo, nuevaCantidad);
+        await eventRepo.updateGrupoVisitante(selectedItem.id_grupo, nuevaCantidad, nuevasObservaciones, selectedItem.id_evento);
       }
       showToast('Registro actualizado correctamente', 'success');
       fetchData();
@@ -221,7 +221,8 @@ export const RegistroVisitante: React.FC = () => {
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveQuantity}
         cantidadActual={(activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes) || 0}
-        titulo="Modificar cantidad"
+        observacionesActuales={activeTab === 'mapa' ? selectedItem?.observaciones : selectedItem?.evento?.descripcion}
+        titulo="Modificar registro"
       />
 
       <ModalDetalleRegistro
@@ -229,6 +230,7 @@ export const RegistroVisitante: React.FC = () => {
         onClose={() => setIsDetailModalOpen(false)}
         data={selectedItem}
         tipo={activeTab}
+        onEdit={() => handleEditRequest(selectedItem)}
       />
 
       {/* Toast */}

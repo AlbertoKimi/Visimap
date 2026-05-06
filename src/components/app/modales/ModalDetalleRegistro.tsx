@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalDetalleRegistroProps } from '@/interfaces/components';
-import { MapPin, Users, Calendar, MessageSquare, Globe, Info, Loader2 } from 'lucide-react';
+import { MapPin, Users, Calendar, Globe, Info, Loader2, Edit2 } from 'lucide-react';
 import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { GrupoVisitante } from '@/interfaces/Evento';
 import { formatearFecha, cn } from '@/utils/utils';
@@ -12,7 +12,8 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
   isOpen,
   onClose,
   data,
-  tipo
+  tipo,
+  onEdit
 }) => {
   const [grupos, setGrupos] = useState<GrupoVisitante[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,9 +45,21 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <Info className="w-5 h-5 text-blue-500" />
-          <span>{title}</span>
+          <span className="flex-1">{title}</span>
+          {onEdit && (
+            <button 
+              onClick={() => {
+                onClose();
+                onEdit();
+              }}
+              className="p-1.5 mr-6 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+              title="Modificar registro"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
       }
       size="md"
@@ -144,7 +157,6 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
               {isMapa ? 'Observaciones' : 'Descripción'}
             </p>
             <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800 relative group">
-              <MessageSquare className="absolute top-4 right-4 w-4 h-4 text-slate-200 dark:text-slate-700 group-hover:text-blue-500/20 transition-colors" />
               <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed whitespace-pre-wrap">
                 {isMapa ? data.observaciones : (data.evento?.descripcion || data.descripcion)}
               </p>

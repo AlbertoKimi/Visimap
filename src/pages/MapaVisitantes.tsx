@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Formulario } from "@/components/app/Formulario";
 import SpainProvincesMap from "@/components/app/SpainProvinciasMapa";
+import { Modal } from "@/components/ui/Modal";
 import { Snackbar, Alert } from '@mui/material';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { useAuthStore } from "@/stores/authStore";
@@ -199,49 +200,27 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </div>
       </motion.div>
 
-      <AnimatePresence>
-        {showForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={() => setShowForm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] md:max-h-[95vh] flex flex-col overflow-hidden border dark:border-slate-800"
-            >
-              <div className="overflow-y-auto flex-1 px-6 md:px-5 py-6 md:py-4 scroll-smooth [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 dark:hover:[&::-webkit-scrollbar-thumb]:bg-slate-600">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
-                      <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">{selectedProvince?.name}</p>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowForm(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                    <X className="w-5 h-5 text-gray-500 dark:text-slate-400" />
-                  </button>
-                </div>
-
-                <Formulario
-                  mostrarObservaciones={true}
-                  provinciaInicial={selectedProvince?.name || ''}
-                  paisInicial="España"
-                  onSubmit={handleRegistroModal}
-                  onCancel={() => setShowForm(false)}
-                  resetTrigger={resetModalTrigger}
-                  bloquearProvincia={true}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        size="md"
+        title={
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">{selectedProvince?.name}</p>
+          </div>
+        }
+      >
+        <Formulario
+          mostrarObservaciones={true}
+          provinciaInicial={selectedProvince?.name || ''}
+          paisInicial="España"
+          onSubmit={handleRegistroModal}
+          onCancel={() => setShowForm(false)}
+          resetTrigger={resetModalTrigger}
+          bloquearProvincia={true}
+        />
+      </Modal>
 
       <Snackbar
         open={notificacion.open}

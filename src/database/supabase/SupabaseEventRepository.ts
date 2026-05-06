@@ -132,13 +132,22 @@ export class SupabaseEventRepository implements EventRepository {
     if (error) throw error;
   }
 
-  async updateGrupoVisitante(id: number, num_visitantes: number): Promise<void> {
+  async updateGrupoVisitante(id: number, num_visitantes: number, descripcion?: string, id_evento?: number): Promise<void> {
     const { error } = await supabase
       .from('grupo_visitante')
       .update({ num_visitantes })
       .eq('id_grupo', id);
 
     if (error) throw error;
+
+    if (descripcion !== undefined && id_evento) {
+      const { error: eventError } = await supabase
+        .from('evento')
+        .update({ descripcion })
+        .eq('id_evento', id_evento);
+        
+      if (eventError) throw eventError;
+    }
   }
 
   async getGruposByEvento(id_evento: number): Promise<GrupoVisitante[]> {

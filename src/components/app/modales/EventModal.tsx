@@ -203,7 +203,7 @@ export const EventModal: React.FC<EventModalProps> = ({
   );
 
   const footer = (
-    <div className="flex justify-between w-full gap-3 flex-wrap">
+    <div className={`flex w-full gap-3 flex-wrap ${isNew ? 'justify-center' : 'justify-between'}`}>
       {!isNew && !confirmarCierre && (
         <Button
           variant="ghost"
@@ -213,7 +213,7 @@ export const EventModal: React.FC<EventModalProps> = ({
           <Trash2 className="w-4 h-4" /> Eliminar
         </Button>
       )}
-      <div className="flex gap-2 ml-auto flex-wrap">
+      <div className={`flex gap-2 flex-wrap ${!isNew ? 'ml-auto' : ''}`}>
         {!isNew && !editando && !finalizado && !confirmarCierre && (
           <Button
             variant="ghost"

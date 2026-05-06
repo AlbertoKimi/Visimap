@@ -6,6 +6,6 @@ export interface VisitorRepository {
   createRegistro(registro: RegistroVisitante): Promise<void>;
   getAllRegistros(): Promise<any[]>;
   deleteRegistro(id: number): Promise<void>;
-  updateRegistro(id: number, cantidad: number): Promise<void>;
+  updateRegistro(id: number, cantidad: number, observaciones?: string): Promise<void>;
   getAllPaises(): Promise<Pais[]>;
 }

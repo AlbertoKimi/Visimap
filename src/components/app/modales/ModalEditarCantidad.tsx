@@ -7,13 +7,16 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
   onClose,
   onSave,
   cantidadActual,
+  observacionesActuales,
   titulo
 }) => {
   const [cantidad, setCantidad] = useState(cantidadActual);
+  const [observaciones, setObservaciones] = useState(observacionesActuales || '');
 
   useEffect(() => {
     setCantidad(cantidadActual);
-  }, [cantidadActual]);
+    setObservaciones(observacionesActuales || '');
+  }, [cantidadActual, observacionesActuales]);
 
   const footer = (
     <>
@@ -24,7 +27,7 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
         Cerrar
       </button>
       <button
-        onClick={() => onSave(cantidad)}
+        onClick={() => onSave(cantidad, observaciones)}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >
         Guardar
@@ -41,21 +44,35 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
       size="sm"
     >
       <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">
-        Modifica el número de visitantes registrados para este registro.
+        Modifica el número de visitantes y/o las observaciones para este registro.
       </p>
 
       <div className="space-y-4">
-        <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
-          Nueva Cantidad
-        </label>
-        <div className="relative group">
-          <input
-            type="number"
-            value={cantidad}
-            onChange={(e) => setCantidad(parseInt(e.target.value) || 0)}
-            className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all appearance-none"
-            autoFocus
-            min="0"
+        <div>
+          <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2">
+            Nueva Cantidad
+          </label>
+          <div className="relative group">
+            <input
+              type="number"
+              value={cantidad}
+              onChange={(e) => setCantidad(parseInt(e.target.value) || 0)}
+              className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all appearance-none"
+              autoFocus
+              min="0"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2">
+            Observaciones (Opcional)
+          </label>
+          <textarea
+            value={observaciones}
+            onChange={(e) => setObservaciones(e.target.value)}
+            className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all resize-none min-h-[100px]"
+            placeholder="Añade o modifica las observaciones..."
           />
         </div>
       </div>
