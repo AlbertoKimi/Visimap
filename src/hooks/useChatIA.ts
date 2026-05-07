@@ -225,11 +225,10 @@ export function useChatIA() {
           resultados.length > 0 ? { consulta, resultados } : undefined
         );
 
-        // Fusionar gráficos de ambas respuestas
-        const graficosFinales: GraficoGenerado[] = [
-          ...respuesta.graficos,
-          ...respuestaFinal.graficos,
-        ];
+        // Usamos solo los gráficos de la respuesta final (evita duplicados si la IA generó un placeholder)
+        const graficosFinales: GraficoGenerado[] = respuestaFinal.graficos.length > 0 
+          ? respuestaFinal.graficos 
+          : respuesta.graficos;
 
         setMensajes(prev =>
           prev.map(m =>

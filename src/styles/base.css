@@ -5,6 +5,46 @@
     font-family: system-ui, -apple-system, sans-serif;
   }
 
+  /* Scrollbar Global Estilizada (Webkit) */
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+    transition: background-color 0.2s;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
+  }
+
+  /* Scrollbar en Modo Oscuro */
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b;
+  }
+
+  /* Soporte para Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .dark * {
+    scrollbar-color: #475569 transparent;
+  }
 }
 
 .logo {

@@ -1,5 +1,6 @@
 import { openaiClient } from './openaiClient';
 import type { ArchivoAdjunto, GraficoGenerado, ConsultaDB, TipoGrafico } from '@/interfaces/ChatIA';
+import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // System Prompt — Contexto completo del museo y su base de datos
@@ -17,29 +18,31 @@ Fecha actual: ${fechaISO}. "Este mes"=${inicioMes}~${fechaISO}. "Este año"=${in
 
 REGLA ABSOLUTA: NUNCA inventes datos. Si la BD devuelve [] (vacío), di que no hay datos y NO generes gráfico.
 NUNCA imprimas bloques de código JSON con los datos en crudo para el usuario.
-AGREGAR DATOS: Si te piden un gráfico temporal y la BD te da 10 registros del mismo día, DEBES SUMAR sus valores tú mismo en un único punto por día antes de generar el gráfico. NO pongas cada registro suelto.
+AGREGAR DATOS: Si te piden un gráfico temporal y la BD te da múltiples registros del mismo día, DEBES SUMAR sus valores tú mismo en un único punto por día antes de generar el gráfico. NO pongas cada registro suelto.
+TOTALES EXACTOS Y GRÁFICOS: 
+1. Si el usuario pide un dato exacto (ej. "cuántos visitantes", "dame el total de registros"), DEBES sumar los datos de la consulta y responder SOLO con texto dando la cifra exacta. NO generes ningún bloque de gráfico a menos que el usuario lo pida.
+2. SOLO genera un bloque \`\`\`chart si el usuario pide explícitamente un gráfico, gráfica, evolución visual o representación visual. Si no lo pide, da solo el dato en texto.
+RESUMEN OBLIGATORIO: Nunca enumeres todos los días uno por uno (ej. "el día 1 hubo X, el día 2 hubo Y"). Haz un resumen directo. Si te piden datos de todo un AÑO, agrupa la información por MESES para los cálculos y gráficos.
 
 TABLAS (Supabase - usa siempre columnas:"*" para evitar errores):
-- vista_visitantes_totales (¡USA ESTA PARA CONTAR VISITANTES GENERALES!): origen(ventanilla/evento), id_origen, total_personas, fecha
-- registro_visitante: id_registro, id_usuario(FK profiles), id_pais(FK pais), id_provincia(FK provincia), cantidad(int), tipo_visita(individual/familia/grupo), creado_en(TIMESTAMPTZ)
-- grupo_visitante: id_grupo, id_evento(FK evento), num_visitantes, tipo_origen, origen, created_at
+- vista_visitas_agrupadas_diarias (¡ÚSALA PARA TOTAL DE VISITANTES, REGISTROS Y RENDIMIENTO DEL PERSONAL!): fecha, tipo_entrada, nombre_trabajador, total_visitantes, total_registros
+- vista_visitas_unificadas (¡ÚSALA SOLO SI NECESITAS FILTRAR POR PAÍS, PROVINCIA O PROCEDENCIA!): tipo_entrada, fecha, total_personas, tipo_origen(provincia/pais), procedencia, nombre_trabajador
 - evento: id_evento, nombre_evento, fecha_inicio, fecha_fin, finalizado(bool), id_tipo_evento(FK tipo_evento)
 - tipo_evento: id_tipo_evento, nombre
-- profiles: id(UUID), nombre, primer_apellido, rol(admin/trabajador), active(bool)
+- perfiles (profiles): id(UUID), nombre, primer_apellido, rol(admin/trabajador), active(bool)
 - notas: id, titulo, contenido, estado(normal/urgente/finalizada), creado_por(FK profiles), creado_en
-- pais: id_pais, nombre_pais, codigo_iso
-- provincia: id_provincia, nombre_provincia
 
 CONSULTA BD:
 \`\`\`db-query
-{"tabla":"vista_visitantes_totales","columnas":"*","campoFecha":"fecha","rangoInicio":"${inicioMes}","rangoFin":"${fechaISO}"}
+{"tabla":"vista_visitas_agrupadas_diarias","columnas":"*","campoFecha":"fecha","rangoInicio":"${inicioMes}","rangoFin":"${fechaISO}"}
 \`\`\`
 
 GRÁFICO (ejemplo correcto sumando por fechas y usando nombres lógicos):
 \`\`\`chart
 {"tipo":"bar","titulo":"Visitantes Totales","datos":[{"fecha":"2026-04-01","ventanilla":45,"eventos":120}],"claveX":"fecha","claves":["ventanilla","eventos"],"colores":["#3b82f6","#10b981"]}
 \`\`\`
-Tipos disponibles: bar, area, pie, line.`;}
+Tipos disponibles: bar, area, pie, line.`;
+}
 
 const getSystemPrompt = buildSystemPrompt;
 
@@ -95,14 +98,6 @@ function parsearRespuesta(texto: string): RespuestaParsed {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Tipos del historial (formato OpenAI)
-// ──────────────────────────────────────────────────────────────────────────────
-
-// Usamos ChatCompletionMessageParam del SDK para el tipado estricto si quieres,
-// o nuestro propio interfaz como teníamos en Groq
-import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
-
-// ──────────────────────────────────────────────────────────────────────────────
 // Servicio principal
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -131,7 +126,7 @@ export class OpenAIService {
     let contenidoUsuario = '';
 
     if (datosContexto) {
-      contenidoUsuario += `[Datos de la BD — tabla: ${datosContexto.consulta.tabla}]\n${JSON.stringify(datosContexto.resultados, null, 2)}\n\n`;
+      contenidoUsuario += `[Datos de la BD — tabla: ${datosContexto.consulta.tabla}]\n${JSON.stringify(datosContexto.resultados)}\n\n`;
     }
 
     contenidoUsuario += textoPregunta;
@@ -154,12 +149,11 @@ export class OpenAIService {
 
     try {
       const completion = await openaiClient.chat.completions.create({
-        model: 'gpt-4o-mini', // Usamos gpt-4o-mini que es rápido y barato, perfecto para esto
+        model: 'llama-3.3-70b-versatile',
         temperature: 0.5,
-        max_tokens: 1024,
+        max_tokens: 4096,
         messages: [
           { role: 'system', content: getSystemPrompt() },
-          // Limitar historial a los últimos 4 mensajes para no exceder el límite de tokens
           ...this.historial.slice(-4),
         ],
       });

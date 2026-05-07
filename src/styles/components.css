@@ -236,35 +236,6 @@
   border-top-color: #ef4444;
 }
 
-/* Estilo del scrollbar*/
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 10px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-
 .grid-event-pill {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -287,9 +258,7 @@
 /* ── Wrapper principal ──────────────────────────────────────────────────── */
 
 .chat-ia-wrapper {
-  @apply bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden flex flex-col dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl;
-  min-height: 520px;
-  max-height: 800px;
+  @apply flex-1 bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden flex flex-col h-full w-full dark:bg-slate-900 dark:border-slate-800 dark:shadow-2xl;
 }
 
 /* ── Cabecera ────────────────────────────────────────────────────────────── */

@@ -153,7 +153,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
       <div className="chat-input-footer">
         <span className="chat-modelo-badge">
           <Sparkles className="w-3 h-3" />
-          GPT-4o-mini · OpenAI
+          Llama 3 · Groq
         </span>
         <span className="chat-input-hint">Enter para enviar · Shift+Enter para nueva línea</span>
       </div>

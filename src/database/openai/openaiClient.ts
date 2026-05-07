@@ -1,13 +1,14 @@
 import OpenAI from 'openai';
 
-const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string;
+const apiKey = import.meta.env.VITE_GROQ_API_KEY as string;
 
 if (!apiKey) {
-  console.error('[OpenAIClient] VITE_OPENAI_API_KEY no está definida en el .env');
+  console.error('[GroqClient] VITE_GROQ_API_KEY no está definida en el .env');
 }
 
-// dangerouslyAllowBrowser: true es necesario para llamadas desde el navegador (Vite)
+// Groq es 100% compatible con la librería de OpenAI, solo cambiamos la URL base
 export const openaiClient = new OpenAI({
   apiKey,
+  baseURL: 'https://api.groq.com/openai/v1',
   dangerouslyAllowBrowser: true,
 });

@@ -490,7 +490,7 @@ export const GraficosPanel: React.FC = () => {
           {datosTrabajadores.length === 0 ? (
             <div className="flex items-center justify-center h-full text-slate-400">Sin actividad registrada este mes</div>
           ) : (
-            <div className="w-full h-full flex flex-col justify-center overflow-y-auto pr-2 overflow-x-hidden custom-scrollbar">
+            <div className="w-full h-full overflow-y-auto pr-2 overflow-x-hidden custom-scrollbar">
               <ResponsiveContainer width="100%" height={Math.max(200, datosTrabajadores.length * 60 + 60)}>
                 <BarChart
                   data={datosTrabajadores}
