@@ -167,19 +167,21 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               )}
 
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Asistente"
-                  className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
-                  onClick={handleNavClick}
-                >
-                  <NavLink to="/dashboard/asistente">
-                    <Sparkles />
-                    <span>Asistente</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Asistente"
+                    className="h-11 text-[15px] [&>svg]:size-5 gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 aria-[current=page]:bg-blue-50 dark:aria-[current=page]:bg-blue-900/30 aria-[current=page]:text-blue-600 dark:aria-[current=page]:text-blue-400 aria-[current=page]:font-semibold aria-[current=page]:shadow-sm transition-colors"
+                    onClick={handleNavClick}
+                  >
+                    <NavLink to="/dashboard/asistente">
+                      <Sparkles />
+                      <span>Asistente</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
 
               <SidebarMenuItem>
                 <SidebarMenuButton

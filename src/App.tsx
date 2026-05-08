@@ -32,9 +32,12 @@ export default function App() {
     isLoading,
     setSession,
     clearSession,
+    userProfile,
     setUserProfile,
     setLoading
   } = useAuthStore();
+
+  const isAdmin = userProfile?.role_id === 1;
 
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
 
@@ -138,7 +141,7 @@ export default function App() {
             },
             {
               path: "registro-visitante",
-              element: <RegistroVisitante />
+              element: isAdmin ? <RegistroVisitante /> : <Navigate to="/dashboard/mapa" replace />
             },
             {
               path: "personal",
@@ -150,7 +153,7 @@ export default function App() {
             },
             {
               path: "estadisticas",
-              element: <Graficos />
+              element: isAdmin ? <Graficos /> : <Navigate to="/dashboard/mapa" replace />
             },
             {
               path: "notas",
@@ -158,11 +161,11 @@ export default function App() {
             },
             {
               path: "asistente",
-              element: <Asistente />
+              element: isAdmin ? <Asistente /> : <Navigate to="/dashboard/mapa" replace />
             },
             {
               path: "historial",
-              element: <Historial />
+              element: isAdmin ? <Historial /> : <Navigate to="/dashboard/mapa" replace />
             },
             {
               path: "perfil",
