@@ -1,9 +1,34 @@
+/*  Tablas – Filas alternas desktop (≥1024px) */
+
+
+@media (min-width: 1024px) {
+
+  /* filas pares */
+  tbody .tabla-fila-alterna:nth-child(even) {
+    background-color: var(--tabla-fila-par) !important;
+  }
+
+  /* filas impares */
+  tbody .tabla-fila-alterna:nth-child(odd) {
+    background-color: var(--tabla-fila-impar) !important;
+  }
+
+  /* hover sobre cualquier fila */
+  tbody .tabla-fila-alterna:nth-child(even):hover,
+  tbody .tabla-fila-alterna:nth-child(odd):hover {
+    background-color: var(--tabla-hover-bg) !important;
+  }
+}
+
+
+/* ─── Botones ─────────────────────────────────────────────────────────────── */
+
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200/60 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none;
 }
 
 .btn-gradient-auth {
-  @apply w-full h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-xl hover:scale-[1.01] transition-all duration-300;
+  @apply w-full h-12 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl font-bold text-base transition-all duration-200 hover:shadow-lg hover:shadow-indigo-200/80 hover:scale-[1.01] active:scale-[0.98];
 }
 
 .btn-gradient-landing {

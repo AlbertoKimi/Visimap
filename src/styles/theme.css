@@ -142,6 +142,11 @@
     --menu-text: #334155;
     --menu-hover: #f1f5f9;
     --menu-border: #e2e8f0;
+
+    /* Filas alternas en tablas */
+    --tabla-fila-par: #dbeafe;
+    --tabla-fila-impar: #ffffff;
+    --tabla-hover-bg: #bfdbfe;
   }
 
   .dark {
@@ -162,6 +167,14 @@
 
     /* Rojo para el modo oscuro */
     --color-danger-dark: #f87171;
+
+    /* Filas alternas en tablas */
+    --tabla-fila-par: #172554;
+    /* indigo-950 — contraste notorio en oscuro */
+    --tabla-fila-impar: #0f172a;
+    /* neutral-900 — fondo base oscuro */
+    --tabla-hover-bg: #1e3a8a;
+    /* primary-900 — hover visible */
   }
 
   /* Estilos globales para modo oscuro si no hay Tailwind */

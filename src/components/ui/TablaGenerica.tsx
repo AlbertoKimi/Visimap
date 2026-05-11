@@ -284,7 +284,7 @@ export function TablaGenerica<T>({
                   <tr
                     key={id}
                     onClick={() => onRowClick && onRowClick(row)}
-                    className={`flex flex-col lg:table-row rounded-2xl lg:rounded-none border border-slate-100 dark:border-slate-800 lg:border-none shadow-sm lg:shadow-none p-4 lg:p-0 transition-all duration-150 bg-white dark:bg-slate-900/40 ${onRowClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/60' : ''} ${isSelected ? 'ring-2 ring-blue-500/50 bg-blue-50/30 dark:bg-blue-900/20' : 'hover:border-blue-200 dark:hover:border-blue-800 lg:hover:bg-slate-50/80 dark:lg:hover:bg-slate-800/40'}`}
+                    className={`tabla-fila-alterna flex flex-col lg:table-row rounded-2xl lg:rounded-none border border-slate-100 dark:border-slate-800 lg:border-none shadow-sm lg:shadow-none p-4 lg:p-0 transition-all duration-150 bg-white dark:bg-slate-900/40 ${onRowClick ? 'cursor-pointer' : ''} ${isSelected ? 'ring-2 ring-blue-500/50 !bg-blue-50/30 dark:!bg-blue-900/20' : 'hover:border-blue-200 dark:hover:border-blue-800'}`}
                   >
                     {onDeleteSelected && (
                       <td className="flex justify-between items-center lg:table-cell px-0 lg:px-5 py-2 lg:py-4 border-b border-slate-50 dark:border-slate-800/50 lg:border-none mb-4 lg:mb-0">

@@ -115,7 +115,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold transition-all duration-200 hover:shadow-lg hover:shadow-blue-200/80 hover:scale-[1.02] active:scale-[0.98]"
           >
             Iniciar Sesión
           </button>
