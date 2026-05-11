@@ -3,10 +3,21 @@ import { Globe, Map as MapIcon, Calendar, FileText } from 'lucide-react';
 import { supabase } from '@/database/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { VisitaHistorial, DesgloseItem, RawProvResult, RawPaisResult } from '@/interfaces/Historial';
-import { getNombreMes } from '@/utils/utils';
+import { getNombreMes, calcularPaginas } from '@/utils/utils';
+
+const HISTORIAL_PAGE_SIZE = 10;
 
 export const Historial: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -14,6 +25,7 @@ export const Historial: React.FC = () => {
   const [datosProvincias, setDatosProvincias] = useState<DesgloseItem[]>([]);
   const [datosPaises, setDatosPaises] = useState<DesgloseItem[]>([]);
   const [totalAnual, setTotalAnual] = useState(0);
+  const [paginaHistorial, setPaginaHistorial] = useState(1);
 
   useEffect(() => {
     fetchHistorial();
@@ -239,7 +251,7 @@ export const Historial: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {loading ? (
-                    Array(5).fill(0).map((_, i) => (
+                    Array(HISTORIAL_PAGE_SIZE).fill(0).map((_, i) => (
                       <tr key={i}>
                         <td className="px-6 py-4"><Skeleton className="h-4 w-12" /></td>
                         <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
@@ -247,27 +259,87 @@ export const Historial: React.FC = () => {
                         <td className="px-6 py-4"><Skeleton className="h-4 w-12 mx-auto" /></td>
                       </tr>
                     ))
-                  ) : datosMensuales.length > 0 ? (
-                    datosMensuales.map((item, i) => {
-                      const trend = i < datosMensuales.length - 1 ? item.total - datosMensuales[i + 1].total : 0;
-                      return (
-                        <tr key={`${item.anio}-${item.mes}`} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                          <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-200">{item.anio}</td>
-                          <td className="px-6 py-4 capitalize text-slate-600 dark:text-slate-300">{getNombreMes(item.mes)}</td>
-                          <td className="px-6 py-4 text-right font-bold text-blue-600 dark:text-blue-400">{item.total.toLocaleString()}</td>
-                          <td className="px-6 py-4 text-center">
-                            {trend > 0 ? (
-                              <span className="text-emerald-500 text-xs font-bold">↑</span>
-                            ) : trend < 0 ? (
-                              <span className="text-red-500 text-xs font-bold">↓</span>
-                            ) : (
-                              <span className="text-slate-300 text-xs">-</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
+                  ) : datosMensuales.length > 0 ? (() => {
+                    const totalPaginas = Math.max(1, Math.ceil(datosMensuales.length / HISTORIAL_PAGE_SIZE));
+                    const paginaActual = Math.min(paginaHistorial, totalPaginas);
+                    const inicio = (paginaActual - 1) * HISTORIAL_PAGE_SIZE;
+                    const paginados = datosMensuales.slice(inicio, inicio + HISTORIAL_PAGE_SIZE);
+                    const numeros = calcularPaginas(totalPaginas, paginaActual);
+                    return (
+                      <>
+                        {paginados.map((item, i) => {
+                          const idxGlobal = inicio + i;
+                          const trend = idxGlobal < datosMensuales.length - 1
+                            ? item.total - datosMensuales[idxGlobal + 1].total
+                            : 0;
+                          return (
+                            <tr key={`${item.anio}-${item.mes}`} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                              <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-200">{item.anio}</td>
+                              <td className="px-6 py-4 capitalize text-slate-600 dark:text-slate-300">{getNombreMes(item.mes)}</td>
+                              <td className="px-6 py-4 text-right font-bold text-blue-600 dark:text-blue-400">{item.total.toLocaleString()}</td>
+                              <td className="px-6 py-4 text-center">
+                                {trend > 0 ? (
+                                  <span className="text-emerald-500 text-xs font-bold">↑</span>
+                                ) : trend < 0 ? (
+                                  <span className="text-red-500 text-xs font-bold">↓</span>
+                                ) : (
+                                  <span className="text-slate-300 text-xs">-</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {totalPaginas > 1 && (
+                          <tr>
+                            <td colSpan={4} className="px-0 py-0">
+                              <div className="historial-paginacion">
+                                <p className="historial-paginacion-info">
+                                  Mostrando{' '}
+                                  <span className="font-semibold text-slate-600 dark:text-slate-300">
+                                    {inicio + 1}–{Math.min(inicio + HISTORIAL_PAGE_SIZE, datosMensuales.length)}
+                                  </span>{' '}de{' '}
+                                  <span className="font-semibold text-slate-600 dark:text-slate-300">{datosMensuales.length}</span> meses
+                                </p>
+                                <Pagination className="justify-center sm:justify-end">
+                                  <PaginationContent className="gap-1">
+                                    <PaginationItem>
+                                      <PaginationPrevious
+                                        onClick={() => setPaginaHistorial(p => Math.max(1, p - 1))}
+                                        className={paginaActual === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                      />
+                                    </PaginationItem>
+                                    {numeros.map((p, i) =>
+                                      p === 'ellipsis' ? (
+                                        <PaginationItem key={`ellipsis-${i}`}>
+                                          <PaginationEllipsis />
+                                        </PaginationItem>
+                                      ) : (
+                                        <PaginationItem key={p}>
+                                          <PaginationLink
+                                            onClick={() => setPaginaHistorial(p)}
+                                            isActive={p === paginaActual}
+                                            className="h-8 w-8 text-xs"
+                                          >
+                                            {p}
+                                          </PaginationLink>
+                                        </PaginationItem>
+                                      )
+                                    )}
+                                    <PaginationItem>
+                                      <PaginationNext
+                                        onClick={() => setPaginaHistorial(p => Math.min(totalPaginas, p + 1))}
+                                        className={paginaActual === totalPaginas ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                                      />
+                                    </PaginationItem>
+                                  </PaginationContent>
+                                </Pagination>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    );
+                  })() : (
                     <tr>
                       <td colSpan={4} className="px-6 py-10 text-center text-slate-400">No hay datos históricos disponibles</td>
                     </tr>
@@ -279,7 +351,7 @@ export const Historial: React.FC = () => {
         </Card>
 
         {/* Desgloses Laterales */}
-        <div className="space-y-6">
+        <div className="historial-desgloses">
           {/* Top Provincias */}
           <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
             <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">

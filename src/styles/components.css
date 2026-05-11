@@ -695,3 +695,19 @@
 .dark .mapa-shadow {
   filter: drop-shadow(2px 4px 1px white);
 }
+
+
+/*  Historial – Paginación y desgloses laterales                               */
+
+.historial-paginacion {
+  @apply flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50;
+}
+
+.historial-paginacion-info {
+  @apply text-xs text-slate-400 dark:text-slate-500 order-2 sm:order-1;
+}
+
+.historial-desgloses {
+  @apply flex flex-col gap-6;
+
+}
