@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Bot, User, AlertCircle, Loader2 } from 'lucide-react';
+import { Bot, AlertCircle } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
 import { GraficoMensaje } from './GraficoMensaje';
 import type { MensajeChat } from '@/interfaces/ChatIA';
 
@@ -76,11 +77,19 @@ interface BurbujaMensajeProps {
 export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
   const esUsuario = mensaje.rol === 'user';
   const hora = mensaje.timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const { userProfile } = useAuthStore();
 
-  const htmlTexto = useMemo(
-    () => (mensaje.texto ? renderMarkdown(mensaje.texto) : ''),
-    [mensaje.texto]
-  );
+  const htmlTexto = useMemo(() => {
+    if (!mensaje.texto) return '';
+    
+    // Limpiamos los bloques de sistema para que el usuario NO vea el código técnico
+    const textoLimpio = mensaje.texto
+      .replace(/```db-query\s*[\s\S]*?```/g, '')
+      .replace(/```chart\s*[\s\S]*?```/g, '')
+      .trim();
+
+    return renderMarkdown(textoLimpio);
+  }, [mensaje.texto]);
 
   return (
     <div className={`chat-burbuja-fila ${esUsuario ? 'chat-burbuja-fila--user' : 'chat-burbuja-fila--model'}`}>
@@ -108,19 +117,15 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
                 <MiniaturasArchivos archivos={mensaje.archivos} />
               )}
 
-              {/* Texto con icono de error si aplica */}
-              {mensaje.error && (
-                <div className="flex items-center gap-2 text-red-500 mb-1">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                </div>
-              )}
-
               {/* Texto renderizado en markdown */}
               {mensaje.texto && (
-                <div
-                  className="chat-burbuja-texto"
-                  dangerouslySetInnerHTML={{ __html: `<p class="chat-md-p">${htmlTexto}</p>` }}
-                />
+                <div className="flex items-start gap-2">
+                  {mensaje.error && <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />}
+                  <div
+                    className="chat-burbuja-texto"
+                    dangerouslySetInnerHTML={{ __html: `<p class="chat-md-p">${htmlTexto}</p>` }}
+                  />
+                </div>
               )}
             </>
           )}
@@ -141,8 +146,14 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
 
       {/* Avatar usuario */}
       {esUsuario && (
-        <div className="chat-avatar chat-avatar--user">
-          <User className="w-4 h-4 text-white" />
+        <div className="chat-avatar chat-avatar--user overflow-hidden">
+          {userProfile?.avatar_url ? (
+            <img src={userProfile.avatar_url} alt="User" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
+              {userProfile?.nombre?.charAt(0).toUpperCase() || 'U'}
+            </span>
+          )}
         </div>
       )}
     </div>

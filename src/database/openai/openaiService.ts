@@ -9,39 +9,38 @@ import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 function buildSystemPrompt(): string {
   const ahora = new Date();
   const pad = (n: number) => String(n).padStart(2, '0');
-  const fechaISO   = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}`;
-  const inicioMes  = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-01`;
+  const fechaISO = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}`;
+  const inicioMes = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-01`;
   const inicioAnio = `${ahora.getFullYear()}-01-01`;
 
-  return `Eres Visimap IA, asistente del sistema de gestión de un museo. Responde siempre en español con markdown.
-Fecha actual: ${fechaISO}. "Este mes"=${inicioMes}~${fechaISO}. "Este año"=${inicioAnio}~${fechaISO}.
+  return `Analista de Visimap. Usa la DB como única fuente.
+REGLAS:
+1. Si necesitas datos, genera ÚNICAMENTE el bloque \`\`\`db-query.
+2. Tras recibir datos:
+   - Da la respuesta final (periodo/origen).
+   - Para EVOLUCIONES (días, semanas, meses) usa SIEMPRE \`\`\`chart tipo "area". Es el preferido del usuario.
+   - Para desgloses (provincias, países) usa "bar" o "pie".
+3. Precisión total. No menciones nombres técnicos.
 
-REGLA ABSOLUTA: NUNCA inventes datos. Si la BD devuelve [] (vacío), di que no hay datos y NO generes gráfico.
-NUNCA imprimas bloques de código JSON con los datos en crudo para el usuario.
-AGREGAR DATOS: Si te piden un gráfico temporal y la BD te da múltiples registros del mismo día, DEBES SUMAR sus valores tú mismo en un único punto por día antes de generar el gráfico. NO pongas cada registro suelto.
-TOTALES EXACTOS Y GRÁFICOS: 
-1. Si el usuario pide un dato exacto (ej. "cuántos visitantes", "dame el total de registros"), DEBES sumar los datos de la consulta y responder SOLO con texto dando la cifra exacta. NO generes ningún bloque de gráfico a menos que el usuario lo pida.
-2. SOLO genera un bloque \`\`\`chart si el usuario pide explícitamente un gráfico, gráfica, evolución visual o representación visual. Si no lo pide, da solo el dato en texto.
-RESUMEN OBLIGATORIO: Nunca enumeres todos los días uno por uno (ej. "el día 1 hubo X, el día 2 hubo Y"). Haz un resumen directo. Si te piden datos de todo un AÑO, agrupa la información por MESES para los cálculos y gráficos.
+EJEMPLO QUERY (Provincias):
+\`\`\`db-query {"tabla":"registro_visitante", "columnas":"cantidad, provincia(nombre_provincia)"} \`\`\`
 
-TABLAS (Supabase - usa siempre columnas:"*" para evitar errores):
-- vista_visitas_agrupadas_diarias (¡ÚSALA PARA TOTAL DE VISITANTES, REGISTROS Y RENDIMIENTO DEL PERSONAL!): fecha, tipo_entrada, nombre_trabajador, total_visitantes, total_registros
-- vista_visitas_unificadas (¡ÚSALA SOLO SI NECESITAS FILTRAR POR PAÍS, PROVINCIA O PROCEDENCIA!): tipo_entrada, fecha, total_personas, tipo_origen(provincia/pais), procedencia, nombre_trabajador
-- evento: id_evento, nombre_evento, fecha_inicio, fecha_fin, finalizado(bool), id_tipo_evento(FK tipo_evento)
-- tipo_evento: id_tipo_evento, nombre
-- perfiles (profiles): id(UUID), nombre, primer_apellido, rol(admin/trabajador), active(bool)
-- notas: id, titulo, contenido, estado(normal/urgente/finalizada), creado_por(FK profiles), creado_en
-
-CONSULTA BD:
-\`\`\`db-query
-{"tabla":"vista_visitas_agrupadas_diarias","columnas":"*","campoFecha":"fecha","rangoInicio":"${inicioMes}","rangoFin":"${fechaISO}"}
-\`\`\`
-
-GRÁFICO (ejemplo correcto sumando por fechas y usando nombres lógicos):
+EJEMPLO CHART (Evolución):
 \`\`\`chart
-{"tipo":"bar","titulo":"Visitantes Totales","datos":[{"fecha":"2026-04-01","ventanilla":45,"eventos":120}],"claveX":"fecha","claves":["ventanilla","eventos"],"colores":["#3b82f6","#10b981"]}
+{"tipo":"area","titulo":"Visitantes Mensuales","datos":[{"fecha":"2026-05-01","total":30}],"claveX":"fecha","claves":["total"]}
 \`\`\`
-Tipos disponibles: bar, area, pie, line.`;
+
+ESQUEMA:
+- vista_visitas_agrupadas_diarias: [fecha, total_visitantes].
+- registro_visitante: [cantidad, id_provincia, id_pais, creado_en].
+- provincia: [id_provincia, nombre_provincia].
+- pais: [id_pais, nombre_pais].
+- evento: [nombre_evento, fecha_inicio, fecha_fin].
+
+CONTEXTO:
+- Hoy: ${fechaISO}
+- Mes: ${inicioMes} a ${fechaISO}
+- Año: ${inicioAnio} a ${fechaISO}`;
 }
 
 const getSystemPrompt = buildSystemPrompt;
@@ -105,7 +104,7 @@ export class OpenAIService {
   private static instance: OpenAIService;
   private historial: ChatCompletionMessageParam[] = [];
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): OpenAIService {
     if (!OpenAIService.instance) {
@@ -126,7 +125,15 @@ export class OpenAIService {
     let contenidoUsuario = '';
 
     if (datosContexto) {
-      contenidoUsuario += `[Datos de la BD — tabla: ${datosContexto.consulta.tabla}]\n${JSON.stringify(datosContexto.resultados)}\n\n`;
+      const dataStr = JSON.stringify(datosContexto.resultados);
+      const safetyLimit = 20000;
+
+      if (dataStr.length > safetyLimit) {
+        const truncatedData = (datosContexto.resultados as any[]).slice(0, 150);
+        contenidoUsuario += `[DATOS - Tabla: ${datosContexto.consulta.tabla} (Muestra de 150 filas)]\n${JSON.stringify(truncatedData)}\n\n`;
+      } else {
+        contenidoUsuario += `[DATOS - Tabla: ${datosContexto.consulta.tabla}]\n${dataStr}\n\n`;
+      }
     }
 
     contenidoUsuario += textoPregunta;
@@ -135,12 +142,12 @@ export class OpenAIService {
       if (archivo.tipo.startsWith('text/') || archivo.tipo.includes('csv')) {
         try {
           const textoArchivo = atob(archivo.base64);
-          contenidoUsuario += `\n\n[Archivo adjunto: ${archivo.nombre}]\n${textoArchivo.slice(0, 8000)}`;
+          contenidoUsuario += `\n\n[Archivo: ${archivo.nombre}]\n${textoArchivo.slice(0, 8000)}`;
         } catch {
-          contenidoUsuario += `\n\n[Archivo adjunto: ${archivo.nombre} — no se pudo decodificar]`;
+          contenidoUsuario += `\n\n[Archivo: ${archivo.nombre} — error]`;
         }
       } else {
-        contenidoUsuario += `\n\n[Archivo adjunto: ${archivo.nombre} (${archivo.tipo})]`;
+        contenidoUsuario += `\n\n[Archivo: ${archivo.nombre} (${archivo.tipo})]`;
       }
     }
 
@@ -150,11 +157,11 @@ export class OpenAIService {
     try {
       const completion = await openaiClient.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
-        temperature: 0.5,
+        temperature: 0,
         max_tokens: 4096,
         messages: [
           { role: 'system', content: getSystemPrompt() },
-          ...this.historial.slice(-4),
+          ...this.historial.slice(-6),
         ],
       });
 

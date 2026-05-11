@@ -1,5 +1,5 @@
 import React, { useRef, KeyboardEvent, useCallback } from 'react';
-import { Send, Paperclip, X, Loader2, Sparkles } from 'lucide-react';
+import { ArrowUp, Paperclip, X, Loader2 } from 'lucide-react';
 
 interface InputMensajeProps {
   onEnviar: (texto: string) => void;
@@ -123,7 +123,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
           ref={textareaRef}
           id="chat-ia-input"
           rows={1}
-          placeholder="Escribe tu pregunta... (Shift+Enter para nueva línea)"
+          placeholder="Pregunta lo que quieras"
           className="chat-input-textarea"
           onInput={ajustarAltura}
           onKeyDown={handleKeyDown}
@@ -137,25 +137,20 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
           onClick={handleEnviar}
           disabled={isLoading}
           className="chat-btn-enviar"
-          title="Enviar mensaje (Enter)"
+          title="Enviar mensaje"
           aria-label="Enviar mensaje"
           id="btn-enviar-chat"
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <Send className="w-4 h-4" />
+            <ArrowUp className="w-4 h-4" />
           )}
         </button>
       </div>
 
-      {/* ── Badge modelo ──────────────────────────────────────────────────── */}
-      <div className="chat-input-footer">
-        <span className="chat-modelo-badge">
-          <Sparkles className="w-3 h-3" />
-          Llama 3 · Groq
-        </span>
-        <span className="chat-input-hint">Enter para enviar · Shift+Enter para nueva línea</span>
+      <div className="chat-input-footer justify-center">
+        <span className="chat-input-hint">Visimap IA puede cometer errores. Considera verificar la información importante.</span>
       </div>
     </div>
   );

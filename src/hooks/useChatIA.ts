@@ -233,12 +233,12 @@ export function useChatIA() {
         setMensajes(prev =>
           prev.map(m =>
             m.id === idPlaceholder
-              ? {
-                  ...m,
-                  texto: respuestaFinal.texto || respuesta.texto,
-                  graficos: graficosFinales.length > 0 ? graficosFinales : undefined,
-                  cargando: false,
-                }
+                ? {
+                    ...m,
+                    texto: respuestaFinal.texto || m.texto,
+                    graficos: graficosFinales.length > 0 ? graficosFinales : undefined,
+                    cargando: false,
+                  }
               : m
           )
         );
@@ -257,14 +257,24 @@ export function useChatIA() {
           )
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('[useChatIA] Error enviando mensaje:', error);
+      
+      let mensajeError = 'Lo siento, ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo.';
+      
+      // Manejo específico de errores de Groq (Rate Limits)
+      if (error?.status === 429 || error?.message?.includes('429')) {
+        mensajeError = 'He alcanzado el límite de velocidad temporal de la IA. Por favor, espera unos 10-15 segundos antes de volver a preguntar para que pueda procesarlo correctamente.';
+      } else if (error?.status === 503 || error?.message?.includes('503')) {
+        mensajeError = 'El servicio de IA está temporalmente sobrecargado. Inténtalo de nuevo en un momento.';
+      }
+
       setMensajes(prev =>
         prev.map(m =>
           m.id === idPlaceholder
             ? {
                 ...m,
-                texto: 'Lo siento, ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+                texto: mensajeError,
                 cargando: false,
                 error: true,
               }
