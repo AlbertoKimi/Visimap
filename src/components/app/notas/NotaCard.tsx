@@ -18,9 +18,12 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
   const isGlobal = !nota.asignado_a;
   const isTarget = userProfile?.id === nota.asignado_a;
 
-  // Lógica de permisos de botones
-  const hasDeletePermission = isAdmin || isCreator;
-  const hasTogglePermission = isAdmin || isGlobal || isTarget;
+  // Lógica de permisos:
+  // - Nota global (para todos): cualquiera puede borrar, poner en pendiente o finalizar.
+  // - Nota dirigida a alguien: SOLO el destinatario puede cambiar su estado (pendiente/finalizada).
+  //   El creador de una nota dirigida solo puede borrarla, aunque sea admin.
+  const hasDeletePermission = isAdmin || isCreator || isGlobal || isTarget;
+  const hasTogglePermission = isGlobal || isTarget;
 
   const handleSetEstado = async (nuevoEstado: 'normal' | 'pendiente' | 'finalizada') => {
     if (nota.estado === nuevoEstado || !hasTogglePermission) return;
