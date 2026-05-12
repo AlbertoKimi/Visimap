@@ -62,7 +62,7 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Mi Perfil</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+          <p className="page-subtitle">
             Administra tu información personal y visualiza tu actividad
           </p>
         </div>

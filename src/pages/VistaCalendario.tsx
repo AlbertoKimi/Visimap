@@ -264,7 +264,7 @@ export const VistaCalendario: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Calendario de Eventos</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+          <p className="page-subtitle">
             Programación de actividades y gestión del museo
           </p>
         </div>

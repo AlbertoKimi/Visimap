@@ -54,6 +54,9 @@
     --color-neutral-800: #1e293b;
     --color-neutral-900: #0f172a;
 
+    /* Color subtítulos de sección */
+    --color-subtitle: #495566;
+
     /* Colores estado*/
     --color-success: #16a34a;
     --color-success-light: #dcfce7;
@@ -164,6 +167,9 @@
     --menu-text: #f8fafc;
     --menu-hover: #1e293b;
     --menu-border: #334155;
+
+    /* Color subtítulos de sección */
+    --color-subtitle: #BACBE6;
 
     /* Rojo para el modo oscuro */
     --color-danger-dark: #f87171;

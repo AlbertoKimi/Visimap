@@ -21,7 +21,16 @@
 }
 
 
+/* ─── Subtítulo de página ──────────────────────────────────────────────────── */
+
+.page-subtitle {
+  color: var(--color-subtitle);
+  @apply text-xs mt-1 uppercase tracking-widest font-semibold opacity-70;
+}
+
+
 /* ─── Botones ─────────────────────────────────────────────────────────────── */
+
 
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200/60 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] hover:shadow-md active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none;

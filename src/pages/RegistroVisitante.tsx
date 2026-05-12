@@ -125,7 +125,7 @@ export const RegistroVisitante: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Registro de Visitantes</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1 uppercase tracking-widest font-semibold opacity-70">
+          <p className="page-subtitle">
             Control de flujo y actividad
           </p>
         </div>
