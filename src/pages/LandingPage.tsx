@@ -95,7 +95,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Imagen de fondo estática para una carga inicial */}
         <img
           src={heroPosterWebp}
-          alt=""
+          alt="Vista del Museo MUVI digitalizada con VisiMap"
           className="absolute inset-0 w-full h-full object-cover"
           fetchPriority="high"
           aria-hidden="true"
