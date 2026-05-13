@@ -31,6 +31,10 @@ import { RepositoryFactory } from "@/database/RepositoryFactory";
 import logoUrl from "@/assets/Logo-1-opt.webp";
 import logoModoOscuroUrl from "@/assets/Logo-MO-opt.webp";
 
+/**
+ * Pantalla de carga global que se muestra mientras se verifica la sesión
+ * o se descargan los fragmentos de código (Lazy Loading).
+ */
 const LoadingScreen = () => (
   <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
     <div className="flex flex-col items-center gap-4">
@@ -40,6 +44,13 @@ const LoadingScreen = () => (
   </div>
 );
 
+/**
+ * Componente Raíz de la Aplicación (Visimap).
+ * Gestiona el Router principal de React Router DOM v6, la verificación inicial
+ * de la sesión en Supabase y el estado de la aplicación.
+ * Implementa Lazy Loading masivo para optimizar el bundle size inicial.
+ * @returns El componente raíz de la aplicación
+ */
 export default function App() {
   const {
     session,

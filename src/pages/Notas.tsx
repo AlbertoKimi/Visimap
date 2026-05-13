@@ -6,6 +6,13 @@ import { NotaCard } from "@/components/app/notas/NotaCard";
 import { NotaModal } from "@/components/app/notas/NotaModal";
 import { useAuthStore } from "@/stores/authStore";
 
+/**
+ * Vista de Gestión de Notas y Tareas.
+ * Permite visualizar, crear y organizar recordatorios del museo.
+ * Filtra las notas automáticamente según el rol del usuario (Global, Creador o Destinatario)
+ * y las clasifica en tres estados: Normales, Pendientes y Finalizadas.
+ * @returns Componente de la vista de notas
+ */
 export const Notas: React.FC = () => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [isLoading, setIsLoading] = useState(true);

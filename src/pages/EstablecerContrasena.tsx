@@ -7,6 +7,13 @@ import { supabase } from "@/database/supabase/client";
 import fachadaMuviImg from "@/assets/Fachada_Muvi.webp";
 import { EstablecerContrasenaProps } from "@/interfaces/components";
 
+/**
+ * Vista mostrada a los nuevos usuarios tras aceptar la invitación por correo.
+ * Les permite configurar su nombre de usuario final y establecer una contraseña
+ * robusta para activar su cuenta por completo.
+ * @param props.session - Sesión actual temporal obtenida del enlace de invitación
+ * @param props.onComplete - Callback tras configurar la cuenta exitosamente
+ */
 export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ session, onComplete }) => {
     const [passwords, setPasswords] = useState({
         password: '',

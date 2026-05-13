@@ -25,6 +25,16 @@ const userRepo = RepositoryFactory.getUserRepository();
 const authRepo = RepositoryFactory.getAuthRepository();
 import { DetalleUsuarioProps } from "@/interfaces/components";
 
+/**
+ * Componente que muestra y edita la información detallada de un usuario.
+ * Se utiliza tanto en la vista del administrador para gestionar a otros usuarios
+ * como en la vista "Mi Perfil" del propio usuario activo.
+ * Soporta actualización de avatar, contraseñas y datos personales.
+ * @param props.user - Objeto del perfil del usuario a visualizar/editar
+ * @param props.initialMode - Modo inicial: 'view' o 'edit'
+ * @param props.roles - Lista de roles disponibles en el sistema (opcional)
+ * @param props.hideBack - Ocultar botón de retroceso (útil cuando es el perfil propio)
+ */
 export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   user: initialUser,
   initialMode = 'view',

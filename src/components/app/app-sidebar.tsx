@@ -17,6 +17,13 @@ import {
 import { useAuthStore } from "@/stores/authStore"
 import { supabase } from "@/database/supabase/client"
 
+/**
+ * Menú de Navegación Lateral (Sidebar).
+ * Gestiona el enrutamiento principal de la aplicación y la jerarquía visual
+ * de los módulos. Oculta/muestra opciones dependiendo del rol del usuario autenticado
+ * (los trabajadores no ven gráficas, historial ni gestión de personal).
+ * @returns Componente de la barra lateral (collapsible)
+ */
 export function AppSidebar() {
   const { userProfile, clearSession } = useAuthStore()
   const { setOpenMobile, isMobile } = useSidebar()

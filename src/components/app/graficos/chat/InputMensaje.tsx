@@ -1,16 +1,24 @@
 import React, { useRef, KeyboardEvent, useCallback } from 'react';
 import { ArrowUp, Paperclip, X, Loader2 } from 'lucide-react';
 
+/**
+ * Propiedades del componente InputMensaje
+ */
 interface InputMensajeProps {
+  /** Callback ejecutado al enviar un texto */
   onEnviar: (texto: string) => void;
+  /** Callback ejecutado al seleccionar un archivo */
   onAgregarArchivo: (file: File) => void;
+  /** Callback ejecutado al eliminar un archivo adjunto */
   onEliminarArchivo: (nombre: string) => void;
+  /** Lista de archivos adjuntos actuales */
   adjuntos: {
     nombre: string;
     tipo: string;
     previewUrl: string;
     tamaño: number;
   }[];
+  /** Estado de carga que deshabilita interacciones */
   isLoading: boolean;
 }
 
@@ -20,6 +28,13 @@ const formatBytes = (bytes: number): string => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+/**
+ * Componente para el campo de entrada del chat.
+ * Maneja la captura de texto, subida de múltiples archivos (PDF, Imágenes, CSV, etc.),
+ * previsualizaciones, y auto-redimensionamiento del área de texto.
+ * @param props - Propiedades del input (callbacks y estado)
+ * @returns Componente de la barra de entrada del chat
+ */
 export const InputMensaje: React.FC<InputMensajeProps> = ({
   onEnviar,
   onAgregarArchivo,

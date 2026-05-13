@@ -1,19 +1,36 @@
+/**
+ * Módulo de declaración de interfaces para las propiedades (Props)
+ * de los componentes genéricos de Interfaz de Usuario (UI).
+ * @module
+ */
+
 import React, { TextareaHTMLAttributes, SelectHTMLAttributes, InputHTMLAttributes } from "react";
 
-// Toast.tsx
+// --- Componente Toast ---
+
+/** Tipos de notificaciones disponibles (colores/iconos) */
 export type ToastTipo = 'success' | 'error' | 'warning' | 'info';
 
+/** Props para el componente de notificaciones flotantes (Toast/Snackbar) */
 export interface ToastProps {
+  /** Indica si la notificación está visible */
   open: boolean;
+  /** Texto del mensaje a mostrar */
   mensaje: string;
+  /** Variante visual de la notificación */
   tipo?: ToastTipo;
+  /** Tiempo en milisegundos antes de desaparecer automáticamente */
   duracion?: number;
+  /** Callback ejecutado al cerrar la notificación */
   onClose: () => void;
 }
 
-// Modal.tsx
+// --- Componente Modal ---
+
+/** Tamaños predefinidos para los modales */
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
 
+/** Props base para el componente contenedor Modal genérico */
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +41,8 @@ export interface ModalProps {
   showCloseButton?: boolean;
 }
 
-// TextArea.tsx
+// --- Componente TextArea ---
+
 export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   mensajeError?: string;
@@ -33,11 +51,17 @@ export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   manejarError?: (nombre: string, error: boolean) => void;
 }
 
-// TablaGenerica.tsx
+// --- Componente TablaGenérica ---
+
+/** Definición de una columna en la tabla genérica de datos */
 export interface ColumnDef<T> {
+  /** Clave del objeto de datos que corresponde a esta columna */
   key: string;
+  /** Texto a mostrar en la cabecera */
   header: string;
+  /** Permite ordenar por esta columna (true/false) */
   sortable?: boolean;
+  /** Función de renderizado personalizado de la celda */
   render?: (row: T) => React.ReactNode;
 }
 
@@ -53,9 +77,13 @@ export interface ColumnFilter<T = any> {
   filterFn?: (row: T, value: string) => boolean;
 }
 
+/** Props principales del Data Table dinámico y paginado */
 export interface TablaGenericaProps<T> {
+  /** Array de datos a mostrar */
   data: T[];
+  /** Configuración de las columnas */
   columns: ColumnDef<T>[];
+  /** Función para obtener un ID único por fila */
   getRowId: (row: T) => string | number;
   columnFilters?: ColumnFilter<T>[];
   searchPlaceholder?: string;
@@ -72,7 +100,8 @@ export interface TablaGenericaProps<T> {
   onRowClick?: (row: T) => void;
 }
 
-// Select.tsx
+// --- Componente Select ---
+
 export interface Option {
   value: string | number;
   label: string;
@@ -85,7 +114,8 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   manejarCambio: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-// input.tsx
+// --- Componente Input ---
+
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
@@ -96,7 +126,8 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   manejarError?: (nombre: string, error: boolean) => void;
 }
 
-// Checkbox.tsx
+// --- Componente Checkbox ---
+
 export interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   manejarCambio: (e: React.ChangeEvent<HTMLInputElement>) => void;

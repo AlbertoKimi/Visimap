@@ -25,4 +25,4 @@ dist-ssr
 .env
 
 # Archivos generados de TypeDoc (Ignorar en Git)
-docs/api/
+docs/api/

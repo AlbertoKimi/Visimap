@@ -2,6 +2,11 @@ import { supabase } from './client';
 import { Evento, EventoFormData, GrupoVisitante } from "@/interfaces/Evento";
 import { EventRepository } from '../repositories/EventRepository';
 
+/**
+ * Implementación concreta del EventRepository utilizando el cliente Supabase.
+ * Todas las llamadas a base de datos de esta clase asumen que RLS está activo y
+ * el usuario tiene los permisos adecuados.
+ */
 export class SupabaseEventRepository implements EventRepository {
   private static instance: SupabaseEventRepository;
 

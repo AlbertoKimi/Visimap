@@ -29,5 +29,5 @@ jobs:
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs
+          folder: docs # Sube todo lo que hay en docs (tus PDFs + Extra + la api generada por el robot)
           branch: gh-pages

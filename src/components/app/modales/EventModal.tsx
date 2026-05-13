@@ -15,6 +15,15 @@ import { RepositoryFactory } from "@/database/RepositoryFactory";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 
+/**
+ * Modal Complejo de Gestión de Eventos.
+ * Permite la creación, edición, visualización y finalización de eventos de grupos.
+ * Administra internamente un formulario dinámico para agregar múltiples subgrupos de
+ * visitantes (por provincia o internacionales) asociados al mismo evento, calculando
+ * el volumen total de forma dinámica.
+ * @param props - Eventos, callbacks, y listas maestras para desplegables
+ * @returns Componente interactivo tipo Modal
+ */
 export const EventModal: React.FC<EventModalProps> = ({
   event,
   isNew,

@@ -14,6 +14,13 @@ import { useCallback } from 'react';
 const eventRepo = RepositoryFactory.getEventRepository();
 const typeRepo = RepositoryFactory.getEventTypeRepository();
 
+/**
+ * Vista del Calendario Interactivo.
+ * Implementa la interfaz de FullCalendar para gestionar eventos, visitas escolares,
+ * talleres y exposiciones del museo. Permite drag & drop, creación rápida al hacer clic
+ * en una fecha, y notificaciones proactivas de eventos pendientes de finalizar.
+ * @returns Componente de la vista de calendario
+ */
 export const VistaCalendario: React.FC = () => {
   const { user: currentUser } = useAuthStore();
   const [eventos, setEventos] = useState<any[]>([]);

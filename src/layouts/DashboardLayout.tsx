@@ -18,6 +18,11 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 
+/**
+ * Layout principal de la aplicación autenticada (Panel de Control).
+ * Define la estructura maestra: Sidebar (menú lateral), Header (migas de pan, tema, notificaciones)
+ * @returns El componente de layout principal
+ */
 export const DashboardLayout: React.FC = () => {
     const location = useLocation();
 
