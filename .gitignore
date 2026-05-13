@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Archivos generados de TypeDoc (Ignorar en Git)
+docs/api/

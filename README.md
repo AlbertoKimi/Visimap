@@ -15,6 +15,12 @@
     <em>Solución de software diseñada para optimizar la gestión de accesos,<br>flujos de visitantes y organización del personal en el Museo MUVI.</em>
   </p>
 
+  <p align="center">
+    <a href="https://albertokimi.github.io/Visimap/">
+      <img src="https://img.shields.io/badge/📖_Ver_Documentación_Técnica-2563eb?style=for-the-badge&logo=googledocs&logoColor=white" alt="Documentación">
+    </a>
+  </p>
+
 </div>
 
 <br>
@@ -147,6 +153,7 @@ Tabla de referencias rápidas para la operativa sobre el código base:
 | **Compilación** | `npm run build` | Genera la carpeta `/dist` optimizada para producción. |
 | **Previsualización**| `npm run preview` | Levanta un servidor sobre los estáticos de la última compilación. |
 | **Análisis** | `npm run lint` | Comprueba la calidad y el estándar de sintaxis del código. |
+| **Documentación** | `npm run docs` | Genera el portal técnico interactivo con TypeDoc. |
 
 <br>
 
