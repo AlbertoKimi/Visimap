@@ -34,9 +34,25 @@ const logoModoOscuroUrl = logoModoOscuroUrlImg;
 
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      const offset = 100; // Altura aproximada de la navbar + margen extra
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   const [theme, setTheme] = React.useState(() => localStorage.getItem('theme') || 'light');
@@ -69,10 +85,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   return (
     <LazyMotion features={loadFeatures} strict>
       <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
-        <nav className="fixed top-0 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm border-b dark:border-slate-800 z-50">
+        <nav className="fixed top-0 w-full bg-white dark:bg-slate-950 border-b dark:border-slate-800 z-50">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
-              <div>
+              <div onClick={scrollToTop} className="cursor-pointer">
                 <img
                   src={theme === 'dark' ? logoModoOscuroUrl : logoUrl}
                   alt="VisiMap Logo"
@@ -101,7 +117,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </nav>
 
         {/* Hero Section */}
-        <section className="flex items-center justify-center pt-44 pb-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+        <section className="flex items-center justify-center min-h-[calc(100vh-112px)] mt-[112px] py-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-slate-900">
 
           {/* Imagen de fondo estática para una carga inicial en PC */}
           <img
@@ -430,7 +446,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { number: '70%', label: 'Reducción en tiempo de registro' },
+                { number: '80%', label: 'Reducción en tiempo de registro' },
                 { number: '100%', label: 'Datos digitalizados' },
                 { number: '24/7', label: 'Acceso a información' },
                 { number: '∞', label: 'Capacidad de análisis' }
@@ -484,7 +500,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="container mx-auto">
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <div className="flex items-center gap-2 mb-4">
+                <div onClick={scrollToTop} className="flex items-center gap-2 mb-4 cursor-pointer">
                   <img
                     src={logoModoOscuroUrl}
                     alt="VisiMap Logo"
@@ -529,14 +545,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <ul className="space-y-2 text-gray-400">
                   <li>React + Tailwind CSS</li>
                   <li>Supabase Backend</li>
-                  <li>Leaflet.js Maps</li>
-                  <li>Recharts Analytics</li>
+                  <li>FullCalendar & Recharts</li>
+                  <li>Framer Motion & Vite</li>
                 </ul>
               </div>
             </div>
 
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2025 VisiMap - Museo MUVI. Sistema de Gestión de Visitantes.</p>
+              <p>&copy; 2026 VisiMap - Museo MUVI. Sistema de Gestión de Visitantes.</p>
             </div>
           </div>
         </footer>
