@@ -200,7 +200,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   onClick={() => scrollToSection('museo')}
                   variant="outline"
                   size="lg"
-                  className="text-lg px-8 border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900 md:border-white/40 md:text-white md:bg-white/10 md:hover:bg-white/20 md:dark:hover:bg-white/20 md:backdrop-blur-sm transition-colors"
+                  className="text-lg px-8 border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900 md:border-white/40 md:text-white md:bg-white/10 md:hover:bg-gradient-to-r md:hover:from-blue-600 md:hover:to-purple-600 md:hover:text-white md:hover:border-transparent md:backdrop-blur-sm md:shadow-lg md:shadow-black/20 md:hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300"
                 >
                   Conocer Más
                 </Button>
