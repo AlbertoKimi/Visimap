@@ -61,14 +61,29 @@
             box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
         }
 
-        h1 {
-            font-size: 3rem;
+        h1.hero-title {
+            font-size: 5rem;
             font-weight: 800;
             margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #94a3b8);
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 50%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.05em;
+            filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.3));
+            animation: titlePulse 3s infinite ease-in-out;
+        }
+
+        .header-divider {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            margin: 2rem auto 0;
+            border-radius: 99px;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.3)); }
+            50% { transform: scale(1.02); filter: drop-shadow(0 0 50px rgba(37, 99, 235, 0.5)); }
         }
 
         p.subtitle {
@@ -173,9 +188,9 @@
 
     <div class="container">
         <header>
-            <div class="logo-container">V</div>
-            <h1>Visimap</h1>
+            <h1 class="hero-title">Visimap</h1>
             <p class="subtitle">Centro de Documentación y Recursos del Proyecto</p>
+            <div class="header-divider"></div>
         </header>
 
         <div class="grid">
@@ -204,12 +219,6 @@
                 <div class="icon">🌐</div>
                 <h2>Manual de Despliegue</h2>
                 <p>Instrucciones detalladas para instalar y poner en marcha el entorno de desarrollo y producción.</p>
-            </a>
-
-            <a href="./Extra/" class="card">
-                <div class="icon">📂</div>
-                <h2>Recursos Extra</h2>
-                <p>Acceso a la carpeta de documentos adicionales y material complementario del proyecto.</p>
             </a>
         </div>
 
