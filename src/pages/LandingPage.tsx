@@ -24,6 +24,9 @@ import muvi1Img from "@/assets/muvi1.webp";
 import muvihistoriaImg from "@/assets/muvihistoria.webp";
 import muvicocheImg from "@/assets/muvicoche.webp";
 import analisisImg from "@/assets/Analisis.webp";
+import heroMp4 from "@/assets/video/hero-optimized.mp4";
+import heroWebm from "@/assets/video/hero-optimized.webm";
+import heroPosterWebp from "@/assets/video/hero-poster.webp";
 
 const logoUrl = logoUrlImg;
 const logoModoOscuroUrl = logoModoOscuroUrlImg;
@@ -36,6 +39,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   };
 
   const [theme, setTheme] = React.useState(() => localStorage.getItem('theme') || 'light');
+  const [isVideoLoaded, setIsVideoLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    // Retrasar la carga del vídeo para mejorar el Lighthouse Performance
+    const timer = setTimeout(() => setIsVideoLoaded(true), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   React.useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -80,7 +90,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </nav>
 
       {/* Hero Section */}
-      <section className="flex items-center justify-center pt-44 pb-12 px-8 md:px-24 lg:px-48 bg-gradient-to-br from-blue-50 via-purple-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 relative overflow-hidden">
+      <section className="flex items-center justify-center pt-44 pb-12 px-8 md:px-24 lg:px-48 relative overflow-hidden">
+
+        {/* Imagen de fondo estática para una carga inicial */}
+        <img
+          src={heroPosterWebp}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          fetchPriority="high"
+          aria-hidden="true"
+        />
+
+        {/* Vídeo de fondo se inyecta después para no bloquear el renderizado */}
+        {isVideoLoaded && (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+          >
+            <source src={heroWebm} type="video/webm" />
+            <source src={heroMp4} type="video/mp4" />
+          </video>
+        )}
+
+        {/* Overlay para legibilidad del texto */}
+        <div className="absolute inset-0 bg-black/50 dark:bg-black/65" />
+
         <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -92,16 +130,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-block mb-6 px-4 py-2 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-full text-sm font-medium border dark:border-blue-500/30"
+              className="inline-block mb-6 px-4 py-2 bg-white/15 text-white rounded-full text-sm font-medium border border-white/30 backdrop-blur-sm"
             >
               Sistema de Gestión de Visitantes
             </motion.div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl mb-6 bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent leading-tight">
               Digitaliza la experiencia del Museo MUVI
             </h1>
 
-            <p className="text-xl text-gray-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
               VisiMap transforma la gestión de visitantes con tecnología avanzada,
               análisis en tiempo real y una experiencia digital completa.
             </p>
@@ -119,7 +157,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 onClick={() => scrollToSection('museo')}
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900"
+                className="text-lg px-8 border-white/40 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm"
               >
                 Conocer Más
               </Button>
