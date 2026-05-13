@@ -212,7 +212,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Sección de Museo MUVI */}
         <section id="museo" className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
           <div className="container mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               <m.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -372,8 +372,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Beneficios de la Digitalización */}
         <section className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
           <div className="container mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               <m.div
+                className="order-2 lg:order-1"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -388,6 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </m.div>
 
               <m.div
+                className="order-1 lg:order-2"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
