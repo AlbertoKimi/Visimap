@@ -1,3 +1,9 @@
+/**
+ * Custom Hook que orquesta toda la lógica del Asistente Virtual (Chat IA).
+ * Maneja el estado de los mensajes, carga de adjuntos y la doble llamada (Query -> Analizar)
+ * requerida para procesar solicitudes de datos.
+ * @module
+ */
 import { useState, useCallback, useRef } from 'react';
 import { openaiService } from '@/database/openai/openaiService';
 import { supabase } from '@/database/supabase/client';
@@ -13,6 +19,7 @@ import type {
 // Sugerencias rápidas
 // ──────────────────────────────────────────────────────────────────────────────
 
+/** Batería de sugerencias (Pills) iniciales para guiar al usuario */
 export const SUGERENCIAS: SugerenciaChat[] = [
   {
     etiqueta: 'Visitantes del mes',
@@ -50,6 +57,10 @@ export const SUGERENCIAS: SugerenciaChat[] = [
 // Ejecutor de consultas DB generadas por Gemini
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Función middleware que traduce el objeto ConsultaDB generado por la IA
+ * en una petición real de Supabase JS al backend.
+ */
 async function ejecutarConsultaDB(consulta: ConsultaDB): Promise<{ datos: unknown[]; errorMsg?: string }> {
   // Sanitizar columnas: si viene con joins mal formateados, usar '*'
   let columnas = consulta.columnas || '*';
@@ -119,6 +130,7 @@ export function useChatIA() {
 
   // ── Añadir archivo adjunto ─────────────────────────────────────────────────
 
+  /** Procesa y convierte un archivo subido a base64 para enviarlo a la API */
   const agregarArchivo = useCallback(async (file: File) => {
     const MAX_MB = 10;
     if (file.size > MAX_MB * 1024 * 1024) {
@@ -161,6 +173,13 @@ export function useChatIA() {
 
   // ── Enviar mensaje ─────────────────────────────────────────────────────────
 
+  /**
+   * Ciclo de vida completo del envío de un mensaje:
+   * 1. Muestra el mensaje del usuario.
+   * 2. Consulta al LLM.
+   * 3. Si el LLM pide datos, se ejecutan contra Supabase (ejecutarConsultaDB).
+   * 4. Se inyectan los datos de vuelta al LLM para que analice y/o grafique.
+   */
   const enviarMensaje = useCallback(async (texto: string) => {
     if (!texto.trim() && adjuntos.length === 0) return;
     if (isLoading) return;

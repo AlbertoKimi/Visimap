@@ -39,6 +39,13 @@ const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; pa
 import { COLORES_PIE } from '@/constantes/appConstants';
 import { getRangoPeriodo, getNombreMes } from '@/utils/utils';
 
+/**
+ * Panel de gráficos estadísticos del Dashboard.
+ * Este componente orquesta múltiples gráficos (`TarjetaGrafico`) y realiza las
+ * peticiones a la base de datos (Supabase) para agrupar y contar registros de visitantes,
+ * grupos y eventos, transformando la información en un formato apto para Recharts.
+ * @returns Componente de panel con los indicadores analíticos clave
+ */
 export const GraficosPanel: React.FC = () => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 

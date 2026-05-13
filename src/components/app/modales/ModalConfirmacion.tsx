@@ -2,6 +2,18 @@ import React from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalConfirmacionProps } from '@/interfaces/components';
 
+/**
+ * Modal genérico de confirmación de acciones destructivas o críticas.
+ * Unifica el diseño de los diálogos de confirmación en toda la aplicación
+ * (eliminaciones, cambios de estado, etc) utilizando estilos condicionales basados
+ * en la severidad (danger, success, info, warning).
+ * @param props.isOpen - Visibilidad del modal
+ * @param props.titulo - Título principal
+ * @param props.mensaje - Texto de confirmación
+ * @param props.tipo - Temática de color según impacto de la acción
+ * @param props.onConfirm - Función ejecutada al aceptar
+ * @param props.onClose - Función ejecutada al cancelar
+ */
 export const ModalConfirmacion: React.FC<ModalConfirmacionProps> = ({
   isOpen,
   onClose,

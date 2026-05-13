@@ -7,6 +7,14 @@ import { Alerta } from "@/interfaces/components";
 
 
 
+/**
+ * Componente de Campana de Notificaciones.
+ * Gestiona y muestra alertas en tiempo real sobre nuevas notas, cambios de estado en notas,
+ * creación de eventos y finalización de los mismos.
+ * Implementa una lógica de sondeo (polling) cada 30 segundos y persiste el estado de
+ * lectura en el almacenamiento local (localStorage).
+ * @returns Nodo interactivo con contador visual de alertas no leídas.
+ */
 export const NotificationBell: React.FC = () => {
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [isOpen, setIsOpen] = useState(false);

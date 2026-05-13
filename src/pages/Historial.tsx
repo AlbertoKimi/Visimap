@@ -19,6 +19,13 @@ import { getNombreMes, calcularPaginas } from '@/utils/utils';
 
 const HISTORIAL_PAGE_SIZE = 10;
 
+/**
+ * Vista de la página de Historial.
+ * Presenta un desglose tabular e histórico de los visitantes del museo,
+ * así como los rankings top de provincias y países de origen.
+ * Permite exportar los datos mostrados en un archivo PDF.
+ * @returns Componente de la vista de historial
+ */
 export const Historial: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [datosMensuales, setDatosMensuales] = useState<VisitaHistorial[]>([]);

@@ -33,6 +33,22 @@ const logoUrl = logoUrlImg;
 const logoModoOscuroUrl = logoModoOscuroUrlImg;
 
 
+/**
+ * Componente principal de la página de inicio (Landing Page) de Visimap.
+ * 
+ * Este componente actúa como la carta de presentación de la aplicación.
+ * Muestra información sobre el Museo MUVI, las características principales
+ * del sistema, beneficios de la digitalización y un video introductorio.
+ * También gestiona el cambio de tema (claro/oscuro) y la detección de dispositivos móviles.
+ * 
+ * @param props - Propiedades del componente
+ * @param props.onGetStarted - Función de callback que se ejecuta cuando el usuario hace clic en los botones de "Comenzar Ahora" o "Iniciar Sesión". Generalmente redirige a la página de autenticación.
+ * 
+ * @example
+ * ```tsx
+ * <LandingPage onGetStarted={() => navigate('/login')} />
+ * ```
+ */
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const scrollToTop = () => {
     window.scrollTo({

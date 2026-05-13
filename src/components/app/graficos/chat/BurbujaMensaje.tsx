@@ -70,10 +70,21 @@ const TypingDots: React.FC = () => (
 // Burbuja de mensaje
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Propiedades del componente BurbujaMensaje
+ */
 interface BurbujaMensajeProps {
+  /** Objeto de mensaje que contiene el contenido, autor, adjuntos, y estado */
   mensaje: MensajeChat;
 }
 
+/**
+ * Componente que renderiza una burbuja de chat individual.
+ * Soporta renderizado de Markdown, archivos adjuntos, estados de carga (typing),
+ * alertas de error y gráficos incrustados. Aplica estilos diferentes según el autor (usuario o IA).
+ * @param props.mensaje - Datos del mensaje a visualizar
+ * @returns Componente de burbuja de mensaje
+ */
 export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
   const esUsuario = mensaje.rol === 'user';
   const hora = mensaje.timestamp.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });

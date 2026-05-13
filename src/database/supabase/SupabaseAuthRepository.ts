@@ -1,6 +1,10 @@
 import { supabase } from './client';
 import { AuthRepository } from '../repositories/AuthRepository';
 
+/**
+ * Implementación concreta del AuthRepository utilizando el SDK de Supabase.
+ * Sigue el patrón de diseño Singleton para garantizar una única instancia.
+ */
 export class SupabaseAuthRepository implements AuthRepository {
   private static instance: SupabaseAuthRepository;
 

@@ -4,6 +4,15 @@ import { getColoresProvincia } from "@/utils/ProvinciasColores";
 import { LeyendaColores } from "@/components/app/Leyenda";
 import { ProvinceInfo, SpainProvincesMapProps } from "@/interfaces/components";
 
+/**
+ * Mapa SVG Interactivo de España.
+ * Dibuja los trazados vectoriales (paths) de todas las provincias y comunidades autónomas.
+ * Maneja eventos de *hover* (tooltip flotante que sigue al cursor) y *click* (selección),
+ * aplicando colores distintos por zonas geográficas.
+ * @param props.activeId - ID de la provincia actualmente seleccionada
+ * @param props.onProvinceClick - Callback cuando se selecciona una provincia
+ * @param props.className - Clases CSS adicionales para el contenedor
+ */
 export default function SpainProvincesMap({
   activeId,
   onProvinceClick,

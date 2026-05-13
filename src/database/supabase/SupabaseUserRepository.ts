@@ -2,6 +2,11 @@ import { supabase } from './client';
 import { Perfil, UUID } from "@/interfaces/Perfil";
 import { UserRepository, UserStats } from '../repositories/UserRepository';
 
+/**
+ * Implementación concreta del UserRepository utilizando el cliente Supabase.
+ * Gestiona operaciones complejas como el cálculo de estadísticas agrupadas (getStats)
+ * y la subida de imágenes de avatar al Supabase Storage.
+ */
 export class SupabaseUserRepository implements UserRepository {
   private static instance: SupabaseUserRepository;
 

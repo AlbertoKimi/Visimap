@@ -12,6 +12,13 @@ import { FormData, FormularioProps } from "@/interfaces/components";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 
+/**
+ * Formulario de Registro de Visitantes.
+ * Permite capturar datos de entrada de visitantes, gestionando la distinción
+ * entre visitas individuales y de grupo, selección de país y provincia.
+ * Incluye lógica de animación para campos condicionales y carga de países desde el repositorio.
+ * @param props - Configuraciones iniciales, manejadores de eventos y opciones de visualización.
+ */
 export function Formulario({
   provinciaInicial = '',
   paisInicial = '',

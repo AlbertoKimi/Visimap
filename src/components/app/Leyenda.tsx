@@ -3,6 +3,12 @@ import { datosLeyenda } from "@/utils/ProvinciasColores";
 import { cn } from "@/utils";
 import { LeyendaColoresProps } from "@/interfaces/components";
 
+/**
+ * Leyenda de colores para el mapa interactivo.
+ * Muestra la correspondencia entre los colores de las provincias/comunidades
+ * y sus nombres respectivos, ayudando a la interpretación visual del mapa.
+ * @param props.className - Clases CSS opcionales para el posicionamiento.
+ */
 export const LeyendaColores: React.FC<LeyendaColoresProps> = ({ className }) => {
   return (
     <div className={cn("z-30 pointer-events-none select-none transition-all duration-500", className)}>

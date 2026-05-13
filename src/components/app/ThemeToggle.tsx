@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
+/**
+ * Componente para alternar el tema de la aplicación.
+ * Permite al usuario cambiar entre el modo claro y el modo oscuro (dark mode),
+ * sincronizando la preferencia con `localStorage` y aplicando la clase CSS `dark` al documento raíz.
+ * @returns Botón interactivo con iconos dinámicos (Sol/Luna).
+ */
 export const ThemeToggle: React.FC = () => {
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem("theme");

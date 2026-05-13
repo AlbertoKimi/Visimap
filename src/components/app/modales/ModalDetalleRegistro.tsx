@@ -8,6 +8,13 @@ import { formatearFecha, cn } from '@/utils/utils';
 
 const eventRepo = RepositoryFactory.getEventRepository();
 
+/**
+ * Modal visualizador de información de solo lectura.
+ * Presenta el desglose de datos tanto de un visitante individual de la ventanilla,
+ * como de un evento grupal complejo (resolviendo y listando sus subgrupos dinámicamente).
+ * Facilita un botón de acceso directo a edición si el usuario tiene permisos.
+ * @param props - Tipo de entidad y datos raw para renderizar
+ */
 export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
   isOpen,
   onClose,

@@ -15,8 +15,13 @@ const EstadoVacio: React.FC<{ nombre?: string }> = ({ nombre }) => (
   </div>
 );
 
-// ChatIA — componente principal
-
+/**
+ * Componente principal de la interfaz del Chat de IA.
+ * Renderiza el contenedor completo de la conversación, la cabecera, la lista de mensajes
+ * interactivos con Markdown, archivos y gráficos y la barra de sugerencias.
+ * Se apoya en el hook `useChatIA` para la lógica de negocio y la conexión con OpenAI.
+ * @returns Componente interactivo del chat de IA
+ */
 export const ChatIA: React.FC = () => {
   const {
     mensajes,
