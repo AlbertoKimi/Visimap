@@ -5,26 +5,40 @@ import {
   Navigate
 } from 'react-router-dom';
 import { LandingPage } from "@/pages/LandingPage";
-import { MapaVisitantes } from "@/pages/MapaVisitantes";
-import { VistaUsuarios } from "@/pages/VistaUsuarios";
-import { VistaCalendario } from "@/pages/VistaCalendario";
-import { VistaPerfil } from "@/pages/VistaPerfil";
-import { Graficos } from "@/pages/Graficos";
-import { RegistroVisitante } from "@/pages/RegistroVisitante";
-import { Notas } from "@/pages/Notas";
-import { Asistente } from "@/pages/Asistente";
-import { Historial } from "@/pages/Historial";
-import { FormularioSesion } from "@/components/app/FormularioSesion";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { lazy, Suspense } from 'react';
+
+// Code-splitting extremo: diferimos incluso los formularios y el layout del panel de administración
+const FormularioSesion = lazy(() => import("@/components/app/FormularioSesion").then(module => ({ default: module.FormularioSesion })));
+const DashboardLayout = lazy(() => import("@/layouts/DashboardLayout").then(module => ({ default: module.DashboardLayout })));
+const EstablecerContrasena = lazy(() => import("@/pages/EstablecerContrasena").then(module => ({ default: module.EstablecerContrasena })));
+
+// Code-splitting (Lazy Loading) para no bloquear la carga inicial con componentes pesados
+const MapaVisitantes = lazy(() => import("@/pages/MapaVisitantes").then(module => ({ default: module.MapaVisitantes })));
+const VistaUsuarios = lazy(() => import("@/pages/VistaUsuarios").then(module => ({ default: module.VistaUsuarios })));
+const VistaCalendario = lazy(() => import("@/pages/VistaCalendario").then(module => ({ default: module.VistaCalendario })));
+const VistaPerfil = lazy(() => import("@/pages/VistaPerfil").then(module => ({ default: module.VistaPerfil })));
+const Graficos = lazy(() => import("@/pages/Graficos").then(module => ({ default: module.Graficos })));
+const RegistroVisitante = lazy(() => import("@/pages/RegistroVisitante").then(module => ({ default: module.RegistroVisitante })));
+const Notas = lazy(() => import("@/pages/Notas").then(module => ({ default: module.Notas })));
+const Asistente = lazy(() => import("@/pages/Asistente").then(module => ({ default: module.Asistente })));
+const Historial = lazy(() => import("@/pages/Historial").then(module => ({ default: module.Historial })));
 import { ProtectedRoute } from "@/rutas/ProtectedRoute";
 import { PublicRoute } from "@/rutas/PublicRoute";
-import { EstablecerContrasena } from "@/pages/EstablecerContrasena";
 import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/database/supabase/client";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 
-import logoUrl from "@/assets/Logo-1.webp";
-import logoModoOscuroUrl from "@/assets/Logo-MO.webp";
+import logoUrl from "@/assets/Logo-1-opt.webp";
+import logoModoOscuroUrl from "@/assets/Logo-MO-opt.webp";
+
+const LoadingScreen = () => (
+  <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-slate-500 dark:text-slate-400 font-medium">Cargando...</p>
+    </div>
+  </div>
+);
 
 export default function App() {
   const {
@@ -185,15 +199,12 @@ export default function App() {
   ]);
 
   if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">Iniciando Visimap...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 }
