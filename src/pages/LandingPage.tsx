@@ -133,7 +133,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </nav>
 
         {/* Hero Section */}
-        <section className="flex items-center justify-center min-h-[calc(100vh-112px)] mt-[112px] py-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-slate-900">
+        <section className="flex items-center justify-center min-h-[calc(100vh-112px)] mt-[112px] py-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-blue-50 dark:bg-slate-900">
 
           {/* Imagen de fondo estática para una carga inicial en PC */}
           <img
