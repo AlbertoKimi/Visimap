@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
+import { StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { useAuthStore } from "@/stores/authStore";
@@ -208,10 +209,10 @@ export const NotificationBell: React.FC = () => {
     <div className="relative">
       <button
         onClick={toggleOpen}
-        className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+        className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         aria-label="Notificaciones"
       >
-        <Bell size={20} />
+        <img src={ICONOS.campana} className="w-[26px] h-[26px] object-contain" alt="" />
         {hasUnread && (
           <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white shadow-sm animate-bounce"></span>
         )}
@@ -235,7 +236,7 @@ export const NotificationBell: React.FC = () => {
             <div className="max-h-[60vh] overflow-y-auto">
               {alertas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <Bell className="text-slate-300 dark:text-slate-700 mb-3" size={32} />
+                  <img src={ICONOS.campana} className="w-10 h-10 object-contain opacity-40 mb-3 grayscale" alt="" />
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No hay avisos recientes</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px]">Cuando haya nueva actividad en Notas o Eventos, aparecerá aquí.</p>
                 </div>

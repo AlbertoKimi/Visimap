@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react";
+import { ICONOS } from "@/constantes/iconos";
 
 /**
  * Componente para alternar el tema de la aplicación.
@@ -41,9 +41,9 @@ export const ThemeToggle: React.FC = () => {
       aria-label="Cambiar tema"
     >
       {theme === "dark" ? (
-        <Sun className="w-5 h-5 text-yellow-400" />
+        <img src={ICONOS.sol} className="w-[26px] h-[26px] object-contain" alt="" />
       ) : (
-        <Moon className="w-5 h-5 text-neutral-600" />
+        <img src={ICONOS.luna} className="w-[26px] h-[26px] object-contain" alt="" />
       )}
     </button>
   );

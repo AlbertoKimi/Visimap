@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, User } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import TextArea from "@/components/ui/TextArea";
@@ -113,7 +113,7 @@ export function Formulario({
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 hover:shadow-sm'
                 }`}
             >
-              <User className="size-5" />
+              <img src={ICONOS.individual} className="size-7 object-contain" alt="" />
               <span className="text-sm font-bold">Individual</span>
             </Button>
 
@@ -126,7 +126,7 @@ export function Formulario({
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 hover:shadow-sm'
                 }`}
             >
-              <Users className="size-5" />
+              <img src={ICONOS.grupo} className="size-7 object-contain" alt="" />
               <span className="text-sm font-bold">Grupo</span>
             </Button>
           </div>

@@ -7,6 +7,20 @@ import TicketsIcon from "@/assets/iconos/tickets.webp";
 import AsistenteIcon from "@/assets/iconos/Muvi_asistente.webp";
 import PapiroIcon from "@/assets/iconos/Papiro.webp";
 import PicassoIcon from "@/assets/iconos/picasso.webp";
+import GraficaIcon from "@/assets/iconos/Grafica.webp";
+import ProvinciaIcon from "@/assets/iconos/Provincia.webp";
+import RendimientoIcon from "@/assets/iconos/Rendimiento.webp";
+import ResumenIcon from "@/assets/iconos/Resumen.webp";
+import MascarasIcon from "@/assets/iconos/Mascaras.webp";
+import MundoIcon from "@/assets/iconos/Mundo.webp";
+import IndividualIcon from "@/assets/iconos/Individual.webp";
+import GrupoIcon from "@/assets/iconos/Grupo.webp";
+import PuntoIcon from "@/assets/iconos/Punto.webp";
+import CalendarioIcon from "@/assets/iconos/Calendario.webp";
+import SpainIcon from "@/assets/iconos/Spain.webp";
+import SolIcon from "@/assets/iconos/Sol.webp";
+import LunaIcon from "@/assets/iconos/Luna.webp";
+import CampanaIcon from "@/assets/iconos/Campana.webp";
 
 /**
  * Centralización de los iconos personalizados de la aplicación.
@@ -22,4 +36,18 @@ export const ICONOS = {
   asistente: AsistenteIcon,
   papiro: PapiroIcon,
   picasso: PicassoIcon,
+  grafica: GraficaIcon,
+  provincia: ProvinciaIcon,
+  rendimiento: RendimientoIcon,
+  resumen: ResumenIcon,
+  mascaras: MascarasIcon,
+  mundo: MundoIcon,
+  individual: IndividualIcon,
+  grupo: GrupoIcon,
+  punto: PuntoIcon,
+  calendario: CalendarioIcon,
+  spain: SpainIcon,
+  sol: SolIcon,
+  luna: LunaIcon,
+  campana: CampanaIcon,
 };

@@ -12,6 +12,7 @@ import { GrupoExtendio } from "@/interfaces/Evento";
 import { EventModalProps } from "@/interfaces/components";
 import { Pais } from "@/interfaces/Visitor";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { ICONOS } from '@/constantes/iconos';
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 
@@ -433,16 +434,18 @@ export const EventModal: React.FC<EventModalProps> = ({
                             <button
                               type="button"
                               onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'provincia')}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors ${g.tipo_origen === 'provincia' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'provincia' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
-                              🇪🇸 España
+                              <img src={ICONOS.spain} className="w-3.5 h-3.5 object-contain" alt="" />
+                              España
                             </button>
                             <button
                               type="button"
                               onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'pais')}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors ${g.tipo_origen === 'pais' ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'pais' ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
-                              🌍 Internacional
+                              <img src={ICONOS.mundo} className="w-3.5 h-3.5 object-contain" alt="" />
+                              Internacional
                             </button>
                           </div>
                           <div className="flex gap-2 items-start">

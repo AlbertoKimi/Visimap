@@ -7,6 +7,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { openaiService } from '@/database/openai/openaiService';
 import { supabase } from '@/database/supabase/client';
+import { ICONOS } from '@/constantes/iconos';
 import type {
   MensajeChat,
   ArchivoAdjunto,
@@ -24,32 +25,32 @@ export const SUGERENCIAS: SugerenciaChat[] = [
   {
     etiqueta: 'Visitantes del mes',
     prompt: '¿Cuántos visitantes totales ha habido este mes? Dame un resumen por semana.',
-    icono: '📊',
+    icono: ICONOS.grafica,
   },
   {
     etiqueta: 'Gráfico por provincias',
     prompt: 'Genera un gráfico de barras con los visitantes por provincia del mes actual.',
-    icono: '🗺️',
+    icono: ICONOS.provincia,
   },
   {
     etiqueta: 'Rendimiento del personal',
     prompt: 'Muéstrame el rendimiento del personal: ¿quién ha registrado más visitantes este mes?',
-    icono: '👥',
+    icono: ICONOS.rendimiento,
   },
   {
     etiqueta: 'Resumen mensual',
     prompt: 'Crea un informe completo del mes actual con los principales datos del museo.',
-    icono: '📄',
+    icono: ICONOS.resumen,
   },
   {
     etiqueta: 'Eventos activos',
     prompt: '¿Qué eventos hay activos o próximos? Dame un listado con sus fechas.',
-    icono: '🎭',
+    icono: ICONOS.mascaras,
   },
   {
     etiqueta: 'España vs Mundo',
     prompt: 'Compara los visitantes nacionales (España) vs internacionales de este mes.',
-    icono: '🌍',
+    icono: ICONOS.mundo,
   },
 ];
 

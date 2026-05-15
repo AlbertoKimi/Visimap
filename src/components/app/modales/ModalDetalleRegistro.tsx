@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalDetalleRegistroProps } from '@/interfaces/components';
-import { MapPin, Users, Calendar, Globe, Info, Loader2, Edit2 } from 'lucide-react';
+import { Info, Loader2, Edit2 } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { GrupoVisitante } from '@/interfaces/Evento';
 import { formatearFecha, cn } from '@/utils/utils';
@@ -56,7 +57,7 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
           <Info className="w-5 h-5 text-blue-500" />
           <span className="flex-1">{title}</span>
           {onEdit && (
-            <button 
+            <button
               onClick={() => {
                 onClose();
                 onEdit();
@@ -76,38 +77,39 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
         <div className="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 border border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400">
-              {isMapa ? <MapPin className="w-6 h-6" /> : <Calendar className="w-6 h-6" />}
+              <img src={isMapa ? ICONOS.punto : ICONOS.calendario} className="w-6 h-6 object-contain" alt="" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                 {isMapa ? 'Provincia / Procedencia' : 'Nombre del Evento'}
               </p>
               <h4 className="text-xl font-bold text-slate-800 dark:text-white capitalize">
-                {isMapa ? (data.provincia?.nombre_provincia || data.pais?.nombre_pais || '—') : data.nombre_evento}
+                {isMapa 
+                  ? (data.provincia?.nombre_provincia || data.pais?.nombre_pais || '—') 
+                  : (data.nombre_evento || data.evento?.nombre_evento || 'Evento')}
               </h4>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6">
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">
                 Visitantes
               </p>
-              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
-                <Users className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200">
                 <span className="font-bold text-lg">{isMapa ? data.cantidad : data.total_visitantes || grupos.reduce((acc, g) => acc + g.num_visitantes, 0)}</span>
               </div>
             </div>
 
-            <div>
+            <div className="flex flex-col items-center">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">
                 Tipo
               </p>
-              <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200">
+              <div className="flex items-center justify-center gap-2 text-slate-700 dark:text-slate-200">
                 {isMapa ? (
                   <>
                     <span className={cn(
-                      "px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                      "px-4 py-1 rounded-full text-xs font-bold border",
                       data.tipo_visita === 'individual'
                         ? "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"
                         : "bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800"
@@ -117,8 +119,9 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
                   </>
                 ) : (
                   <>
-                    <Globe className="w-4 h-4 text-slate-400" />
-                    <span className="font-medium capitalize">{data.tipo_evento?.nombre || 'Evento'}</span>
+                    <span className="font-bold text-slate-800 dark:text-white text-base capitalize">
+                      {data.evento?.tipo_evento?.nombre || data.tipo_evento?.nombre || 'Evento'}
+                    </span>
                   </>
                 )}
               </div>
