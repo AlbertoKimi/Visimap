@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Bot, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { useAuthStore } from '@/stores/authStore';
 import { GraficoMensaje } from './GraficoMensaje';
 import type { MensajeChat } from '@/interfaces/ChatIA';
@@ -106,8 +107,8 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
     <div className={`chat-burbuja-fila ${esUsuario ? 'chat-burbuja-fila--user' : 'chat-burbuja-fila--model'}`}>
       {/* Avatar */}
       {!esUsuario && (
-        <div className="chat-avatar chat-avatar--model">
-          <Bot className="w-4 h-4 text-white" />
+        <div className="chat-avatar shrink-0 overflow-hidden flex items-center justify-center w-10 h-10 mt-1">
+          <img src={ICONOS.asistente} alt="Asistente" className="w-full h-full object-contain drop-shadow-sm" />
         </div>
       )}
 

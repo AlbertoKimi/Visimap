@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom"
-import { LogOut, Map, UserPlus, Users, Calendar, BarChart3, StickyNote, Settings, Sparkles, History } from "lucide-react"
+import { LogOut } from "lucide-react"
+import { ICONOS } from "@/constantes/iconos"
 
 import {
   Sidebar,
@@ -90,7 +91,7 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/mapa">
-                    <Map />
+                    <img src={ICONOS.mapa} className="size-5 object-contain" alt="" />
                     <span>Mapa Interactivo</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -105,7 +106,7 @@ export function AppSidebar() {
                     onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/registro-visitante">
-                      <UserPlus />
+                      <img src={ICONOS.evento} className="size-5 object-contain" alt="" />
                       <span>Registro Visitante</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -121,7 +122,7 @@ export function AppSidebar() {
                     onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/personal">
-                      <Users />
+                      <img src={ICONOS.cueva} className="size-5 object-contain" alt="" />
                       <span>Trabajadores</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -136,7 +137,7 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/eventos">
-                    <Calendar />
+                    <img src={ICONOS.ceramica} className="size-5 object-contain" alt="" />
                     <span>Eventos</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -151,7 +152,7 @@ export function AppSidebar() {
                     onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/estadisticas">
-                      <BarChart3 />
+                      <img src={ICONOS.museo} className="size-5 object-contain" alt="" />
                       <span>Gráficas</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -167,7 +168,7 @@ export function AppSidebar() {
                     onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/historial">
-                      <History />
+                      <img src={ICONOS.tickets} className="size-5 object-contain" alt="" />
                       <span>Historial</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -183,7 +184,7 @@ export function AppSidebar() {
                     onClick={handleNavClick}
                   >
                     <NavLink to="/dashboard/asistente">
-                      <Sparkles />
+                      <img src={ICONOS.asistente} className="size-5 object-contain" alt="" />
                       <span>Asistente</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -198,7 +199,7 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/notas">
-                    <StickyNote />
+                    <img src={ICONOS.papiro} className="size-5 object-contain" alt="" />
                     <span>Notas</span>
                   </NavLink>
                 </SidebarMenuButton>
@@ -219,7 +220,7 @@ export function AppSidebar() {
                   onClick={handleNavClick}
                 >
                   <NavLink to="/dashboard/perfil">
-                    <Settings />
+                    <img src={ICONOS.picasso} className="size-5 object-contain" alt="" />
                     <span>Editar Perfil</span>
                   </NavLink>
                 </SidebarMenuButton>

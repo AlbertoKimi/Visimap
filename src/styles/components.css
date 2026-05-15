@@ -351,6 +351,43 @@
   @apply text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium;
 }
 
+/* ── Mascota Interactiva (Clippy-style) ────────────────────────────────── */
+
+.mascot-container {
+  @apply relative mb-8 flex justify-center items-center;
+}
+
+.mascot-img {
+  @apply w-32 h-32 md:w-40 md:h-40 object-contain transition-all duration-500 cursor-pointer;
+  animation: mascot-float 4s ease-in-out infinite;
+  filter: drop-shadow(0 10px 15px rgba(59, 130, 246, 0.2));
+}
+
+.mascot-img:hover {
+  animation: mascot-bounce 0.6s ease-in-out infinite;
+  filter: drop-shadow(0 15px 25px rgba(59, 130, 246, 0.4));
+}
+
+.mascot-shadow {
+  @apply absolute -bottom-4 w-20 h-3 bg-blue-500/10 dark:bg-blue-400/5 rounded-[100%] blur-md transition-all duration-500;
+  animation: shadow-pulse 4s ease-in-out infinite;
+}
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes mascot-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shadow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(0.7); opacity: 0.3; }
+}
+
 .chat-sugerencias-fila {
   @apply flex items-center justify-center gap-2 overflow-x-auto pb-3 mb-1 px-1 w-full;
 }
