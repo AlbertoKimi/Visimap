@@ -3,6 +3,20 @@ import { Loader2, RefreshCw, Download } from 'lucide-react';
 import { TarjetaGraficoProps } from "@/interfaces/components";
 import html2canvas from 'html2canvas';
 
+/**
+ * Componente contenedor de las gráficas (`Card`).
+ * Proporciona un marco visual consistente con cabecera, controles de recarga manual,
+ * y funcionalidad de exportación a PNG. Renderiza el gráfico o un estado de carga.
+ * @param props.titulo - Título principal de la tarjeta
+ * @param props.subtitulo - Contexto adicional sobre los datos mostrados
+ * @param props.icono - Icono decorativo de Lucide React
+ * @param props.colorIcono - Clases de Tailwind para el gradiente del icono
+ * @param props.isLoading - Estado de carga activa de los datos del gráfico
+ * @param props.onRefresh - Callback para actualizar manualmente los datos del gráfico
+ * @param props.altura - Clase CSS para definir la altura de la tarjeta
+ * @param props.children - Componente del gráfico interno (usualmente Recharts)
+ * @returns Contenedor estandarizado de visualización
+ */
 export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   titulo,
   subtitulo,

@@ -3,6 +3,13 @@ import Input from "@/components/ui/input";
 import fondoLoginImg from "@/assets/Fondo_Login.webp";
 import { FormularioSesionProps } from "@/interfaces/components";
 
+/**
+ * Componente de Formulario de Inicio de Sesión.
+ * Renderiza la interfaz de acceso con campos de email y contraseña,
+ * validaciones en tiempo real y soporte para cambio de tema (claro/oscuro)
+ * reflejado en el logo.
+ * @param props - Manejadores de login/vuelta atrás y URLs de branding.
+ */
 export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   onLogin,
   onBack,

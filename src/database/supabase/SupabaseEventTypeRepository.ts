@@ -2,6 +2,9 @@ import { supabase } from './client';
 import { TipoEvento } from "@/interfaces/Evento";
 import { EventTypeRepository } from '../repositories/EventTypeRepository';
 
+/**
+ * Implementación concreta del EventTypeRepository utilizando el cliente Supabase.
+ */
 export class SupabaseEventTypeRepository implements EventTypeRepository {
   private static instance: SupabaseEventTypeRepository;
 

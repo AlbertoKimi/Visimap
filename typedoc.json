@@ -1,0 +1,10 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src"],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "name": "Visimap Documentation",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "tsconfig": "tsconfig.app.json",
+  "includeVersion": true
+}

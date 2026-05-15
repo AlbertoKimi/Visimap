@@ -7,11 +7,22 @@ import { useAuthStore } from "@/stores/authStore";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Perfil } from "@/interfaces/Perfil";
 
+/**
+ * Interfaz para las propiedades del componente NotaModal.
+ */
 interface NotaModalProps {
+  /** Función para cerrar el modal. */
   onClose: () => void;
+  /** Callback ejecutado tras crear exitosamente una nota. */
   onNotaCreated: () => void;
 }
 
+/**
+ * Componente Modal para la creación de nuevas notas.
+ * Permite definir un título, contenido y asignar la nota a "Todos" o a un usuario específico del equipo.
+ * Carga dinámicamente la lista de usuarios activos para el desplegable de asignación.
+ * @param props - Propiedades del modal (onClose, onNotaCreated).
+ */
 export const NotaModal: React.FC<NotaModalProps> = ({ onClose, onNotaCreated }) => {
   const [titulo, setTitulo] = useState('');
   const [contenido, setContenido] = useState('');

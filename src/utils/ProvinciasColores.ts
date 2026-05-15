@@ -1,3 +1,9 @@
+/**
+ * Módulo de configuración de colores para el mapa interactivo de España.
+ * Asigna colores de TailwindCSS a cada Comunidad Autónoma y provincia.
+ * @module
+ */
+
 interface ComunidadColor {
   [key: string]: string;
 }
@@ -101,10 +107,16 @@ const coloresProvincia: { [key: string]: string } = {
   melilla: comunidadColores.ciudades
 };
 
+/**
+ * Obtiene la clase CSS (Tailwind fill color) asignada a una provincia.
+ * Utilizado por el componente SVG del Mapa interactivo.
+ * @param id Identificador de la provincia (ej: 'badajoz')
+ */
 export const getColoresProvincia = (id: string): string => {
   return coloresProvincia[id] || 'fill-gray-100'; 
 };
 
+/** Datos estructurados para renderizar la leyenda visual de colores en la UI */
 export const datosLeyenda = [
   { nombre: 'Andalucía', color: comunidadColores.andalucia },
   { nombre: 'Aragón', color: comunidadColores.aragon },

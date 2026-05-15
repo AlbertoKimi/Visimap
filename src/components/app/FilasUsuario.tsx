@@ -3,6 +3,12 @@ import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
 import { UserRowProps } from "@/interfaces/components";
 
+/**
+ * Componente que representa una fila individual en la tabla de usuarios.
+ * Muestra información del perfil (avatar, nombre, email, rol, estado)
+ * y proporciona un menú de acciones contextuales.
+ * @param props - Datos del perfil, lista de roles para mapeo de nombres y callback de acciones.
+ */
 export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);

@@ -33,6 +33,22 @@ const logoUrl = logoUrlImg;
 const logoModoOscuroUrl = logoModoOscuroUrlImg;
 
 
+/**
+ * Componente principal de la página de inicio (Landing Page) de Visimap.
+ * 
+ * Este componente actúa como la carta de presentación de la aplicación.
+ * Muestra información sobre el Museo MUVI, las características principales
+ * del sistema, beneficios de la digitalización y un video introductorio.
+ * También gestiona el cambio de tema (claro/oscuro) y la detección de dispositivos móviles.
+ * 
+ * @param props - Propiedades del componente
+ * @param props.onGetStarted - Función de callback que se ejecuta cuando el usuario hace clic en los botones de "Comenzar Ahora" o "Iniciar Sesión". Generalmente redirige a la página de autenticación.
+ * 
+ * @example
+ * ```tsx
+ * <LandingPage onGetStarted={() => navigate('/login')} />
+ * ```
+ */
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const scrollToTop = () => {
     window.scrollTo({
@@ -117,7 +133,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </nav>
 
         {/* Hero Section */}
-        <section className="flex items-center justify-center min-h-[calc(100vh-112px)] mt-[112px] py-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-slate-900">
+        <section className="flex items-center justify-center min-h-[calc(100vh-112px)] mt-[112px] py-12 px-8 md:px-24 lg:px-48 relative overflow-hidden bg-blue-50 dark:bg-slate-900">
 
           {/* Imagen de fondo estática para una carga inicial en PC */}
           <img
@@ -184,7 +200,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   onClick={() => scrollToSection('museo')}
                   variant="outline"
                   size="lg"
-                  className="text-lg px-8 border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900 md:border-white/40 md:text-white md:bg-white/10 md:hover:bg-white/20 md:dark:hover:bg-white/20 md:backdrop-blur-sm transition-colors"
+                  className="text-lg px-8 border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900 md:border-white/40 md:text-white md:bg-white/10 md:hover:bg-gradient-to-r md:hover:from-blue-600 md:hover:to-purple-600 md:hover:text-white md:hover:border-transparent md:backdrop-blur-sm md:shadow-lg md:shadow-black/20 md:hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300"
                 >
                   Conocer Más
                 </Button>
@@ -196,7 +212,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Sección de Museo MUVI */}
         <section id="museo" className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
           <div className="container mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               <m.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -356,8 +372,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         {/* Beneficios de la Digitalización */}
         <section className="py-24 px-8 md:px-24 lg:px-48 bg-white dark:bg-slate-950">
           <div className="container mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
               <m.div
+                className="order-2 lg:order-1"
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -372,6 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </m.div>
 
               <m.div
+                className="order-1 lg:order-2"
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}

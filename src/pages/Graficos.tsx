@@ -1,6 +1,11 @@
 import { GraficosPanel } from '@/components/app/graficos/GraficosPanel';
 
-
+/**
+ * Vista de la página de Estadísticas (Dashboard Analítico).
+ * Muestra el panel de control con todos los gráficos estadísticos
+ * en tiempo real sobre la afluencia de visitantes.
+ * @returns Componente de la vista de gráficos
+ */
 export const Graficos: React.FC = () => {
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">

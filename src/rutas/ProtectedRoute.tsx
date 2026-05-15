@@ -2,6 +2,12 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from "@/stores/authStore";
 
+/**
+ * Componente enrutador que envuelve las rutas privadas (Dashboard).
+ * Bloquea el acceso a usuarios no autenticados redirigiéndolos al login.
+ * Muestra un spinner de carga mientras verifica el estado de la sesión.
+ * @returns El componente de ruta protegida
+ */
 export const ProtectedRoute: React.FC = () => {
     const { isAuthenticated, isLoading } = useAuthStore();
 

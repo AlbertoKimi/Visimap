@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Loader2, X } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Modal } from "@/components/ui/Modal";
@@ -16,6 +16,17 @@ import { useAuthStore } from "@/stores/authStore";
 const userRepo = RepositoryFactory.getUserRepository();
 const roleRepo = RepositoryFactory.getRoleRepository();
 
+/**
+ * Vista de administración de usuarios (Solo accesible para Administradores).
+ * 
+ * Este componente es el panel principal de gestión del personal. Permite a los
+ * administradores ver la lista de todos los usuarios registrados, crear nuevas
+ * cuentas de trabajadores/administradores, y modificar el estado de las cuentas
+ * existentes (activar/desactivar).
+ * 
+ * @param props - Propiedades del componente
+ * @param props.onRefreshProfile - Callback opcional para refrescar los datos del perfil del usuario actual (útil si el admin modifica sus propios datos).
+ */
 export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onRefreshProfile }) => {
   const { userProfile } = useAuthStore();
   const [profiles, setProfiles] = useState<Perfil[]>([]);

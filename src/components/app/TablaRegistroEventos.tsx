@@ -6,6 +6,13 @@ import { ColumnDef, ColumnFilter } from '@/interfaces/ui';
 import { RegistroEvento } from '@/interfaces/Evento';
 import { TablaRegistroEventosProps } from '@/interfaces/components';
 
+/**
+ * Tabla de datos para la gestión de Grupos/Eventos.
+ * Reutiliza el componente `TablaGenerica` pasándole las columnas específicas del
+ * dominio de eventos (nombre de evento, origen, número de visitantes, autor, acciones).
+ * Incluye lógica de filtrado por "Tipo origen".
+ * @param props - Datos de eventos y callbacks de acciones
+ */
 export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
   registros,
   onDelete,

@@ -4,6 +4,13 @@ import { Session } from '@supabase/supabase-js';
 import { AuthState } from "@/interfaces/Auth";
 import { Perfil } from "@/interfaces/Perfil";
 
+/**
+ * Hook personalizado para acceder y mutar el estado global de autenticación.
+ * 
+ * Utiliza Zustand para la gestión del estado y el middleware 'persist' para
+ * guardar automáticamente la sesión en el `localStorage` del navegador.
+ * Esto permite mantener al usuario conectado aunque recargue la página.
+ */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set: (state: Partial<AuthState> | ((state: AuthState) => Partial<AuthState>)) => void) => ({

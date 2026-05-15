@@ -1,3 +1,10 @@
+/**
+ * Módulo de servicio para la comunicación con la Inteligencia Artificial.
+ * Se encarga de gestionar el historial de chat, construir el prompt del sistema,
+ * enviar consultas a Groq/OpenAI y parsear las respuestas especiales (gráficos y queries DB).
+ * @module
+ */
+
 import { openaiClient } from './openaiClient';
 import type { ArchivoAdjunto, GraficoGenerado, ConsultaDB, TipoGrafico } from '@/interfaces/ChatIA';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
@@ -6,6 +13,11 @@ import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 // System Prompt — Contexto completo del museo y su base de datos
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Construye dinámicamente el prompt del sistema que define el comportamiento de la IA.
+ * Le proporciona el esquema exacto de la base de datos y la fecha actual para que
+ * sepa cómo formular consultas SQL (Supabase) al vuelo.
+ */
 function buildSystemPrompt(): string {
   const ahora = new Date();
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -49,12 +61,21 @@ const getSystemPrompt = buildSystemPrompt;
 // Parser de bloques especiales en la respuesta
 // ──────────────────────────────────────────────────────────────────────────────
 
+/** Resultado de parsear la respuesta bruta de la IA */
 export interface RespuestaParsed {
+  /** Texto limpio para mostrar al usuario, sin los bloques JSON ocultos */
   texto: string;
+  /** Arrays de configuraciones de gráficos extraídos del markdown */
   graficos: GraficoGenerado[];
+  /** Arrays de consultas a base de datos sugeridas por la IA */
   consultas: ConsultaDB[];
 }
 
+/**
+ * Examina la respuesta en texto plano devuelta por la IA usando expresiones regulares.
+ * Extrae los bloques ````chart```` y ````db-query````, convirtiéndolos en objetos TS,
+ * y devuelve el texto sobrante limpio de metadatos.
+ */
 function parsearRespuesta(texto: string): RespuestaParsed {
   const graficos: GraficoGenerado[] = [];
   const consultas: ConsultaDB[] = [];
@@ -100,6 +121,10 @@ function parsearRespuesta(texto: string): RespuestaParsed {
 // Servicio principal
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Servicio Singleton que orquesta la mensajería con la API del LLM.
+ * Mantiene la memoria del historial a corto plazo del chat activo.
+ */
 export class OpenAIService {
   private static instance: OpenAIService;
   private historial: ChatCompletionMessageParam[] = [];
@@ -113,10 +138,15 @@ export class OpenAIService {
     return OpenAIService.instance;
   }
 
+  /** Reinicia el historial de mensajes de la sesión activa */
   limpiarHistorial(): void {
     this.historial = [];
   }
 
+  /**
+   * Envía un mensaje al LLM, incluyendo historial, archivos adjuntos procesados 
+   * y datos de contexto inyectados por peticiones a la DB previas.
+   */
   async enviarMensaje(
     textoPregunta: string,
     archivos: ArchivoAdjunto[] = [],

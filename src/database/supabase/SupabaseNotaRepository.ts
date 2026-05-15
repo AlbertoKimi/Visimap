@@ -2,6 +2,10 @@ import { supabase } from './client';
 import { Nota } from "@/interfaces/Nota";
 import { NotaRepository } from '../repositories/NotaRepository';
 
+/**
+ * Implementación concreta del NotaRepository utilizando el cliente Supabase.
+ * Gestiona el crud de la tabla `notas`.
+ */
 export class SupabaseNotaRepository implements NotaRepository {
   private static instance: SupabaseNotaRepository;
 

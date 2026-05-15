@@ -6,6 +6,12 @@ import { useAuthStore } from "@/stores/authStore";
 import { supabase } from "@/database/supabase/client";
 import { MenuLateralProps } from "@/interfaces/components";
 
+/**
+ * Componente de Menú Lateral de Navegación.
+ * Proporciona acceso a las diferentes secciones del dashboard,
+ * filtrando opciones según el rol de administrador y gestionando el cierre de sesión.
+ * @param props.userProfile - Perfil del usuario actual para mostrar información y validar permisos.
+ */
 export const MenuLateral: React.FC<MenuLateralProps> = ({
   userProfile
 }) => {

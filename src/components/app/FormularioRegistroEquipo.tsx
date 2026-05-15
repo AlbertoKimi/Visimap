@@ -7,6 +7,14 @@ import { FormularioRegistroProps } from "@/interfaces/components";
 
 const authRepo = RepositoryFactory.getAuthRepository();
 
+/**
+ * Formulario para invitar a nuevos miembros del equipo (Administradores/Trabajadores).
+ * Gestiona la captura y validación de datos personales y contacta con el backend
+ * de Supabase para enviar un enlace mágico (Magic Link) de primer inicio de sesión.
+ * @param props.onCancel - Callback para cerrar el modal sin hacer cambios
+ * @param props.onSuccess - Callback para refrescar la tabla al invitar exitosamente
+ * @param props.mostrarNotificacion - Función externa para emitir toasts
+ */
 export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
   onCancel,
   onSuccess,

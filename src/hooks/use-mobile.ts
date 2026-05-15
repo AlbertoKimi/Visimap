@@ -2,6 +2,11 @@ import * as React from "react"
 
 const MOBILE_BREAKPOINT = 1024
 
+/**
+ * Custom Hook para detectar si el usuario está navegando desde un dispositivo móvil o pantalla pequeña.
+ * Muy útil para colapsar barras laterales (Sidebars) o cambiar layouts condicionalmente.
+ * Considera móvil cualquier pantalla por debajo de 1024px.
+ */
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 

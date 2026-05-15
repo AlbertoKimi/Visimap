@@ -8,6 +8,14 @@ import { UsersTableProps } from '@/interfaces/components';
 
 
 
+/**
+ * Celda de acciones para la tabla de usuarios.
+ * Renderiza un menú desplegable (MUI Menu) con opciones para ver detalles,
+ * editar el perfil o cambiar el estado de activación del usuario.
+ * @param props.profile - El perfil de usuario asociado a la fila.
+ * @param props.onAction - Callback para manejar la acción seleccionada.
+ * @param props.currentUserId - ID del usuario actualmente autenticado (para evitar auto-acciones).
+ */
 const ActionsCell: React.FC<{
   profile: Perfil;
   onAction: (action: string, profile: Perfil) => void;
@@ -94,6 +102,13 @@ const ActionsCell: React.FC<{
   );
 };
 
+/**
+ * Tabla principal para la gestión del personal/equipo.
+ * Utiliza el componente genérico `TablaGenerica` para mostrar la lista de perfiles,
+ * permitiendo búsqueda, filtrado por rol/estado y acciones masivas de activación/desactivación.
+ * @param props - Propiedades que incluyen la lista de usuarios, roles disponibles y manejadores de eventos.
+ * @returns Componente de tabla interactiva.
+ */
 export const UsersTable: React.FC<UsersTableProps> = ({
   users,
   roles,
