@@ -124,8 +124,6 @@ export const NotificationBell: React.FC = () => {
           // 3. Notificación al confirmar la finalización (para todos)
           if (evento.finalizado) {
             const timestampActualizado = (evento as any).updated_at || (evento as any).actualizado_en;
-            // Si no hay timestamp de actualización, usamos la fecha de fin o creación, 
-            // pero nos aseguramos de que no sea superior a 'ahora' para evitar que salten al top erróneamente
             const backupDate = (fechaFin && fechaFin < hoy) ? fechaFin : (fechaCrea < hoy ? fechaCrea : hoy);
             const fechaConfirmado = timestampActualizado ? new Date(timestampActualizado) : backupDate;
 
@@ -141,6 +139,23 @@ export const NotificationBell: React.FC = () => {
                 icono: CheckCircle2,
               });
             }
+          }
+
+          // 4. Notificación cuando el evento comienza (para todos)
+          const fechaInicioStr = evento.fecha_inicio;
+          const fechaInicio = fechaInicioStr ? new Date(fechaInicioStr) : null;
+
+          if (fechaInicio && fechaInicio <= hoy && fechaInicio > tresDiasAtras && !evento.finalizado) {
+            nuevasAlertas.push({
+              id: `evt-${evento.id_evento}-start`,
+              tipo: 'evento',
+              mensaje: `El evento ha comenzado: ${evento.nombre_evento}`,
+              fechaDate: fechaInicio,
+              fechaTexto: fechaInicio.toLocaleDateString() + ' ' + fechaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              link: '/dashboard/eventos',
+              leido: false,
+              icono: Calendar,
+            });
           }
         });
 
@@ -245,32 +260,33 @@ export const NotificationBell: React.FC = () => {
                   {alertas.map(alerta => {
                     const Icon = alerta.icono;
                     const isSuccess = alerta.mensaje.toLowerCase().includes('finalizad');
+                    const isStarting = alerta.mensaje.toLowerCase().includes('comenzado');
 
                     return (
                       <button
                         key={alerta.id}
                         onClick={() => handleAlertClick(alerta.link)}
                         title={alerta.mensaje}
-                        className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${
-                          !alerta.leido
+                        className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${!alerta.leido
                             ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 border-l-4 border-blue-400'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className={`p-2.5 rounded-full shrink-0 shadow-sm ${isSuccess
                           ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                          : alerta.tipo === 'nota'
-                            ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400'
-                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                          : isStarting
+                            ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                            : alerta.tipo === 'nota'
+                              ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400'
+                              : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
                           }`}>
                           <Icon size={18} strokeWidth={2.5} />
                         </div>
 
                         <div className="flex-1 min-w-0 pt-0.5">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className={`text-sm leading-snug break-words ${
-                              !alerta.leido ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'
-                            }`}>
+                            <p className={`text-sm leading-snug break-words ${!alerta.leido ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'
+                              }`}>
                               {alerta.mensaje}
                             </p>
                             {!alerta.leido && (
