@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.15) 0%, transparent 50%);
             color: var(--text);
@@ -82,8 +83,17 @@
         }
 
         @keyframes titlePulse {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.3)); }
-            50% { transform: scale(1.02); filter: drop-shadow(0 0 50px rgba(37, 99, 235, 0.5)); }
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 30px rgba(37, 99, 235, 0.3));
+            }
+
+            50% {
+                transform: scale(1.02);
+                filter: drop-shadow(0 0 50px rgba(37, 99, 235, 0.5));
+            }
         }
 
         p.subtitle {
@@ -173,17 +183,30 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Estilos para móviles */
         @media (max-width: 640px) {
-            h1 { font-size: 2rem; }
-            .grid { grid-template-columns: 1fr; }
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -199,7 +222,8 @@
                 <span class="badge">Recomendado</span>
                 <div class="icon">🚀</div>
                 <h2>Documentación Técnica (TypeDoc)</h2>
-                <p>Explora el portal interactivo con la estructura de componentes, interfaces y lógica del sistema de forma profesional.</p>
+                <p>Explora el portal interactivo con la estructura de componentes, interfaces y lógica del sistema de
+                    forma profesional.</p>
             </a>
 
             <!-- Manuales PDF -->
@@ -209,7 +233,7 @@
                 <p>Guía paso a paso para el uso de la aplicación, registro de visitantes y gestión de eventos.</p>
             </a>
 
-            <a href="./Manual-Tecnico-Visimap.pdf.pdf" target="_blank" class="card">
+            <a href="./Manual_Tecnico_Visimap.pdf" target="_blank" class="card">
                 <div class="icon">🛠️</div>
                 <h2>Manual Técnico</h2>
                 <p>Detalles sobre la arquitectura, base de datos en Supabase y servicios de IA.</p>
@@ -228,4 +252,5 @@
     </div>
 
 </body>
+
 </html>
