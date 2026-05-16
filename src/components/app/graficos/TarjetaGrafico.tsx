@@ -32,18 +32,56 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
   const handleDownload = async () => {
     if (!cardRef.current) return;
     try {
+      // 1. Buscamos si hay algún contenedor con scroll dentro de la tarjeta
+      const contenedorScroll = cardRef.current.querySelector('.overflow-y-auto') as HTMLDivElement | null;
+      
+      // Obtenemos la altura total del scroll (scrollHeight) si existe
+      const alturaScrollReal = contenedorScroll ? contenedorScroll.scrollHeight : 0;
+
+      // 2. Creamos un identificador temporal único para encontrar esta tarjeta exacta en el clon del DOM
+      const tempId = `descarga-grafico-${Date.now()}`;
+      cardRef.current.id = tempId;
+
+      // 3. Renderizamos la tarjeta con html2canvas
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff',
         scale: 2,
         logging: false,
-        useCORS: true
+        useCORS: true,
+        // Usamos la función onclone para modificar la copia del DOM que hace html2canvas
+        // de esta forma, no alteramos visualmente lo que el usuario ve en su pantalla
+        onclone: (documentoClonado) => {
+          const tarjetaClonada = documentoClonado.getElementById(tempId);
+          if (tarjetaClonada && alturaScrollReal > 0) {
+            // Buscamos el contenedor de altura fija y el contenedor de scroll en el clon
+            const contenedorContenidoClon = tarjetaClonada.querySelector('.chart-content-container') as HTMLDivElement | null;
+            const contenedorScrollClon = tarjetaClonada.querySelector('.overflow-y-auto') as HTMLDivElement | null;
+
+            // Expandimos las alturas al tamaño real del gráfico para que quepa todo entero sin recortar
+            if (contenedorContenidoClon) {
+              contenedorContenidoClon.style.height = `${alturaScrollReal}px`;
+              contenedorContenidoClon.style.minHeight = `${alturaScrollReal}px`;
+            }
+            if (contenedorScrollClon) {
+              contenedorScrollClon.style.height = `${alturaScrollReal}px`;
+              contenedorScrollClon.style.minHeight = `${alturaScrollReal}px`;
+              contenedorScrollClon.style.overflow = 'visible'; // Hacemos visible el desbordamiento
+              contenedorScrollClon.style.overflowY = 'visible';
+            }
+          }
+        }
       });
+
+      // 4. Creamos el enlace de descarga para guardar la imagen PNG
       const link = document.createElement('a');
       link.download = `grafico-${titulo.toLowerCase().replace(/\s+/g, '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (err) {
       console.error('Error al exportar imagen:', err);
+    } finally {
+      // 5. Limpiamos el ID temporal del elemento real del DOM
+      cardRef.current.removeAttribute('id');
     }
   };
 
@@ -65,7 +103,9 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
             {subtitulo && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{subtitulo}</p>}
           </div>
         </div>
-        <div className="flex items-center gap-1">
+
+        {/* Controles */}
+        <div className="flex items-center gap-1" data-html2canvas-ignore="true">
           <button
             onClick={handleDownload}
             title="Descargar como imagen"
@@ -86,7 +126,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
       </div>
 
       {/* Contenido */}
-      <div className={`${altura} w-full relative flex items-center justify-center`}>
+      <div className={`${altura} w-full relative flex items-center justify-center chart-content-container`}>
         {isLoading ? (
           <div className="flex flex-col items-center gap-2 text-slate-400">
             <Loader2 className="w-7 h-7 animate-spin text-blue-400" />

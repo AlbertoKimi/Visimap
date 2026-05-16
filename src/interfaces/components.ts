@@ -42,6 +42,7 @@ export interface MenuLateralProps {
 export interface TarjetaGraficoProps {
   titulo: string;
   subtitulo?: string;
+  valorTotal?: number | string;
   icono?: React.ReactNode;
   colorIcono?: string;
   children: React.ReactNode;
