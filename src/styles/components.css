@@ -1,24 +1,21 @@
-/*  Tablas – Filas alternas desktop (≥1024px) */
+/*  Tablas y Tarjetas – Filas/Tarjetas alternas (Todos los dispositivos) */
 
-
-@media (min-width: 1024px) {
-
-  /* filas pares */
-  tbody .tabla-fila-alterna:nth-child(even) {
-    background-color: var(--tabla-fila-par) !important;
-  }
-
-  /* filas impares */
-  tbody .tabla-fila-alterna:nth-child(odd) {
-    background-color: var(--tabla-fila-impar) !important;
-  }
-
-  /* hover sobre cualquier fila */
-  tbody .tabla-fila-alterna:nth-child(even):hover,
-  tbody .tabla-fila-alterna:nth-child(odd):hover {
-    background-color: var(--tabla-hover-bg) !important;
-  }
+/* filas/tarjetas pares */
+tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(even) {
+  background-color: var(--tabla-fila-par) !important;
 }
+
+/* filas/tarjetas impares */
+tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd) {
+  background-color: var(--tabla-fila-impar) !important;
+}
+
+/* hover sobre cualquier fila/tarjeta */
+tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(even):hover,
+tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
+  background-color: var(--tabla-hover-bg) !important;
+}
+
 
 
 /* ─── Subtítulo de página ──────────────────────────────────────────────────── */
