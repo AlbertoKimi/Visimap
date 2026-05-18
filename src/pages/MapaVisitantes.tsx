@@ -29,6 +29,13 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
   const [resetLateralTrigger, setResetLateralTrigger] = useState(0);
   const [resetModalTrigger, setResetModalTrigger] = useState(0);
   const [estaAbierto, setEstaAbierto] = useState(false);
+
+  // Limpia el formulario lateral al cerrarse el panel
+  React.useEffect(() => {
+    if (!estaAbierto) {
+      setResetLateralTrigger(prev => prev + 1);
+    }
+  }, [estaAbierto]);
   const [notificacion, setNotificacion] = useState<{
     open: boolean,
     mensaje: string,
@@ -113,6 +120,11 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
       }
 
       mostrarNotificacion(mensajeAmigable, 'error');
+
+      // Cerramos el modal e inicializamos la provincia seleccionada al fallar, como solicitó el usuario
+      setShowForm(false);
+      setSelectedProvince(null);
+
       return false;
     }
   };
@@ -144,7 +156,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
         <Formulario
           onSubmit={handleRegistroLateral}
           mostrarObservaciones={true}

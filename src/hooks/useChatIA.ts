@@ -55,7 +55,7 @@ export const SUGERENCIAS: SugerenciaChat[] = [
 ];
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Ejecutor de consultas DB generadas por Gemini
+// Ejecutor de consultas DB generadas por Groq (IA)
 // ──────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -211,11 +211,81 @@ export function useChatIA() {
     setIsLoading(true);
     scrollAlFinal();
 
+
+    // INTERCEPTOR DE CONSULTAS DE VISITANTES
+
+    const lowerText = texto.toLowerCase().trim();
+    const tieneVisitantes = lowerText.includes('visitante') || lowerText.includes('visita') || lowerText.includes('persona') || lowerText.includes('gente');
+    const tieneAnio = lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este')));
+    const tieneTotalHistorico = lowerText.includes('total') || lowerText.includes('histórico') || lowerText.includes('historico') || lowerText.includes('acumulado') || lowerText.includes('todos los tiempos');
+
+    // Palabras clave que indican que el usuario quiere un reporte mensual, semanal, diario o desgloses gráficos.
+    // Si contiene alguna de estas, NO interceptamos y dejamos que la IA haga su trabajo con gráficos.
+    const exclusiones = ['mes', 'semana', 'diario', 'día', 'dia', 'provincia', 'país', 'pais', 'grafico', 'gráfico', 'chart', 'mensual', 'semanal', 'diaria'];
+    const tieneExclusiones = exclusiones.some(palabra => lowerText.includes(palabra));
+
+    if (tieneVisitantes && (tieneAnio || tieneTotalHistorico) && !tieneExclusiones) {
+      try {
+        // Consultamos directamente la vista del historial de visitantes (la fuente de verdad de la app)
+        const { data: vistaData, error: vistaError } = await supabase
+          .from('vista_visitantes_totales')
+          .select('total_personas, fecha');
+
+        if (vistaError) throw vistaError;
+
+        let totalAnual = 0;
+        let totalHistorico = 0;
+        const currentYear = new Date().getFullYear();
+
+        vistaData?.forEach(item => {
+          const fecha = new Date(item.fecha);
+          const anio = fecha.getFullYear();
+          const personas = item.total_personas || 0;
+
+          totalHistorico += personas;
+          if (anio === currentYear) {
+            totalAnual += personas;
+          }
+        });
+
+        // Construimos una respuesta súper pulida y natural basada en la pregunta exacta
+        let respuestaTexto = '';
+        if (tieneAnio) {
+          respuestaTexto = `Actualmente en el año **${currentYear}**, el museo ha registrado un total de **${totalAnual.toLocaleString('es-ES')}** visitantes. \n\nAdemás, si te interesa el acumulado completo, el total histórico de visitas registradas en la plataforma desde el inicio es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.`;
+        } else {
+          respuestaTexto = `El total histórico acumulado de visitas registradas en el museo desde el inicio de los registros es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.\n\nDurante el año actual (**${currentYear}**), hemos recibido un total de **${totalAnual.toLocaleString('es-ES')}** visitantes.`;
+        }
+
+        respuestaTexto += `\n\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        // Pequeña pausa de 600ms para simular que el asistente (mascota) está analizando, mejorando la experiencia de usuario
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? {
+                ...m,
+                texto: respuestaTexto,
+                cargando: false,
+              }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return; // Finalizamos el flujo exitosamente sin consumir tokens del LLM ni arriesgar fallos
+      } catch (dbErr) {
+        console.error('Error en el interceptor de visitantes de la IA:', dbErr);
+        // Si hay algún fallo con la base de datos local, dejamos que continúe el flujo normal hacia el LLM
+      }
+    }
+
     try {
-      // Primera llamada a OpenAI
+      // Primera llamada a Groq
       const respuesta = await openaiService.enviarMensaje(texto.trim(), archivosActuales);
 
-      // Si Gemini pidió datos de BD, los ejecutamos y hacemos una segunda llamada
+      // Si Groq pidió datos de BD, los ejecutamos y hacemos una segunda llamada
       if (respuesta.consultas.length > 0) {
         const consulta = respuesta.consultas[0]; // procesamos la primera consulta
         let resultados: unknown[] = [];
@@ -246,19 +316,19 @@ export function useChatIA() {
         );
 
         // Usamos solo los gráficos de la respuesta final (evita duplicados si la IA generó un placeholder)
-        const graficosFinales: GraficoGenerado[] = respuestaFinal.graficos.length > 0 
-          ? respuestaFinal.graficos 
+        const graficosFinales: GraficoGenerado[] = respuestaFinal.graficos.length > 0
+          ? respuestaFinal.graficos
           : respuesta.graficos;
 
         setMensajes(prev =>
           prev.map(m =>
             m.id === idPlaceholder
-                ? {
-                    ...m,
-                    texto: respuestaFinal.texto || m.texto,
-                    graficos: graficosFinales.length > 0 ? graficosFinales : undefined,
-                    cargando: false,
-                  }
+              ? {
+                ...m,
+                texto: respuestaFinal.texto || m.texto,
+                graficos: graficosFinales.length > 0 ? graficosFinales : undefined,
+                cargando: false,
+              }
               : m
           )
         );
@@ -268,20 +338,20 @@ export function useChatIA() {
           prev.map(m =>
             m.id === idPlaceholder
               ? {
-                  ...m,
-                  texto: respuesta.texto,
-                  graficos: respuesta.graficos.length > 0 ? respuesta.graficos : undefined,
-                  cargando: false,
-                }
+                ...m,
+                texto: respuesta.texto,
+                graficos: respuesta.graficos.length > 0 ? respuesta.graficos : undefined,
+                cargando: false,
+              }
               : m
           )
         );
       }
     } catch (error: any) {
       console.error('[useChatIA] Error enviando mensaje:', error);
-      
+
       let mensajeError = 'Lo siento, ha ocurrido un error al procesar tu solicitud. Por favor, inténtalo de nuevo.';
-      
+
       // Manejo específico de errores de Groq (Rate Limits)
       if (error?.status === 429 || error?.message?.includes('429')) {
         mensajeError = 'He alcanzado el límite de velocidad temporal de la IA. Por favor, espera unos 10-15 segundos antes de volver a preguntar para que pueda procesarlo correctamente.';
@@ -293,11 +363,11 @@ export function useChatIA() {
         prev.map(m =>
           m.id === idPlaceholder
             ? {
-                ...m,
-                texto: mensajeError,
-                cargando: false,
-                error: true,
-              }
+              ...m,
+              texto: mensajeError,
+              cargando: false,
+              error: true,
+            }
             : m
         )
       );

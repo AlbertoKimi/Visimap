@@ -72,6 +72,14 @@ export function Formulario({
     }
   }, [resetTrigger, provinciaInicial, paisInicial]);
 
+  // Si el país seleccionado cambia y deja de ser España, limpiamos el campo de provincia
+  useEffect(() => {
+    const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
+    if (!esEspana && formData.provincia !== '') {
+      setFormData(prev => ({ ...prev, provincia: '' }));
+    }
+  }, [formData.pais, formData.provincia]);
+
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -99,8 +107,8 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col h-full gap-[var(--spacing-xs)] md:gap-[var(--spacing-sm)]">
-      <div className="flex-none space-y-2 md:space-y-4">
+    <div className="flex flex-col gap-2 md:gap-3">
+      <div className="flex-none space-y-1.5 md:space-y-2.5">
         <div>
           <label className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</label>
           <div className="flex justify-center items-center gap-[var(--spacing-xs)] sm:gap-[var(--spacing-sm)]">
@@ -169,7 +177,7 @@ export function Formulario({
 
         <div className="relative">
           <AnimatePresence mode='popLayout'>
-            {(esEspana || formData.provincia) && (
+            {esEspana && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -194,7 +202,7 @@ export function Formulario({
       </div>
 
       {mostrarObservaciones && (
-        <div className="flex-1">
+        <div>
           <TextArea
             label="Observaciones"
             name="observaciones"
@@ -207,7 +215,7 @@ export function Formulario({
         </div>
       )}
 
-      <div className="flex gap-3 pt-1 mt-auto">
+      <div className="flex gap-3 pt-1">
         {onCancel && (
           <Button
             type="button"
