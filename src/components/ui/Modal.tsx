@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between p-6 pb-2 shrink-0">
+              <div className="flex items-center justify-between px-6 pt-5 pb-1 shrink-0">
                 {title ? (
                   typeof title === 'string' ? (
                     <h3 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
@@ -89,7 +89,7 @@ export const Modal: React.FC<ModalProps> = ({
             )}
 
             {/* Cuerpo */}
-            <div className="p-6 pt-2 overflow-y-auto flex-1 custom-scrollbar">
+            <div className="px-6 pb-5 pt-1 overflow-y-auto flex-1 custom-scrollbar">
               {children}
             </div>
 

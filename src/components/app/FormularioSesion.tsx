@@ -21,6 +21,32 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   const [errorStatus, setErrorStatus] = useState<Record<string, boolean>>({});
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+  // Estado para almacenar el número de intentos fallidos (se recupera de localStorage)
+  const [intentos, setIntentos] = useState(() => Number(localStorage.getItem('visimap_intentos') || 0));
+  // Estado para almacenar el momento en el que se quita el bloqueo
+  const [bloqueadoHasta, setBloqueadoHasta] = useState(() => Number(localStorage.getItem('visimap_bloqueado_hasta') || 0));
+  // Estado para controlar los minutos que está bloqueado
+  const [minutosBloqueo, setMinutosBloqueo] = useState(() => Number(localStorage.getItem('visimap_minutos_bloqueo') || 1));
+  // Estado para saber cuántos segundos le queda de bloqueo.
+  const [segundosRestantes, setSegundosRestantes] = useState(0);
+
+  // Cuenta atrás del bloqueo cada segundo en tiempo real
+  React.useEffect(() => {
+    const verificarTiempoRestante = () => {
+      const ahora = Date.now();
+      if (bloqueadoHasta > ahora) {
+        // Diferencia y la convertimos a segundos (redondeando hacia arriba)
+        setSegundosRestantes(Math.ceil((bloqueadoHasta - ahora) / 1000));
+      } else {
+        setSegundosRestantes(0);
+      }
+    };
+
+    verificarTiempoRestante();
+    const timerInterval = setInterval(verificarTiempoRestante, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [bloqueadoHasta]);
 
   React.useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -43,9 +69,16 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
     setErrorStatus(prev => ({ ...prev, [name]: hasError }));
   };
 
+  // Envío del formulario con la seguridad de los bloqueos.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmissionError(null);
+
+    // Si el usuario está bloqueado por tiempo, impedimos cualquier petición a la base de datos
+    if (segundosRestantes > 0) {
+      setSubmissionError(`Acceso temporalmente deshabilitado. Por favor, espera ${segundosRestantes} segundos.`);
+      return;
+    }
 
     if (Object.values(errorStatus).some(v => v)) {
       setSubmissionError('Por favor, corrige los errores en el formulario.');
@@ -53,9 +86,53 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
     }
 
     try {
+      // Intentamos iniciar sesión llamando al repositorio de autenticación
       await onLogin(email, password);
+
+      // Si es correcto, reseteamos todo.
+      localStorage.removeItem('visimap_intentos');
+      localStorage.removeItem('visimap_bloqueado_hasta');
+      localStorage.removeItem('visimap_minutos_bloqueo');
+      setIntentos(0);
+      setBloqueadoHasta(0);
+      setMinutosBloqueo(1);
+      setSegundosRestantes(0);
+
     } catch (err: any) {
-      setSubmissionError('Correo electrónico o contraseña incorrectos.');
+      // ¡LOGIN INCORRECTO!
+      const nuevosIntentos = intentos + 1;
+
+      if (nuevosIntentos >= 5) {
+        // Si falla 5 veces consecutivas, calculamos la penalización
+        const tiempoBloqueoMs = minutosBloqueo * 60 * 1000;
+        const nuevaFechaBloqueo = Date.now() + tiempoBloqueoMs;
+
+        // Bloqueamos el login guardando la fecha de desbloqueo en estado y localStorage
+        setBloqueadoHasta(nuevaFechaBloqueo);
+        localStorage.setItem('visimap_bloqueado_hasta', String(nuevaFechaBloqueo));
+
+        // Reseteamos los intentos para la siguiente ronda de pruebas tras desbloquearse
+        setIntentos(0);
+        localStorage.setItem('visimap_intentos', '0');
+
+        // Aumentamos los minutos progresivamente para el siguiente bloqueo (+1 minuto más)
+        const siguienteMinuto = minutosBloqueo + 1;
+        setMinutosBloqueo(siguienteMinuto);
+        localStorage.setItem('visimap_minutos_bloqueo', String(siguienteMinuto));
+
+        setSubmissionError(
+          `Has alcanzado el límite de 5 intentos fallidos. Acceso bloqueado durante ${minutosBloqueo} minuto(s).`
+        );
+      } else {
+        // Si aún le quedan intentos, simplemente actualizamos el contador
+        setIntentos(nuevosIntentos);
+        localStorage.setItem('visimap_intentos', String(nuevosIntentos));
+        const intentosRestantes = 5 - nuevosIntentos;
+
+        setSubmissionError(
+          `Correo electrónico o contraseña incorrectos. Te quedan ${intentosRestantes} intentos.`
+        );
+      }
     }
   };
 
@@ -99,6 +176,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
             error="Introduce un email válido (ej: usuario@empresa.com)"
             manejarCambio={manejarCambioEmail}
             manejarError={manejarError}
+            disabled={segundosRestantes > 0}
           />
 
           <Input
@@ -112,6 +190,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
             error="La contraseña es obligatoria"
             manejarCambio={manejarCambioPassword}
             manejarError={manejarError}
+            disabled={segundosRestantes > 0}
           />
 
           {submissionError && (
@@ -122,9 +201,10 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold transition-all duration-200 hover:shadow-lg hover:shadow-blue-200/80 hover:scale-[1.02] active:scale-[0.98]"
+            disabled={segundosRestantes > 0}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-bold transition-all duration-200 hover:shadow-lg hover:shadow-blue-200/80 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
           >
-            Iniciar Sesión
+            {segundosRestantes > 0 ? `Bloqueado (Espera ${segundosRestantes}s)` : 'Iniciar Sesión'}
           </button>
         </form>
         <button

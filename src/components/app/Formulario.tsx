@@ -111,14 +111,14 @@ export function Formulario({
       <div className="flex-none space-y-1.5 md:space-y-2.5">
         <div>
           <label className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</label>
-          <div className="flex justify-center items-center gap-[var(--spacing-xs)] sm:gap-[var(--spacing-sm)]">
+          <div className="flex justify-center items-center gap-[var(--spacing-xs)] sm:gap-[var(--spacing-sm)] px-1.5 py-1">
             <Button
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })}
-              className={`flex-1 sm:flex-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'individual'
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-md scale-105 hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-700 hover:scale-105'
-                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 hover:shadow-sm'
+              className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'individual'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-md scale-[1.03] hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-700 hover:scale-[1.03]'
+                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'
                 }`}
             >
               <img src={ICONOS.individual} className="size-7 object-contain" alt="" />
@@ -129,9 +129,9 @@ export function Formulario({
               type="button"
               variant="outline"
               onClick={() => setFormData({ ...formData, tipoVisita: 'grupo', numPersonas: 2 })}
-              className={`flex-1 sm:flex-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'grupo'
-                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 shadow-md scale-105 hover:bg-purple-50 dark:hover:bg-blue-900/40 hover:text-purple-700 hover:scale-105'
-                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 hover:shadow-sm'
+              className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'grupo'
+                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 shadow-md scale-[1.03] hover:bg-purple-50 dark:hover:bg-blue-900/40 hover:text-purple-700 hover:scale-[1.03]'
+                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'
                 }`}
             >
               <img src={ICONOS.grupo} className="size-7 object-contain" alt="" />

@@ -29,6 +29,13 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
   const [resetLateralTrigger, setResetLateralTrigger] = useState(0);
   const [resetModalTrigger, setResetModalTrigger] = useState(0);
   const [estaAbierto, setEstaAbierto] = useState(false);
+
+  // Limpia el formulario lateral al cerrarse el panel
+  React.useEffect(() => {
+    if (!estaAbierto) {
+      setResetLateralTrigger(prev => prev + 1);
+    }
+  }, [estaAbierto]);
   const [notificacion, setNotificacion] = useState<{
     open: boolean,
     mensaje: string,
@@ -113,6 +120,11 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
       }
 
       mostrarNotificacion(mensajeAmigable, 'error');
+
+      // Cerramos el modal e inicializamos la provincia seleccionada al fallar, como solicitó el usuario
+      setShowForm(false);
+      setSelectedProvince(null);
+
       return false;
     }
   };
@@ -144,7 +156,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
         <Formulario
           onSubmit={handleRegistroLateral}
           mostrarObservaciones={true}
@@ -193,7 +205,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
       >
         <button
           onClick={() => setEstaAbierto(!estaAbierto)}
-          className="absolute top-1/2 left-0 md:-left-4 lg:left-0 md:translate-x-0 lg:-translate-x-full -translate-y-1/2 p-2 bg-white dark:bg-slate-900 rounded-l-2xl md:rounded-r-2xl lg:rounded-l-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-16 group transition-all"
+          className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-l-2xl shadow-xl dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-16 group transition-all"
         >
           {estaAbierto ? (
             <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
