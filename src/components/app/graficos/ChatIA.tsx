@@ -98,7 +98,7 @@ export const ChatIA: React.FC = () => {
               onClick={() => enviarMensaje(s.prompt)}
             >
               <div className="chat-sugerencia-icono">
-                <img src={s.icono} className="size-6 object-contain" alt="" />
+                <img src={s.icono} className="size-5 object-contain" alt="" />
               </div>
               <span className="chat-sugerencia-texto">{s.etiqueta}</span>
             </Card>
