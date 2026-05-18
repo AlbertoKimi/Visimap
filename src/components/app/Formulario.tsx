@@ -107,7 +107,7 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col gap-2 md:gap-3">
+    <div className="flex flex-col justify-between gap-4 h-full md:h-auto min-h-full md:min-h-0">
       <div className="flex-none space-y-1.5 md:space-y-2.5">
         <div>
           <label className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</label>
@@ -215,7 +215,7 @@ export function Formulario({
         </div>
       )}
 
-      <div className="flex gap-3 pt-1">
+      <div className="flex gap-3 pt-2 pb-2 md:pb-0">
         {onCancel && (
           <Button
             type="button"
