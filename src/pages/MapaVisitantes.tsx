@@ -15,6 +15,13 @@ interface MapaVisitantesProps {
   onRegistrarVisitante?: () => void;
 }
 
+/**
+ * Vista principal de la aplicación: Mapa de Visitantes.
+ * Contiene el mapa interactivo de España (SVG) para registrar visitantes
+ * nacionales haciendo clic en provincias, y un formulario lateral/inferior
+ * para registrar visitantes internacionales.
+ * @param props.onRegistrarVisitante - Evento emitido al completar un registro
+ */
 export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
   const { user } = useAuthStore();
   const [selectedProvince, setSelectedProvince] = useState<any>(null);

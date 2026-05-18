@@ -13,6 +13,14 @@ interface VistaPerfilProps {
   onRefreshProfile?: () => void;
 }
 
+/**
+ * Vista de Mi Perfil.
+ * Es un wrapper (contenedor) específico que reutiliza el componente `DetalleUsuario`
+ * forzando el ocultamiento del botón de volver (`hideBack=true`) para que la experiencia
+ * de usuario sea coherente con una vista de configuración de cuenta personal.
+ * @param props.userProfile - Perfil actual logueado
+ * @param props.onRefreshProfile - Callback para actualizar la información global si hay cambios
+ */
 export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefreshProfile }) => {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
+import { StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { useAuthStore } from "@/stores/authStore";
@@ -7,6 +8,14 @@ import { Alerta } from "@/interfaces/components";
 
 
 
+/**
+ * Componente de Campana de Notificaciones.
+ * Gestiona y muestra alertas en tiempo real sobre nuevas notas, cambios de estado en notas,
+ * creación de eventos y finalización de los mismos.
+ * Implementa una lógica de sondeo (polling) cada 30 segundos y persiste el estado de
+ * lectura en el almacenamiento local (localStorage).
+ * @returns Nodo interactivo con contador visual de alertas no leídas.
+ */
 export const NotificationBell: React.FC = () => {
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -115,8 +124,6 @@ export const NotificationBell: React.FC = () => {
           // 3. Notificación al confirmar la finalización (para todos)
           if (evento.finalizado) {
             const timestampActualizado = (evento as any).updated_at || (evento as any).actualizado_en;
-            // Si no hay timestamp de actualización, usamos la fecha de fin o creación, 
-            // pero nos aseguramos de que no sea superior a 'ahora' para evitar que salten al top erróneamente
             const backupDate = (fechaFin && fechaFin < hoy) ? fechaFin : (fechaCrea < hoy ? fechaCrea : hoy);
             const fechaConfirmado = timestampActualizado ? new Date(timestampActualizado) : backupDate;
 
@@ -132,6 +139,23 @@ export const NotificationBell: React.FC = () => {
                 icono: CheckCircle2,
               });
             }
+          }
+
+          // 4. Notificación cuando el evento comienza (para todos)
+          const fechaInicioStr = evento.fecha_inicio;
+          const fechaInicio = fechaInicioStr ? new Date(fechaInicioStr) : null;
+
+          if (fechaInicio && fechaInicio <= hoy && fechaInicio > tresDiasAtras && !evento.finalizado) {
+            nuevasAlertas.push({
+              id: `evt-${evento.id_evento}-start`,
+              tipo: 'evento',
+              mensaje: `El evento ha comenzado: ${evento.nombre_evento}`,
+              fechaDate: fechaInicio,
+              fechaTexto: fechaInicio.toLocaleDateString() + ' ' + fechaInicio.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              link: '/dashboard/eventos',
+              leido: false,
+              icono: Calendar,
+            });
           }
         });
 
@@ -200,10 +224,10 @@ export const NotificationBell: React.FC = () => {
     <div className="relative">
       <button
         onClick={toggleOpen}
-        className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+        className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         aria-label="Notificaciones"
       >
-        <Bell size={20} />
+        <img src={ICONOS.campana} className="w-[26px] h-[26px] object-contain" alt="" />
         {hasUnread && (
           <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white shadow-sm animate-bounce"></span>
         )}
@@ -227,7 +251,7 @@ export const NotificationBell: React.FC = () => {
             <div className="max-h-[60vh] overflow-y-auto">
               {alertas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <Bell className="text-slate-300 dark:text-slate-700 mb-3" size={32} />
+                  <img src={ICONOS.campana} className="w-10 h-10 object-contain opacity-40 mb-3 grayscale" alt="" />
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No hay avisos recientes</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px]">Cuando haya nueva actividad en Notas o Eventos, aparecerá aquí.</p>
                 </div>
@@ -236,32 +260,33 @@ export const NotificationBell: React.FC = () => {
                   {alertas.map(alerta => {
                     const Icon = alerta.icono;
                     const isSuccess = alerta.mensaje.toLowerCase().includes('finalizad');
+                    const isStarting = alerta.mensaje.toLowerCase().includes('comenzado');
 
                     return (
                       <button
                         key={alerta.id}
                         onClick={() => handleAlertClick(alerta.link)}
                         title={alerta.mensaje}
-                        className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${
-                          !alerta.leido
+                        className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${!alerta.leido
                             ? 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 border-l-4 border-blue-400'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-transparent'
-                        }`}
+                          }`}
                       >
                         <div className={`p-2.5 rounded-full shrink-0 shadow-sm ${isSuccess
                           ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                          : alerta.tipo === 'nota'
-                            ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400'
-                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
+                          : isStarting
+                            ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+                            : alerta.tipo === 'nota'
+                              ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400'
+                              : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400'
                           }`}>
                           <Icon size={18} strokeWidth={2.5} />
                         </div>
 
                         <div className="flex-1 min-w-0 pt-0.5">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className={`text-sm leading-snug break-words ${
-                              !alerta.leido ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'
-                            }`}>
+                            <p className={`text-sm leading-snug break-words ${!alerta.leido ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-700 dark:text-slate-300'
+                              }`}>
                               {alerta.mensaje}
                             </p>
                             {!alerta.leido && (

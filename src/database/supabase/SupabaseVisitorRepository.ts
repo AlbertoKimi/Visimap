@@ -2,6 +2,11 @@ import { supabase } from './client';
 import { Pais, Provincia, RegistroVisitante } from "@/interfaces/Visitor";
 import { VisitorRepository } from '../repositories/VisitorRepository';
 
+/**
+ * Implementación concreta del VisitorRepository utilizando el cliente Supabase.
+ * Gestiona el crud de la tabla `registros_visitas` y las tablas de soporte
+ * como `paises` y `provincias`.
+ */
 export class SupabaseVisitorRepository implements VisitorRepository {
   private static instance: SupabaseVisitorRepository;
 

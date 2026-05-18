@@ -81,6 +81,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           disabled={disabled}
           onChange={handleChangeInternal}
           onBlur={handleBlur}
+          autoCapitalize={isPassword || type === "email" ? "none" : (props.autoCapitalize as any)}
+          autoCorrect={isPassword || type === "email" ? "off" : (props.autoCorrect as any)}
+          spellCheck={isPassword || type === "email" ? false : props.spellCheck}
           className={`input-style-comun input-responsive ${disabled ? "input-disabled" : `${colorClass}`
             } ${isPassword ? "pr-11" : ""} ${props.className || ""}`}
           aria-invalid={smError}

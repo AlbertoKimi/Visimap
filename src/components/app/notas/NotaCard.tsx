@@ -4,11 +4,24 @@ import { Nota } from "@/interfaces/Nota";
 import { useAuthStore } from "@/stores/authStore";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 
+/**
+ * Interfaz para las propiedades del componente NotaCard.
+ */
 interface NotaCardProps {
+  /** Objeto de nota con toda la información (título, contenido, estado, autor). */
   nota: Nota;
+  /** Callback para notificar al componente padre que los datos han cambiado y debe refrescar la lista. */
   onNotaUpdated: () => void;
 }
 
+/**
+ * Componente de tarjeta para la visualización de notas.
+ * Implementa la lógica de permisos basada en roles y autoría:
+ * - Los Administradores pueden borrar cualquier nota.
+ * - Los autores pueden borrar sus propias notas.
+ * - Los destinatarios específicos de una nota son los únicos (junto a notas globales) que pueden cambiar el estado.
+ * @param props - Propiedades del componente (nota y callback de actualización).
+ */
 export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
   const { userProfile } = useAuthStore();
   const [isProcessing, setIsProcessing] = useState(false);

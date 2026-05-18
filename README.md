@@ -15,6 +15,12 @@
     <em>Solución de software diseñada para optimizar la gestión de accesos,<br>flujos de visitantes y organización del personal en el Museo MUVI.</em>
   </p>
 
+  <p align="center">
+    <a href="https://albertokimi.github.io/Visimap/">
+      <img src="https://img.shields.io/badge/📖_Ver_Documentación_Técnica-2563eb?style=for-the-badge&logo=googledocs&logoColor=white" alt="Documentación">
+    </a>
+  </p>
+
 </div>
 
 <br>
@@ -74,6 +80,7 @@ Organización modular de los directorios siguiendo las mejores prácticas de des
 
 ```bash
 visimap/
+├── .github/workflows/    # Automatización y CI/CD (Despliegue automático de TypeDoc)
 ├── docs/                 # Documentación técnica y manuales corporativos
 ├── public/               # Assets estáticos y recursos públicos
 ├── src/
@@ -147,6 +154,7 @@ Tabla de referencias rápidas para la operativa sobre el código base:
 | **Compilación** | `npm run build` | Genera la carpeta `/dist` optimizada para producción. |
 | **Previsualización**| `npm run preview` | Levanta un servidor sobre los estáticos de la última compilación. |
 | **Análisis** | `npm run lint` | Comprueba la calidad y el estándar de sintaxis del código. |
+| **Documentación** | `npm run docs` | Genera el portal técnico interactivo con TypeDoc. |
 
 <br>
 
@@ -197,6 +205,8 @@ La persistencia y seguridad de la información está delegada en Supabase (Postg
 - **16/04/2026** · **Segunda sesión de tutoría**. Presentación de los avances realizados, destacando la finalización de la migración a TypeScript y la implementación de las vistas de registro de visitantes y gestión de notas. Recepción de feedback sobre la optimización de la jerarquía de carpetas, la necesidad de implementar **filtrado y paginación** en las tablas de datos, y la importancia crítica de auditar las **políticas RLS** de la base de datos y el refinamiento del diseño **responsive**.
 - **28/04/2026** · **Tercera sesión de tutoría**. Evaluación de los ajustes de diseño en el **modo responsive** y la correcta implementación de la gestión de **cookies**. Revisión de la nueva sección interactiva de **Gráficos e Inteligencia Artificial**, así como la validación del flujo para la **creación de credenciales para los profesores del tribunal** evaluador. **Pequeña reunión** con Paco para hablar sobre la **documentación**
 - **06/05/2026** · **Reunión grupal con Paco para hablar sobre el proyecto**. Tema principal: **manuales que debemos entregar y la entrega del proyecto final**. Invitación al **Github** de los profesores del tribunal y dudas que hemos tenido sobre el tema de la **documentación**.
+- **11/05/2026** · **Cuarta sesión de tutoría**. Presentación del **asistente de Inteligencia Artificial** avanzado y el sistema de **filtrado dinámico** en tablas. Implementación de mejoras visuales críticas, incluyendo la integración de **vídeo en el Hero** y el refinamiento estético global de la interfaz siguiendo las directrices de diseño corporativo.
+- **11/05/2026** · **Reunión con Paco**. Revisión final del **Manual Técnico** y la estructura de la **Presentación del Proyecto**. Validación positiva de los entregables, destacando la calidad de la documentación y la coherencia del material de soporte para la defensa ante el tribunal.
 
 <br>
 

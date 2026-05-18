@@ -53,10 +53,21 @@ const COLORES_TEMA = [
 // Componente principal
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Propiedades del componente GraficoMensaje
+ */
 interface GraficoMensajeProps {
+  /** Definición estructural y datos del gráfico a renderizar */
   grafico: GraficoGenerado;
 }
 
+/**
+ * Componente que renderiza gráficos analíticos interactivos incrustados en el chat.
+ * Soporta múltiples tipos de gráficos (`bar`, `area`, `line`, `pie`) delegando el
+ * renderizado en la librería Recharts. Utiliza colores y tooltips del tema global.
+ * @param props.grafico - Objeto gráfico generado por la IA
+ * @returns Componente contenedor y lienzo del gráfico
+ */
 export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
   const colores = useMemo(
     () => (grafico.colores?.length > 0 ? grafico.colores : COLORES_TEMA),

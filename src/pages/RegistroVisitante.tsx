@@ -8,6 +8,12 @@ import { ModalEditarCantidad } from '@/components/app/modales/ModalEditarCantida
 import { ModalDetalleRegistro } from '@/components/app/modales/ModalDetalleRegistro';
 import { Toast } from '@/components/ui/Toast';
 
+/**
+ * Vista de Gestión de Registros.
+ * Centraliza la administración (lectura, borrado masivo/individual, edición)
+ * de los registros de visitantes (generales o de eventos).
+ * Muestra pestañas independientes para los dos orígenes de datos.
+ */
 export const RegistroVisitante: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'mapa' | 'eventos'>('mapa');
   const [data, setData] = useState<any[]>([]);

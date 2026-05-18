@@ -6,7 +6,12 @@ import { ColumnDef, ColumnFilter } from '@/interfaces/ui';
 import { RegistroMapa } from '@/interfaces/Visitor';
 import { TablaRegistroMapaProps } from '@/interfaces/components';
 
-
+/**
+ * Tabla de datos para la gestión de visitantes individuales de Ventanilla.
+ * Reutiliza el componente `TablaGenerica` configurando columnas para ubicaciones
+ * (provincias/países), cantidad, tipo de visita (individual/grupo general), y autor.
+ * @param props - Datos de registro y callbacks de acciones CRUD
+ */
 export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
   registros,
   onDelete,

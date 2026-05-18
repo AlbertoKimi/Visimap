@@ -14,6 +14,12 @@ import { EventRepository } from './repositories/EventRepository';
 import { EventTypeRepository } from './repositories/EventTypeRepository';
 import { NotaRepository } from './repositories/NotaRepository';
 
+/**
+ * Patrón de diseño Abstract Factory.
+ * Proporciona un punto de acceso centralizado a todas las instancias de los repositorios.
+ * Esto permite cambiar fácilmente la base de datos subyacente (ej: de Supabase a Firebase)
+ * sin modificar el código de los componentes o stores que usan estos repositorios.
+ */
 export class RepositoryFactory {
   static getAuthRepository(): AuthRepository {
     return SupabaseAuthRepository.getInstance();

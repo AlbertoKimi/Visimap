@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { BotMessageSquare, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { Card } from '@/components/ui/card';
 import { useChatIA, SUGERENCIAS } from '@/hooks/useChatIA';
 import { useAuthStore } from '@/stores/authStore';
@@ -8,6 +9,10 @@ import { InputMensaje } from './chat/InputMensaje';
 
 const EstadoVacio: React.FC<{ nombre?: string }> = ({ nombre }) => (
   <div className="chat-vacio">
+    <div className="mascot-container">
+      <img src={ICONOS.asistente} alt="Mascota Muvi" className="mascot-img" />
+      <div className="mascot-shadow" />
+    </div>
     <div className="chat-vacio-textos">
       <h2 className="chat-vacio-saludo">Hola, {nombre || 'Alberto'}</h2>
       <h3 className="chat-vacio-titulo">¿Por dónde empezamos?</h3>
@@ -15,8 +20,13 @@ const EstadoVacio: React.FC<{ nombre?: string }> = ({ nombre }) => (
   </div>
 );
 
-// ChatIA — componente principal
-
+/**
+ * Componente principal de la interfaz del Chat de IA.
+ * Renderiza el contenedor completo de la conversación, la cabecera, la lista de mensajes
+ * interactivos con Markdown, archivos y gráficos y la barra de sugerencias.
+ * Se apoya en el hook `useChatIA` para la lógica de negocio y la conexión con OpenAI.
+ * @returns Componente interactivo del chat de IA
+ */
 export const ChatIA: React.FC = () => {
   const {
     mensajes,
@@ -40,8 +50,8 @@ export const ChatIA: React.FC = () => {
 
       {/* ── Cabecera ──────────────────────────────────────────────────────── */}
       <div className="chat-ia-header">
-        <div className="chat-ia-header-icono">
-          <BotMessageSquare className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+        <div className="flex items-center justify-center w-8 h-8 shrink-0">
+          <img src={ICONOS.asistente} className="w-7 h-7 object-contain" alt="" />
         </div>
         <div className="chat-ia-header-textos">
           <h3 className="chat-ia-header-titulo">Asistente</h3>
@@ -87,7 +97,9 @@ export const ChatIA: React.FC = () => {
               className="chat-sugerencia-pill"
               onClick={() => enviarMensaje(s.prompt)}
             >
-              <span className="chat-sugerencia-icono">{s.icono}</span>
+              <div className="chat-sugerencia-icono">
+                <img src={s.icono} className="size-6 object-contain" alt="" />
+              </div>
               <span className="chat-sugerencia-texto">{s.etiqueta}</span>
             </Card>
           ))}

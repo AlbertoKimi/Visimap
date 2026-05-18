@@ -42,6 +42,14 @@ const renderEventContent = (arg: any) => {
 
 
 
+/**
+ * Componente de Calendario Interactivo.
+ * Integra FullCalendar para visualización mensual/anual y una implementación personalizada
+ * para las vistas semanales y diarias con mayor densidad de información.
+ * Gestiona estados de carga, navegación entre fechas y cambio de vistas dinámicas.
+ * @param props - Eventos a mostrar y manejadores de interacción (click en fecha/evento).
+ * @returns Componente de calendario dentro de una tarjeta estilizada.
+ */
 export const Calendario: React.FC<CalendarioProps> = ({
   eventos,
   cargando,

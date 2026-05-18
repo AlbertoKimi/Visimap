@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalEditarCantidadProps } from '@/interfaces/components';
 
+/**
+ * Modal específico para la edición rápida in-line.
+ * Se utiliza para corregir la afluencia registrada o añadir observaciones a posteriori
+ * a un registro ya guardado sin tener que reconstruir todo el objeto original.
+ * @param props.cantidadActual - Valor numérico previo
+ * @param props.observacionesActuales - Texto previo
+ * @param props.onSave - Lógica de actualización a invocar
+ */
 export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
   isOpen,
   onClose,

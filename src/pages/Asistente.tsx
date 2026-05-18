@@ -1,6 +1,12 @@
 import React from 'react';
 import { ChatIA } from '@/components/app/graficos/ChatIA';
 
+/**
+ * Vista de la página del Asistente Inteligente.
+ * Renderiza el contenedor principal que aloja el componente `ChatIA`
+ * permitiendo al administrador realizar consultas en lenguaje natural.
+ * @returns Componente de la vista del asistente
+ */
 export const Asistente: React.FC = () => {
   return (
     <div className="flex flex-col min-h-[calc(100vh-6rem)] w-full max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">

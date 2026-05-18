@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   AreaChart, Area,
-  PieChart, Pie, Cell
+  PieChart, Pie, Cell, LabelList
 } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { TarjetaGrafico } from './TarjetaGrafico';
@@ -15,6 +15,8 @@ import {
   PerfilRaw
 } from '@/interfaces/Graficos';
 import Select from '@/components/ui/Select';
+import { COLORES_PIE } from '@/constantes/appConstants';
+import { getRangoPeriodo, getNombreMes } from '@/utils/utils';
 
 const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (!active || !payload?.length) return null;
@@ -36,11 +38,138 @@ const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; pa
   );
 };
 
-import { COLORES_PIE } from '@/constantes/appConstants';
-import { getRangoPeriodo, getNombreMes } from '@/utils/utils';
+const LeyendaConTotal = ({ payload, total }: { payload?: { value: string | number; color?: string }[]; total: number | string }) => (
+  <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium mt-4">
+    {payload?.map((entry, index) => (
+      <div key={`item-${index}`} className="flex items-center gap-2 transition-opacity hover:opacity-80 cursor-default">
+        <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: entry.color }}></span>
+        <span className="text-slate-600 dark:text-slate-400">{entry.value}</span>
+      </div>
+    ))}
+    <div className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 pl-6 ml-2">
+      <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
+      <span className="text-slate-900 dark:text-slate-200 font-bold">Total: {typeof total === 'number' ? total.toLocaleString('es-ES') : total}</span>
+    </div>
+  </div>
+);
 
+interface CustomBarLabelProps {
+  x?: string | number;
+  y?: string | number;
+  width?: string | number;
+  height?: string | number;
+  value?: any;
+  payload?: any;
+  index?: number;
+  data?: any[];
+  isDark?: boolean;
+  fontSize?: string | number;
+  showZeroIfTotalZero?: boolean;
+  targetKey?: string;
+}
+
+const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  value = 0,
+  payload,
+  index,
+  data,
+  isDark = false,
+  fontSize = 9,
+  showZeroIfTotalZero = false,
+  targetKey
+}) => {
+  const numX = typeof x === 'string' ? parseFloat(x) : Number(x || 0);
+  const numY = typeof y === 'string' ? parseFloat(y) : Number(y || 0);
+  const numWidth = typeof width === 'string' ? parseFloat(width) : Number(width || 0);
+  const numHeight = typeof height === 'string' ? parseFloat(height) : Number(height || 0);
+
+  let displayValue = 0;
+  if (targetKey && payload) {
+    const rawVal = payload[targetKey] !== undefined
+      ? payload[targetKey]
+      : (payload.payload?.[targetKey] !== undefined
+        ? payload.payload[targetKey]
+        : undefined);
+
+    if (rawVal !== undefined) {
+      displayValue = Number(rawVal);
+    } else {
+      displayValue = Number(value);
+    }
+  } else if (targetKey && data && typeof index === 'number' && data[index]) {
+    const row = data[index];
+    const rawVal = row[targetKey];
+    if (rawVal !== undefined) {
+      displayValue = Number(rawVal);
+    } else {
+      displayValue = Number(value);
+    }
+  } else {
+    displayValue = Number(value);
+  }
+
+  if (displayValue === 0) {
+    if (showZeroIfTotalZero && payload && payload.total === 0) {
+      return (
+        <text
+          x={numX + 5}
+          y={numY + numHeight / 2}
+          textAnchor="start"
+          dominantBaseline="central"
+          style={{
+            fill: isDark ? '#cbd5e1' : '#334155',
+            fontSize,
+            fontWeight: 'bold',
+            pointerEvents: 'none'
+          }}
+        >
+          0
+        </text>
+      );
+    }
+    return null;
+  }
+
+  const MIN_WIDTH_FOR_INSIDE_LABEL = 24;
+  const isInside = numWidth >= MIN_WIDTH_FOR_INSIDE_LABEL;
+
+  const textX = isInside ? numX + numWidth / 2 : numX + numWidth + 5;
+  const textY = numY + numHeight / 2;
+  const textAnchor = isInside ? 'middle' : 'start';
+  const fill = isInside ? '#ffffff' : (isDark ? '#cbd5e1' : '#334155');
+
+  return (
+    <text
+      x={textX}
+      y={textY}
+      textAnchor={textAnchor}
+      dominantBaseline="central"
+      style={{
+        fill,
+        fontSize,
+        fontWeight: 'bold',
+        pointerEvents: 'none'
+      }}
+    >
+      {displayValue}
+    </text>
+  );
+};
+
+/**
+ * Panel de gráficos estadísticos del Dashboard.
+ * Este componente orquesta múltiples gráficos (`TarjetaGrafico`) y realiza las
+ * peticiones a la base de datos (Supabase) para agrupar y contar registros de visitantes,
+ * grupos y eventos, transformando la información en un formato apto para Recharts.
+ * @returns Componente de panel con los indicadores analíticos clave
+ */
 export const GraficosPanel: React.FC = () => {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -53,7 +182,7 @@ export const GraficosPanel: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
-  // Calculamos estos valores directamente en cada renderizado (sin useMemo)
+  // Calculamos estos valores directamente en cada renderizado
   const nombreMes = getNombreMes(selectedMonth);
   const rango = getRangoPeriodo(selectedMonth, selectedYear);
 
@@ -197,9 +326,9 @@ export const GraficosPanel: React.FC = () => {
       const resultado: VisitaProvincia[] = Object.entries(mapa)
         .map(([provincia, vals]) => ({
           provincia,
-          visitantesNormales: vals.normales,
-          visitantesEventos: vals.eventos,
-          total: vals.normales + vals.eventos
+          visitantesNormales: vals.normales || 0,
+          visitantesEventos: vals.eventos || 0,
+          total: (vals.normales || 0) + (vals.eventos || 0)
         }))
         .filter(p => p.total > 0)
         .sort((a, b) => b.total - a.total);
@@ -257,7 +386,10 @@ export const GraficosPanel: React.FC = () => {
       }
 
       const resultado = Object.values(mapa)
-        .map(w => ({ ...w, total: w.registros + w.eventos + w.notas }))
+        .map(w => ({
+          ...w,
+          total: (w.registros || 0) + (w.eventos || 0) + (w.notas || 0)
+        }))
         .sort((a, b) => b.total - a.total);
 
       setDatosTrabajadores(resultado);
@@ -326,6 +458,7 @@ export const GraficosPanel: React.FC = () => {
     fetchTodo();
     const intervalo = setInterval(fetchTodo, 1_800_000); // 30 minutos
     return () => clearInterval(intervalo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth, selectedYear]);
 
   return (
@@ -404,80 +537,94 @@ export const GraficosPanel: React.FC = () => {
 
         {/* 1. Evolución diaria */}
         <div className="xl:col-span-2">
-          <TarjetaGrafico
-            titulo={`Tráfico y Visitantes en ${nombreMes}`}
-            subtitulo={`Evolución desglosada por días durante el mes de ${nombreMes}`}
-            isLoading={loadingEvolucion}
-            onRefresh={fetchEvolucion}
-            altura="h-80"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={datosEvolucion} margin={{ top: 15, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="4 4" stroke={isDark ? '#334155' : '#e2e8f0'} vertical={false} />
-                <XAxis dataKey="dia" tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dy={10} minTickGap={20} />
-                <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip content={<TooltipPersonalizado />} />
-                <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                <Area
-                  type="monotone"
-                  dataKey="visitantesIndividuales"
-                  name="Individuales"
-                  stroke="var(--color-primary-500)"
-                  strokeWidth={3}
-                  fill="url(#colorPrimary)"
-                  activeDot={{ r: 8, strokeWidth: 0 }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="visitantesGrupo"
-                  name="Grupos (Eventos)"
-                  stroke="var(--color-secondary-500)"
-                  strokeWidth={3}
-                  fill="url(#colorSecondary)"
-                  activeDot={{ r: 8, strokeWidth: 0 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </TarjetaGrafico>
+          {(() => {
+            const total = datosEvolucion.reduce((acc, curr) => acc + (curr.total || 0), 0);
+            return (
+              <TarjetaGrafico
+                titulo={`Tráfico y Visitantes en ${nombreMes}`}
+                subtitulo={`Evolución desglosada por días durante el mes de ${nombreMes}`}
+                isLoading={loadingEvolucion}
+                onRefresh={fetchEvolucion}
+                altura="h-80"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={datosEvolucion} margin={{ top: 15, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="4 4" stroke={isDark ? '#334155' : '#e2e8f0'} vertical={false} />
+                    <XAxis dataKey="dia" tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dy={10} minTickGap={20} />
+                    <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} tickLine={false} axisLine={false} dx={-10} />
+                    <Tooltip content={<TooltipPersonalizado />} />
+                    <Legend content={<LeyendaConTotal total={total} />} />
+                    <Area
+                      type="monotone"
+                      dataKey="visitantesIndividuales"
+                      name="Individuales"
+                      stroke="var(--color-primary-500)"
+                      strokeWidth={3}
+                      fill="url(#colorPrimary)"
+                      activeDot={{ r: 8, strokeWidth: 0 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="visitantesGrupo"
+                      name="Grupos (Eventos)"
+                      stroke="var(--color-secondary-500)"
+                      strokeWidth={3}
+                      fill="url(#colorSecondary)"
+                      activeDot={{ r: 8, strokeWidth: 0 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </TarjetaGrafico>
+            );
+          })()}
         </div>
 
         {/* 2. Provincias */}
-        <TarjetaGrafico
-          titulo={`Procedencia Nacional en ${nombreMes}`}
-          subtitulo={`Todas las provincias en ${nombreMes} (Ventanilla + Eventos Grupales)`}
-          isLoading={loadingProvincias}
-          onRefresh={fetchProvincias}
-          altura="h-96"
-        >
-          {datosProvincias.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-slate-400">Sin datos de provincias registrados este mes</div>
-          ) : (
-            <div className="w-full h-full overflow-y-auto pr-2 custom-scrollbar">
-              <ResponsiveContainer width="100%" height={Math.max(300, datosProvincias.length * 40)}>
-                <BarChart
-                  data={datosProvincias}
-                  layout="vertical"
-                  margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={isDark ? '#1e293b' : '#f1f5f9'} />
-                  <XAxis type="number" hide />
-                  <YAxis
-                    type="category"
-                    dataKey="provincia"
-                    tick={{ fontSize: 11, fill: isDark ? '#cbd5e1' : '#334155', fontWeight: 500 }}
-                    axisLine={false}
-                    tickLine={false}
-                    width={100}
-                  />
-                  <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
-                  <Legend iconType="circle" wrapperStyle={{ paddingBottom: '10px' }} />
-                  <Bar dataKey="visitantesNormales" name="Individuales" stackId="a" fill="var(--color-primary-400)" radius={[0, 0, 0, 0]} barSize={18} />
-                  <Bar dataKey="visitantesEventos" name="Grupos/Eventos" stackId="a" fill="var(--color-secondary-400)" radius={[0, 6, 6, 0]} barSize={18} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </TarjetaGrafico>
+        {(() => {
+          const total = datosProvincias.reduce((acc, curr) => acc + (curr.total || 0), 0);
+          return (
+            <TarjetaGrafico
+              titulo={`Procedencia Nacional en ${nombreMes}`}
+              subtitulo={`Todas las provincias en ${nombreMes} (Ventanilla + Eventos Grupales)`}
+              isLoading={loadingProvincias}
+              onRefresh={fetchProvincias}
+              altura="h-96"
+            >
+              {datosProvincias.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-slate-400">Sin datos de provincias registrados este mes</div>
+              ) : (
+                <div className="w-full h-full overflow-y-auto pr-2 custom-scrollbar">
+                  <ResponsiveContainer width="100%" height={Math.max(300, datosProvincias.length * 40)}>
+                    <BarChart
+                      data={datosProvincias}
+                      layout="vertical"
+                      margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={isDark ? '#1e293b' : '#f1f5f9'} />
+                      <XAxis type="number" hide />
+                      <YAxis
+                        type="category"
+                        dataKey="provincia"
+                        tick={{ fontSize: 11, fill: isDark ? '#cbd5e1' : '#334155', fontWeight: 500 }}
+                        axisLine={false}
+                        tickLine={false}
+                        width={100}
+                      />
+                      <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
+                      <Legend content={<LeyendaConTotal total={total} />} />
+                      <Bar dataKey="visitantesNormales" name="Individuales" stackId="a" fill="var(--color-primary-400)" radius={[0, 0, 0, 0]} barSize={18} isAnimationActive={false}>
+                        <LabelList dataKey="visitantesNormales" content={<CustomBarLabel isDark={isDark} fontSize={9} targetKey="visitantesNormales" />} />
+                      </Bar>
+                      <Bar dataKey="visitantesEventos" name="Grupos/Eventos" stackId="a" fill="var(--color-secondary-400)" radius={[0, 6, 6, 0]} barSize={18} isAnimationActive={false}>
+                        <LabelList dataKey="visitantesEventos" content={<CustomBarLabel isDark={isDark} fontSize={9} targetKey="visitantesEventos" />} />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </TarjetaGrafico>
+          );
+        })()}
 
         {/* 3. Actividad Trabajadores (Stacked Bar) */}
         <TarjetaGrafico
@@ -510,9 +657,15 @@ export const GraficosPanel: React.FC = () => {
                   <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '10px' }} />
 
-                  <Bar dataKey="registros" name="Registros (Ventanilla)" stackId="a" fill="var(--color-info)" barSize={28} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="eventos" name="Eventos Org." stackId="a" fill="var(--color-warning)" barSize={28} radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="notas" name="Notas Creadas" stackId="a" fill="var(--color-success)" barSize={28} radius={[0, 6, 6, 0]} />
+                  <Bar dataKey="registros" name="Registros" stackId="a" fill="var(--color-info)" barSize={28} radius={[0, 0, 0, 0]} isAnimationActive={false}>
+                    <LabelList dataKey="registros" content={<CustomBarLabel isDark={isDark} fontSize={10} showZeroIfTotalZero={true} targetKey="registros" />} />
+                  </Bar>
+                  <Bar dataKey="eventos" name="Eventos Org." stackId="a" fill="var(--color-warning)" barSize={28} radius={[0, 0, 0, 0]} isAnimationActive={false}>
+                    <LabelList dataKey="eventos" content={<CustomBarLabel isDark={isDark} fontSize={10} targetKey="eventos" />} />
+                  </Bar>
+                  <Bar dataKey="notas" name="Notas Creadas" stackId="a" fill="var(--color-success)" barSize={28} radius={[0, 6, 6, 0]} isAnimationActive={false}>
+                    <LabelList dataKey="notas" content={<CustomBarLabel isDark={isDark} fontSize={10} targetKey="notas" />} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -520,61 +673,76 @@ export const GraficosPanel: React.FC = () => {
         </TarjetaGrafico>
 
         {/* 4. España vs Mundo */}
-        <TarjetaGrafico
-          titulo={`Procedencia Internacional en ${nombreMes}`}
-          subtitulo={`Ventanilla individual (${nombreMes})`}
-          isLoading={loadingEspania}
-          onRefresh={fetchEspania}
-          altura="h-64"
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={datosEspania} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e2e8f0'} />
-              <XAxis dataKey="name" hide />
-              <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} axisLine={false} tickLine={false} dx={-10} />
-              <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
-              <Legend iconType="circle" />
-              <Bar dataKey="España" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} barSize={40} />
-              <Bar dataKey="Resto del Mundo" fill="var(--color-secondary-500)" radius={[6, 6, 0, 0]} barSize={40} />
-            </BarChart>
-          </ResponsiveContainer>
-        </TarjetaGrafico>
+        {(() => {
+          const total = datosEspania.reduce((acc, curr) => acc + (curr.España || 0) + (curr['Resto del Mundo'] || 0), 0);
+          return (
+            <TarjetaGrafico
+              titulo={`Procedencia Internacional en ${nombreMes}`}
+              subtitulo={`Ventanilla individual (${nombreMes})`}
+              isLoading={loadingEspania}
+              onRefresh={fetchEspania}
+              altura="h-64"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={datosEspania} margin={{ top: 20, right: 20, left: 0, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#334155' : '#e2e8f0'} />
+                  <XAxis dataKey="name" hide />
+                  <YAxis tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }} axisLine={false} tickLine={false} dx={-10} />
+                  <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
+                  <Legend content={<LeyendaConTotal total={total} />} />
+                  <Bar dataKey="España" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} barSize={40}>
+                    <LabelList dataKey="España" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 11, fontWeight: 'bold' }} />
+                  </Bar>
+                  <Bar dataKey="Resto del Mundo" fill="var(--color-secondary-500)" radius={[6, 6, 0, 0]} barSize={40}>
+                    <LabelList dataKey="Resto del Mundo" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 11, fontWeight: 'bold' }} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </TarjetaGrafico>
+          );
+        })()}
 
         {/* 5. Círculo de Categorías de Eventos */}
-        <TarjetaGrafico
-          titulo={`Categorías de Eventos en ${nombreMes}`}
-          subtitulo={`Porcentaje de visitantes según tipo de evento (${nombreMes})`}
-          isLoading={loadingEventosMes}
-          onRefresh={fetchEventosMes}
-          altura="h-64"
-        >
-          {datosEventosMes.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-slate-400">Sin eventos en {nombreMes}</div>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={datosEventosMes}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="40%"
-                  outerRadius="75%"
-                  paddingAngle={3}
-                  dataKey="value"
-                  nameKey="name"
-                  stroke="none"
-                  labelLine={false}
-                >
-                  {datosEventosMes.map((_, i) => (
-                    <Cell key={`cell-${i}`} fill={COLORES_PIE[i % COLORES_PIE.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<TooltipPersonalizado />} />
-                <Legend iconType="circle" />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </TarjetaGrafico>
+        {(() => {
+          const total = datosEventosMes.reduce((acc, curr) => acc + (curr.value || 0), 0);
+          return (
+            <TarjetaGrafico
+              titulo={`Categorías de Eventos en ${nombreMes}`}
+              subtitulo={`Porcentaje de visitantes según tipo de evento (${nombreMes})`}
+              isLoading={loadingEventosMes}
+              onRefresh={fetchEventosMes}
+              altura="h-64"
+            >
+              {datosEventosMes.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-slate-400">Sin eventos en {nombreMes}</div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={datosEventosMes}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius="40%"
+                      outerRadius="75%"
+                      paddingAngle={3}
+                      dataKey="value"
+                      nameKey="name"
+                      stroke="none"
+                      labelLine={true}
+                      label={({ name, value }) => `${name}: ${value}`}
+                    >
+                      {datosEventosMes.map((_, i) => (
+                        <Cell key={`cell-${i}`} fill={COLORES_PIE[i % COLORES_PIE.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<TooltipPersonalizado />} />
+                    <Legend content={<LeyendaConTotal total={total} />} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </TarjetaGrafico>
+          );
+        })()}
 
       </div>
     </div>

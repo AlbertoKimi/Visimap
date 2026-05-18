@@ -2,6 +2,9 @@ import { supabase } from './client';
 import { Rol } from "@/interfaces/Rol";
 import { RoleRepository } from '../repositories/RoleRepository';
 
+/**
+ * Implementación concreta del RoleRepository utilizando el cliente Supabase.
+ */
 export class SupabaseRoleRepository implements RoleRepository {
   private static instance: SupabaseRoleRepository;
 
