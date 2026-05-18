@@ -181,7 +181,7 @@ export function Formulario({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
+                exit={{ opacity: 0, y: 0 }}
               >
                 <Input
                   label="Provincia"
@@ -199,21 +199,21 @@ export function Formulario({
             )}
           </AnimatePresence>
         </div>
-      </div>
 
-      {mostrarObservaciones && (
-        <div>
-          <TextArea
-            label="Observaciones"
-            name="observaciones"
-            value={formData.observaciones}
-            manejarCambio={manejarCambio}
-            required={false}
-            placeholder="Escribe aquí notas adicionales..."
-            rows={1}
-          />
-        </div>
-      )}
+        {mostrarObservaciones && (
+          <div>
+            <TextArea
+              label="Observaciones"
+              name="observaciones"
+              value={formData.observaciones}
+              manejarCambio={manejarCambio}
+              required={false}
+              placeholder="Escribe aquí notas adicionales..."
+              rows={1}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex gap-3 pt-2 pb-2 md:pb-0">
         {onCancel && (
