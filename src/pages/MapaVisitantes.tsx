@@ -144,8 +144,11 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
     <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
       <div className="flex items-start justify-between mb-[var(--spacing-xs)] md:mb-[var(--spacing-sm)]">
         <div className="w-full text-center md:text-left">
-          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">Registro Internacional</h3>
-          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5 opacity-80">Visitantes fuera de mapa</p>
+          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+            <span className="md:hidden">Registro Visitantes</span>
+            <span className="hidden md:inline">Registro Internacional</span>
+          </h3>
+          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5 opacity-80">Visitantes de todo el mundo</p>
         </div>
         {/* La X solo se muestra en escritorio */}
         <button
