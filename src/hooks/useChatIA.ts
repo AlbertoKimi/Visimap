@@ -223,8 +223,18 @@ export function useChatIA() {
     // INTERCEPTOR DE CONSULTAS DE VISITANTES Y ESTADÍSTICAS EN TIEMPO REAL
 
     const lowerText = texto.toLowerCase().trim();
+    const ahora = new Date();
+    const currentYear = ahora.getFullYear();
+    const currentMonthIndex = ahora.getMonth();
+    const mesesNombres = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const matchAnio = lowerText.match(/\b(20\d{2})\b/);
+    // targetYear: se recalculará tras detectar matchFechaCompleta, por ahora tomamos del año suelto
+    const targetYearBase = matchAnio ? parseInt(matchAnio[1], 10) : currentYear;
+
     const tieneVisitantes = lowerText.includes('visitante') || lowerText.includes('visita') || lowerText.includes('persona') || lowerText.includes('gente');
-    const tieneAnio = lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este')));
+    const tieneAnio = (matchAnio !== null) || lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este') || lowerText.includes('el') || lowerText.includes('en')));
     const tieneTotalHistorico = lowerText.includes('total') || lowerText.includes('histórico') || lowerText.includes('historico') || lowerText.includes('acumulado') || lowerText.includes('todos los tiempos');
     const tieneMes = lowerText.includes('mes') || lowerText.includes('mensual');
     const tienePersonal = lowerText.includes('personal') || lowerText.includes('rendimiento') || lowerText.includes('trabajador') || lowerText.includes('empleado');
@@ -235,22 +245,24 @@ export function useChatIA() {
     // Consultas por día específico
     const tieneHoy = lowerText.includes('hoy');
     const tieneAyer = lowerText.includes('ayer');
-    const matchDia = lowerText.match(/(?:d[ií]a|el)\s+(\d{1,2})/);
-    const tieneDiaEspecifico = tieneHoy || tieneAyer || (matchDia !== null && parseInt(matchDia[1], 10) >= 1 && parseInt(matchDia[1], 10) <= 31);
 
-    const ahora = new Date();
-    const currentYear = ahora.getFullYear();
-    const currentMonthIndex = ahora.getMonth();
-    const mesesNombres = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    const pad = (n: number) => String(n).padStart(2, '0');
+    // Detección de fecha completa en formato DD/MM/YYYY o DD-MM-YYYY (tiene preferencia sobre el resto)
+    const matchFechaCompleta = lowerText.match(/\b(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})\b/);
+    const matchDia = matchFechaCompleta ? null : lowerText.match(/\b(?:d[ií]a|el)\s+(\d{1,2})\b/);
+    const tieneDiaEspecifico = tieneHoy || tieneAyer || matchFechaCompleta !== null || (matchDia !== null && parseInt(matchDia[1], 10) >= 1 && parseInt(matchDia[1], 10) <= 31);
 
     // Parsear mes y año específicos si se mencionan en la consulta
-    const indiceMesSolicitado = mesesNombres.findIndex(m => lowerText.includes(m));
+    // Si hay fecha completa DD/MM/YYYY, toma mes y año de ahí con prioridad absoluta
+    const indiceMesSolicitado = matchFechaCompleta
+      ? parseInt(matchFechaCompleta[2], 10) - 1
+      : mesesNombres.findIndex(m => lowerText.includes(m));
     const targetMonthIndex = indiceMesSolicitado !== -1 ? indiceMesSolicitado : currentMonthIndex;
     const targetMesNombre = mesesNombres[targetMonthIndex];
 
-    const matchAnio = lowerText.match(/\b(20\d{2})\b/);
-    const targetYear = matchAnio ? parseInt(matchAnio[1], 10) : currentYear;
+    // targetYear definitivo: fecha completa > año suelto (matchAnio) > año actual
+    const targetYear = matchFechaCompleta
+      ? parseInt(matchFechaCompleta[3], 10)
+      : targetYearBase;
 
     // Calcular las fechas de inicio y fin para el mes solicitado
     const inicioMes = `${targetYear}-${pad(targetMonthIndex + 1)}-01`;
@@ -261,6 +273,32 @@ export function useChatIA() {
       const ultimoDia = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
       finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ultimoDia)}T23:59:59.999`;
     }
+
+    // Consultar provincias y países en la BD
+    let todasProvincias: { id_provincia: number; nombre_provincia: string }[] = [];
+    let todosPaises: { id_pais: number; nombre_pais: string }[] = [];
+    try {
+      const [resProv, resPais] = await Promise.all([
+        supabase.from('provincia').select('id_provincia, nombre_provincia'),
+        supabase.from('pais').select('id_pais, nombre_pais')
+      ]);
+      todasProvincias = resProv.data || [];
+      todosPaises = resPais.data || [];
+    } catch (e) {
+      console.error('Error cargando catálogos de provincias/países:', e);
+    }
+
+    const provEncontrada = todasProvincias.find(p => 
+      lowerText.includes(p.nombre_provincia.toLowerCase())
+    );
+    const paisEncontrado = !provEncontrada 
+      ? todosPaises.find(p => lowerText.includes(p.nombre_pais.toLowerCase())) 
+      : undefined;
+
+    const esComparativaEspaniaMundo = (lowerText.includes('españa') || lowerText.includes('nacionales')) && 
+      (lowerText.includes('mundo') || lowerText.includes('internacionales') || lowerText.includes('vs') || lowerText.includes('compar'));
+
+    const tieneLugarEspecifico = (!!provEncontrada || !!paisEncontrado) && !esComparativaEspaniaMundo;
 
     // INTERCEPTOR: EVENTOS ACTIVOS
     if (tieneEventos) {
@@ -297,6 +335,137 @@ export function useChatIA() {
         return;
       } catch (dbErr) {
         console.error('Error en interceptor de eventos activos:', dbErr);
+      }
+    }
+
+    // INTERCEPTOR: CONSULTA DE PROVINCIA/PAÍS ESPECÍFICO
+    if (tieneLugarEspecifico && tieneVisitantes) {
+      try {
+        let inicio = '';
+        let fin = '';
+        let labelPeriodo = '';
+
+        if (tieneDiaEspecifico) {
+          let targetDate = new Date();
+          let labelDia = 'hoy';
+          if (tieneHoy) {
+            targetDate = new Date();
+            labelDia = 'hoy';
+          } else if (tieneAyer) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            targetDate = d;
+            labelDia = 'ayer';
+          } else if (matchFechaCompleta) {
+            const numeroDia = parseInt(matchFechaCompleta[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          } else if (matchDia) {
+            const numeroDia = parseInt(matchDia[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          }
+          const y = targetDate.getFullYear();
+          const m = pad(targetDate.getMonth() + 1);
+          const d = pad(targetDate.getDate());
+          inicio = `${y}-${m}-${d}T00:00:00`;
+          fin = `${y}-${m}-${d}T23:59:59.999`;
+          labelPeriodo = `${labelDia} (${d}/${m}/${y})`;
+        } else if ((lowerText.includes('año') || lowerText.includes('año actual') || matchAnio) && indiceMesSolicitado === -1 && !tieneMes) {
+          inicio = `${targetYear}-01-01T00:00:00`;
+          fin = `${targetYear}-12-31T23:59:59.999`;
+          labelPeriodo = `en el año ${targetYear}`;
+        } else {
+          inicio = `${inicioMes}T00:00:00`;
+          fin = finMes;
+          labelPeriodo = `en ${targetMesNombre} de ${targetYear}`;
+        }
+
+        let totalIndividuales = 0;
+        let totalGrupos = 0;
+        let nombreLugar = '';
+
+        if (provEncontrada) {
+          nombreLugar = provEncontrada.nombre_provincia;
+          
+          const [resNorm, resGrp] = await Promise.all([
+            supabase.from('registro_visitante')
+              .select('cantidad')
+              .eq('id_provincia', provEncontrada.id_provincia)
+              .gte('creado_en', inicio)
+              .lte('creado_en', fin),
+            supabase.from('grupo_visitante')
+              .select(`
+                num_visitantes,
+                tipo_origen,
+                origen,
+                evento!inner (
+                  fecha_inicio
+                )
+              `)
+              .eq('tipo_origen', 'provincia')
+              .eq('origen', provEncontrada.nombre_provincia)
+              .gte('evento.fecha_inicio', inicio)
+              .lte('evento.fecha_inicio', fin)
+          ]);
+
+          if (resNorm.error) throw resNorm.error;
+          if (resGrp.error) throw resGrp.error;
+
+          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+        } else if (paisEncontrado) {
+          nombreLugar = paisEncontrado.nombre_pais;
+
+          const [resNorm, resGrp] = await Promise.all([
+            supabase.from('registro_visitante')
+              .select('cantidad')
+              .eq('id_pais', paisEncontrado.id_pais)
+              .gte('creado_en', inicio)
+              .lte('creado_en', fin),
+            supabase.from('grupo_visitante')
+              .select(`
+                num_visitantes,
+                tipo_origen,
+                origen,
+                evento!inner (
+                  fecha_inicio
+                )
+              `)
+              .eq('tipo_origen', 'pais')
+              .eq('origen', paisEncontrado.nombre_pais)
+              .gte('evento.fecha_inicio', inicio)
+              .lte('evento.fecha_inicio', fin)
+          ]);
+
+          if (resNorm.error) throw resNorm.error;
+          if (resGrp.error) throw resGrp.error;
+
+          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+        }
+
+        const totalGeneral = totalIndividuales + totalGrupos;
+
+        let respuestaTexto = `El número total de visitantes registrado procedentes de **${nombreLugar}** **${labelPeriodo}** es de **${totalGeneral.toLocaleString('es-ES')}** personas.\n\n`;
+        respuestaTexto += `**Desglose de visitas:**\n`;
+        respuestaTexto += `- 🎫 **Ventanilla (individuales)**: **${totalIndividuales.toLocaleString('es-ES')}** visitantes\n`;
+        respuestaTexto += `- 🎭 **Eventos / Grupos**: **${totalGrupos.toLocaleString('es-ES')}** visitantes\n\n`;
+        respuestaTexto += `*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de provincia/país específico:', dbErr);
       }
     }
 
@@ -624,11 +793,13 @@ export function useChatIA() {
           d.setDate(d.getDate() - 1);
           targetDate = d;
           labelDia = 'ayer';
+        } else if (matchFechaCompleta) {
+          const numeroDia = parseInt(matchFechaCompleta[1], 10);
+          targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+          labelDia = `el día ${numeroDia}`;
         } else if (matchDia) {
           const numeroDia = parseInt(matchDia[1], 10);
-          const d = new Date();
-          d.setDate(numeroDia);
-          targetDate = d;
+          targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
           labelDia = `el día ${numeroDia}`;
         }
 
@@ -817,14 +988,14 @@ export function useChatIA() {
           const personas = item.total_personas || 0;
 
           totalHistorico += personas;
-          if (anio === currentYear) {
+          if (anio === (tieneAnio ? targetYear : currentYear)) {
             totalAnual += personas;
           }
         });
 
         let respuestaTexto = '';
         if (tieneAnio) {
-          respuestaTexto = `Actualmente en el año **${currentYear}**, el museo ha registrado un total de **${totalAnual.toLocaleString('es-ES')}** visitantes. \n\nAdemás, si te interesa el acumulado completo, el total histórico de visitas registradas en la plataforma desde el inicio es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.`;
+          respuestaTexto = `Durante el año **${targetYear}**, el museo ha registrado un total de **${totalAnual.toLocaleString('es-ES')}** visitantes. \n\nAdemás, si te interesa el acumulado completo, el total histórico de visitas registradas en la plataforma desde el inicio es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.`;
         } else {
           respuestaTexto = `El total histórico acumulado de visitas registradas en el museo desde el inicio de los registros es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.\n\nDurante el año actual (**${currentYear}**), hemos recibido un total de **${totalAnual.toLocaleString('es-ES')}** visitantes.`;
         }
