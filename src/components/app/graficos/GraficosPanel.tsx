@@ -238,7 +238,15 @@ export const GraficosPanel: React.FC = () => {
 
       const [resNormal, resGrupo] = await Promise.all([
         supabase.from('registro_visitante').select('cantidad, creado_en, tipo_visita').gte('creado_en', inicio).lte('creado_en', fin),
-        supabase.from('grupo_visitante').select('num_visitantes, created_at').gte('created_at', inicio).lte('created_at', fin)
+        supabase.from('grupo_visitante')
+          .select(`
+            num_visitantes,
+            evento!inner (
+              fecha_inicio
+            )
+          `)
+          .gte('evento.fecha_inicio', inicio)
+          .lte('evento.fecha_inicio', fin)
       ]);
 
       const mapaDias: Record<string, { individuales: number; grupos: number }> = {};
@@ -258,9 +266,10 @@ export const GraficosPanel: React.FC = () => {
       }
 
       if (resGrupo.data) {
-        for (const g of resGrupo.data as unknown as { num_visitantes: number; created_at: string }[]) {
-          if (!g.created_at) continue;
-          const dia = new Date(g.created_at).getDate().toString();
+        for (const g of resGrupo.data as any) {
+          const fechaInicio = g.evento?.fecha_inicio;
+          if (!fechaInicio) continue;
+          const dia = new Date(fechaInicio).getDate().toString();
           if (mapaDias[dia]) {
             mapaDias[dia].grupos += (g.num_visitantes || 0);
           }
@@ -295,9 +304,16 @@ export const GraficosPanel: React.FC = () => {
 
       const { data: resGrp, error: errGrp } = await supabase
         .from('grupo_visitante')
-        .select('num_visitantes, tipo_origen, origen')
-        .gte('created_at', inicio)
-        .lte('created_at', fin);
+        .select(`
+          num_visitantes,
+          tipo_origen,
+          origen,
+          evento!inner (
+            fecha_inicio
+          )
+        `)
+        .gte('evento.fecha_inicio', inicio)
+        .lte('evento.fecha_inicio', fin);
 
       if (errNorm) throw errNorm;
       if (errGrp) throw errGrp;
@@ -409,21 +425,21 @@ export const GraficosPanel: React.FC = () => {
         .from('grupo_visitante')
         .select(`
           num_visitantes,
-          created_at,
-          evento:id_evento (
+          evento!inner (
+            fecha_inicio,
             tipo_evento (
               nombre
             )
           )
         `)
-        .gte('created_at', inicio)
-        .lte('created_at', fin);
+        .gte('evento.fecha_inicio', inicio)
+        .lte('evento.fecha_inicio', fin);
 
       if (error) throw error;
 
       const mapa: Record<string, number> = {};
 
-      for (const g of (data || []) as unknown as { num_visitantes: number; evento: { tipo_evento: { nombre: string } | null } | null }[]) {
+      for (const g of (data || []) as any[]) {
         let nombreCategoria = 'Categoría Desconocida';
 
         if (g.evento?.tipo_evento?.nombre) {
@@ -721,9 +737,9 @@ export const GraficosPanel: React.FC = () => {
                     <Pie
                       data={datosEventosMes}
                       cx="50%"
-                      cy="50%"
-                      innerRadius="40%"
-                      outerRadius="75%"
+                      cy="46%"
+                      innerRadius="35%"
+                      outerRadius="58%"
                       paddingAngle={3}
                       dataKey="value"
                       nameKey="name"
