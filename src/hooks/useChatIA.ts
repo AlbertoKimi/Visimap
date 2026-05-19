@@ -241,8 +241,26 @@ export function useChatIA() {
     const ahora = new Date();
     const currentYear = ahora.getFullYear();
     const currentMonthIndex = ahora.getMonth();
-    const mesNombre = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][currentMonthIndex];
+    const mesesNombres = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const pad = (n: number) => String(n).padStart(2, '0');
+
+    // Parsear mes y año específicos si se mencionan en la consulta
+    const indiceMesSolicitado = mesesNombres.findIndex(m => lowerText.includes(m));
+    const targetMonthIndex = indiceMesSolicitado !== -1 ? indiceMesSolicitado : currentMonthIndex;
+    const targetMesNombre = mesesNombres[targetMonthIndex];
+
+    const matchAnio = lowerText.match(/\b(20\d{2})\b/);
+    const targetYear = matchAnio ? parseInt(matchAnio[1], 10) : currentYear;
+
+    // Calcular las fechas de inicio y fin para el mes solicitado
+    const inicioMes = `${targetYear}-${pad(targetMonthIndex + 1)}-01`;
+    let finMes = '';
+    if (targetMonthIndex === currentMonthIndex && targetYear === currentYear) {
+      finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`;
+    } else {
+      const ultimoDia = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+      finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ultimoDia)}T23:59:59.999`;
+    }
 
     // INTERCEPTOR: EVENTOS ACTIVOS
     if (tieneEventos) {
@@ -285,9 +303,6 @@ export function useChatIA() {
     // 1. INTERCEPTOR: RENDIMIENTO DEL PERSONAL
     if (tienePersonal) {
       try {
-        const inicioMes = `${currentYear}-${pad(currentMonthIndex + 1)}-01`;
-        const finMes = `${currentYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`;
-
         const [resPerfiles, resReg, resEvt, resNot] = await Promise.all([
           supabase.from('profiles').select('id, nombre, nombre_usuario').eq('active', true),
           supabase.from('registro_visitante').select('id_usuario, creado_en').gte('creado_en', inicioMes).lte('creado_en', finMes),
@@ -335,7 +350,7 @@ export function useChatIA() {
           total: val.registros + val.eventos + val.notas
         })).sort((a, b) => b.total - a.total);
 
-        let respuestaTexto = `Aquí tienes el rendimiento detallado del personal durante el mes de **${mesNombre} de ${currentYear}**:\n\n`;
+        let respuestaTexto = `Aquí tienes el rendimiento detallado del personal durante el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
         listaActividad.forEach((t, idx) => {
           respuestaTexto += `${idx + 1}. **${t.name}**: **${t.total}** acciones en total (${t.registros} registros de visitas, ${t.eventos} eventos, ${t.notas} notas)\n`;
         });
@@ -353,7 +368,7 @@ export function useChatIA() {
           {
             id: `grafico-${Date.now()}`,
             tipo: 'bar',
-            titulo: `Actividad y Rendimiento del Personal (${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${currentYear})`,
+            titulo: `Actividad y Rendimiento del Personal (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
             subtitulo: `Suma total de acciones por empleado`,
             datos: chartDatos,
             claves: ['registros', 'eventos', 'notas'],
@@ -381,9 +396,6 @@ export function useChatIA() {
     // 2. INTERCEPTOR: DESGLOSE NACIONAL POR PROVINCIAS
     if (tieneProvincias) {
       try {
-        const inicioMes = `${currentYear}-${pad(currentMonthIndex + 1)}-01`;
-        const finMes = `${currentYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`;
-
         const [resNorm, resGrp] = await Promise.all([
           supabase.from('registro_visitante')
             .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
@@ -428,7 +440,7 @@ export function useChatIA() {
           total: val.normales + val.eventos
         })).filter(p => p.total > 0).sort((a, b) => b.total - a.total);
 
-        let respuestaTexto = `Desglose de visitantes nacionales por provincias durante el mes de **${mesNombre} de ${currentYear}**:\n\n`;
+        let respuestaTexto = `Desglose de visitantes nacionales por provincias durante el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
         if (listaProvincias.length === 0) {
           respuestaTexto += `No se han registrado visitas nacionales durante este mes.\n`;
         } else {
@@ -442,7 +454,7 @@ export function useChatIA() {
           {
             id: `grafico-${Date.now()}`,
             tipo: 'bar',
-            titulo: `Procedencia Nacional por Provincias (${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${currentYear})`,
+            titulo: `Procedencia Nacional por Provincias (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
             subtitulo: `Total: ${listaProvincias.reduce((acc, curr) => acc + curr.total, 0)} visitantes`,
             datos: listaProvincias.slice(0, 10),
             claves: ['individuales', 'grupos'],
@@ -470,9 +482,6 @@ export function useChatIA() {
     // 3. INTERCEPTOR: COMPARATIVA ESPAÑA VS MUNDO (PROCEDENCIA)
     if (tieneMundo && !tienePersonal && !tieneProvincias && !tieneDiaEspecifico && !tieneAnio && !tieneTotalHistorico) {
       try {
-        const inicioMes = `${currentYear}-${pad(currentMonthIndex + 1)}-01`;
-        const finMes = `${currentYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`;
-
         const [resNorm, resGrp] = await Promise.all([
           supabase.from('registro_visitante')
             .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
@@ -542,7 +551,7 @@ export function useChatIA() {
           .map(([nombre, total]) => ({ nombre, total }))
           .sort((a, b) => b.total - a.total);
 
-        let respuestaTexto = `Comparativa de procedencia de visitantes para el mes de **${mesNombre} de ${currentYear}**:\n\n`;
+        let respuestaTexto = `Comparativa de procedencia de visitantes para el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
         respuestaTexto += `- 🇪🇸 **España (Nacionales)**: **${totalEspana.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalEspana / totalUnico) * 100).toFixed(1) : 0}%)\n`;
         respuestaTexto += `- 🌎 **Resto del Mundo (Internacionales)**: **${totalMundo.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalMundo / totalUnico) * 100).toFixed(1) : 0}%)\n\n`;
 
@@ -570,11 +579,11 @@ export function useChatIA() {
           {
             id: `grafico-${Date.now()}`,
             tipo: 'bar',
-            titulo: `Procedencia de Visitantes (${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${currentYear})`,
+            titulo: `Procedencia de Visitantes (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
             subtitulo: `Total: ${totalUnico.toLocaleString('es-ES')} visitantes`,
             datos: [
               {
-                name: mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1),
+                name: targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1),
                 España: totalEspana,
                 'Resto del Mundo': totalMundo
               }
@@ -693,7 +702,12 @@ export function useChatIA() {
     // 5. INTERCEPTOR: VISITANTES DEL MES (EVOLUCIÓN MENSUAL + DESGLOSE SEMANAL)
     if (tieneMes && tieneVisitantes) {
       try {
-        const totalDias = ahora.getDate();
+        let totalDias = 0;
+        if (targetMonthIndex === currentMonthIndex && targetYear === currentYear) {
+          totalDias = ahora.getDate();
+        } else {
+          totalDias = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+        }
 
         const { data: vistaData, error: vistaError } = await supabase
           .from('vista_visitantes_totales')
@@ -703,7 +717,7 @@ export function useChatIA() {
 
         const registrosMes = (vistaData || []).filter(item => {
           const f = new Date(item.fecha);
-          return f.getFullYear() === currentYear && f.getMonth() === currentMonthIndex;
+          return f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex;
         });
 
         const totalMes = registrosMes.reduce((acc, curr) => acc + (curr.total_personas || 0), 0);
@@ -736,23 +750,23 @@ export function useChatIA() {
           else sem5 += p;
         });
 
-        let respuestaTexto = `Durante el mes de **${mesNombre} de ${currentYear}** (del 1 al ${totalDias} de ${mesNombre}), el museo ha registrado un total de **${totalMes.toLocaleString('es-ES')}** visitantes.\n\n`;
+        let respuestaTexto = `Durante el mes de **${targetMesNombre} de ${targetYear}** (del 1 al ${totalDias} de ${targetMesNombre}), el museo ha registrado un total de **${totalMes.toLocaleString('es-ES')}** visitantes.\n\n`;
         respuestaTexto += `Aquí tienes el desglose detallado de visitas por semanas:\n`;
-        respuestaTexto += `- **Semana 1 (01/${pad(currentMonthIndex + 1)} - 07/${pad(currentMonthIndex + 1)}):** **${sem1.toLocaleString('es-ES')}** visitantes\n`;
+        respuestaTexto += `- **Semana 1 (01/${pad(targetMonthIndex + 1)} - 07/${pad(targetMonthIndex + 1)}):** **${sem1.toLocaleString('es-ES')}** visitantes\n`;
         if (totalDias >= 8) {
           const finSem2 = Math.min(14, totalDias);
-          respuestaTexto += `- **Semana 2 (08/${pad(currentMonthIndex + 1)} - ${pad(finSem2)}/${pad(currentMonthIndex + 1)}):** **${sem2.toLocaleString('es-ES')}** visitantes\n`;
+          respuestaTexto += `- **Semana 2 (08/${pad(targetMonthIndex + 1)} - ${pad(finSem2)}/${pad(targetMonthIndex + 1)}):** **${sem2.toLocaleString('es-ES')}** visitantes\n`;
         }
         if (totalDias >= 15) {
           const finSem3 = Math.min(21, totalDias);
-          respuestaTexto += `- **Semana 3 (15/${pad(currentMonthIndex + 1)} - ${pad(finSem3)}/${pad(currentMonthIndex + 1)}):** **${sem3.toLocaleString('es-ES')}** visitantes\n`;
+          respuestaTexto += `- **Semana 3 (15/${pad(targetMonthIndex + 1)} - ${pad(finSem3)}/${pad(targetMonthIndex + 1)}):** **${sem3.toLocaleString('es-ES')}** visitantes\n`;
         }
         if (totalDias >= 22) {
           const finSem4 = Math.min(28, totalDias);
-          respuestaTexto += `- **Semana 4 (22/${pad(currentMonthIndex + 1)} - ${pad(finSem4)}/${pad(currentMonthIndex + 1)}):** **${sem4.toLocaleString('es-ES')}** visitantes\n`;
+          respuestaTexto += `- **Semana 4 (22/${pad(targetMonthIndex + 1)} - ${pad(finSem4)}/${pad(targetMonthIndex + 1)}):** **${sem4.toLocaleString('es-ES')}** visitantes\n`;
         }
         if (totalDias >= 29) {
-          respuestaTexto += `- **Semana 5 (29/${pad(currentMonthIndex + 1)} - ${pad(totalDias)}/${pad(currentMonthIndex + 1)}):** **${sem5.toLocaleString('es-ES')}** visitantes\n`;
+          respuestaTexto += `- **Semana 5 (29/${pad(targetMonthIndex + 1)} - ${pad(totalDias)}/${pad(targetMonthIndex + 1)}):** **${sem5.toLocaleString('es-ES')}** visitantes\n`;
         }
         respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
 
@@ -760,7 +774,7 @@ export function useChatIA() {
           {
             id: `grafico-${Date.now()}`,
             tipo: 'area',
-            titulo: `Evolución Diaria de Visitantes (${mesNombre.charAt(0).toUpperCase() + mesNombre.slice(1)} ${currentYear})`,
+            titulo: `Evolución Diaria de Visitantes (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
             subtitulo: `Total acumulado: ${totalMes.toLocaleString('es-ES')} visitantes`,
             datos: datosEvolucion,
             claves: ['total'],
