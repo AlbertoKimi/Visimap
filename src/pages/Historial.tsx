@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/pagination';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { VisitaHistorial, DesgloseItem, RawProvResult, RawPaisResult } from '@/interfaces/Historial';
+import { VisitaHistorial, DesgloseItem } from '@/interfaces/Historial';
 import { getNombreMes, calcularPaginas } from '@/utils/utils';
 
 const HISTORIAL_PAGE_SIZE = 10;

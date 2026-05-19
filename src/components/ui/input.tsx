@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { InputProps } from "@/interfaces/ui";
 
@@ -17,6 +17,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const [smError, setsmError] = useState(false);
   const [touched, setTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [localErrorMessage, setLocalErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (touched && props.value !== undefined) {
+      const valor = String(props.value);
+      let hasError = false;
+      let errMsg: string | null = null;
+      if (props.required && valor.trim() === "") {
+        hasError = true;
+        errMsg = "Este campo es obligatorio.";
+      } else if (regex && !regex.test(valor)) {
+        hasError = true;
+        errMsg = error || "Formato no válido.";
+      }
+      setsmError(hasError);
+      setLocalErrorMessage(errMsg);
+    }
+  }, [props.value, touched, regex, props.required, error]);
 
   let colorClass = `input-border-${variant}`;
 
@@ -34,26 +52,36 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
     const valor = e.currentTarget.value;
 
     let hasError = false;
-    if (regex && !regex.test(valor)) {
+    let errMsg: string | null = null;
+    if (props.required && valor.trim() === "") {
       hasError = true;
-    } else if (props.required && valor.trim() === "") {
+      errMsg = "Este campo es obligatorio.";
+    } else if (regex && !regex.test(valor)) {
       hasError = true;
+      errMsg = error || "Formato no válido.";
     }
 
     setsmError(hasError);
+    setLocalErrorMessage(errMsg);
     if (manejarError) {
       manejarError(nombre, hasError);
     }
   };
 
   const handleChangeInternal = (e: React.ChangeEvent<HTMLInputElement>) => {
-
+    const valor = e.target.value;
     if (touched) {
-      const valor = e.target.value;
       let hasError = false;
-      if (regex && !regex.test(valor)) hasError = true;
-      else if (props.required && valor.trim() === "") hasError = true;
+      let errMsg: string | null = null;
+      if (props.required && valor.trim() === "") {
+        hasError = true;
+        errMsg = "Este campo es obligatorio.";
+      } else if (regex && !regex.test(valor)) {
+        hasError = true;
+        errMsg = error || "Formato no válido.";
+      }
       setsmError(hasError);
+      setLocalErrorMessage(errMsg);
     }
     if (manejarCambio) {
       manejarCambio(e);
@@ -103,10 +131,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           </button>
         )}
       </div>
-      {smError && error && (
+      {smError && (localErrorMessage || error) && (
         <footer className="mt-1 ml-1 animate-in fade-in slide-in-from-top-1 duration-200">
           <p id={`${name}-error`} aria-live="polite" className="span-error text-red-500 text-xs italic">
-            {error}
+            {localErrorMessage || error}
           </p>
         </footer>
       )}
