@@ -94,13 +94,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
-    <section className="flex flex-col gap-1.5 w-full" aria-labelledby={`${name}-label`}>
+    <section className="flex flex-col gap-1.5 w-full min-w-0" aria-labelledby={`${name}-label`}>
       {label && (
         <label id={`${name}-label`} htmlFor={name} className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 ml-1">
           {label}
         </label>
       )}
-      <div className="relative w-full">
+      <div className="relative w-full min-w-0">
         <input
           id={name}
           ref={ref}

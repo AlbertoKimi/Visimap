@@ -850,6 +850,20 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     font-size: 16px !important;
   }
 
+  /* Evitar que inputs de fecha y hora nativos desborden la pantalla en Safari/iOS */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
   /* Evitar desplazamiento/scroll a nivel de ventana en iOS */
   html, body {
     position: fixed !important;
