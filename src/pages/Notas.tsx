@@ -5,6 +5,7 @@ import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { NotaCard } from "@/components/app/notas/NotaCard";
 import { NotaModal } from "@/components/app/notas/NotaModal";
 import { useAuthStore } from "@/stores/authStore";
+import { Snackbar, Alert } from '@mui/material';
 
 /**
  * Vista de Gestión de Notas y Tareas.
@@ -17,7 +18,26 @@ export const Notas: React.FC = () => {
   const [notas, setNotas] = useState<Nota[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notaParaEditar, setNotaParaEditar] = useState<Nota | null>(null);
+  const [notificacion, setNotificacion] = useState<{
+    open: boolean;
+    mensaje: string;
+    tipo: 'success' | 'error' | 'warning' | 'info';
+  }>({
+    open: false,
+    mensaje: '',
+    tipo: 'success'
+  });
   const { user, userProfile } = useAuthStore();
+
+  const handleCerrarNotificacion = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setNotificacion(prev => ({ ...prev, open: false }));
+  };
+
+  const showToast = (mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'success') => {
+    setNotificacion({ open: true, mensaje, tipo });
+  };
 
   const loadNotas = async () => {
     setIsLoading(true);
@@ -97,7 +117,7 @@ export const Notas: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
               {notasNormales.map(nota => (
-                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} />
+                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} onEditClick={setNotaParaEditar} showToast={showToast} />
               ))}
             </div>
           )}
@@ -118,7 +138,7 @@ export const Notas: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
               {notasPendientes.map(nota => (
-                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} />
+                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} onEditClick={setNotaParaEditar} showToast={showToast} />
               ))}
             </div>
           )}
@@ -139,7 +159,7 @@ export const Notas: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 content-start auto-rows-max">
               {notasFinalizadas.map(nota => (
-                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} />
+                <NotaCard key={nota.id} nota={nota} onNotaUpdated={loadNotas} onEditClick={setNotaParaEditar} showToast={showToast} />
               ))}
             </div>
           )}
@@ -148,8 +168,41 @@ export const Notas: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <NotaModal onClose={() => setIsModalOpen(false)} onNotaCreated={loadNotas} />
+        <NotaModal 
+          onClose={() => setIsModalOpen(false)} 
+          onNotaCreated={() => {
+            loadNotas();
+            showToast('Nota creada correctamente', 'success');
+          }} 
+        />
       )}
+      {notaParaEditar && (
+        <NotaModal
+          nota={notaParaEditar}
+          onClose={() => setNotaParaEditar(null)}
+          onNotaCreated={() => {
+            loadNotas();
+            showToast('Nota actualizada correctamente', 'success');
+          }}
+        />
+      )}
+
+      <Snackbar
+        open={notificacion.open}
+        autoHideDuration={4000}
+        onClose={handleCerrarNotificacion}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        className="z-[100]"
+      >
+        <Alert
+          onClose={handleCerrarNotificacion}
+          severity={notificacion.tipo}
+          variant="filled"
+          sx={{ width: '100%', minWidth: '300px', boxShadow: 4, fontSize: '0.95rem' }}
+        >
+          {notificacion.mensaje}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

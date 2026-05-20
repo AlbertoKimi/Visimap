@@ -60,7 +60,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
       {errorLocal && (
         <footer className="mt-1 ml-1 animate-in fade-in slide-in-from-top-1 duration-200">
           <span id={`${name}-error`} className="span-error text-red-500 text-xs italic" role="alert">
-            {mensajeError}
+            {mensajeError || "Este campo es obligatorio."}
           </span>
         </footer>
       )}

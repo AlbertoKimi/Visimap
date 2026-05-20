@@ -92,6 +92,9 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
             manejarCambio={manejarCambio}
             manejarError={manejarError}
             required
+            regex={/^(?=.{1,25}$)[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?: [a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+)?$/}
+            error="Nombre inválido (máx. 25 caracteres, solo letras, puede ser nombre compuesto)."
+            maxLength={25}
             placeholder="Introduce el nombre"
           />
 
@@ -102,6 +105,8 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
             manejarCambio={manejarCambio}
             manejarError={manejarError}
             required
+            regex={/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+ [a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+$/}
+            error="Debes introducir exactamente dos apellidos separados por un espacio (solo letras)."
             placeholder="Primer y segundo apellido"
           />
 

@@ -27,7 +27,7 @@ import muvicocheImg from "@/assets/muvicoche.webp";
 import analisisImg from "@/assets/Analisis.webp";
 import heroMp4 from "@/assets/video/hero-optimized.mp4";
 import heroWebm from "@/assets/video/hero-optimized.webm";
-import heroPosterWebp from "@/assets/video/hero-poster.webp";
+import heroPosterWebp from "@/assets/hero-poster.webp";
 
 const logoUrl = logoUrlImg;
 const logoModoOscuroUrl = logoModoOscuroUrlImg;
@@ -81,8 +81,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    // Retrasar la carga del vídeo
-    const timer = setTimeout(() => setIsVideoLoaded(true), 1500);
+    // Retrasar la carga del vídeo 800ms
+    const timer = setTimeout(() => setIsVideoLoaded(true), 800);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', checkMobile);
@@ -144,9 +144,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             aria-hidden="true"
           />
 
-          {/* Vídeo de fondo se inyecta solo en PC */}
+          {/* Vídeo de fondo se inyecta solo en PC con transición suave */}
           {(isVideoLoaded && !isMobile) && (
-            <video
+            <m.video
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="absolute inset-0 w-full h-full object-cover hidden md:block"
               autoPlay
               loop
@@ -156,7 +159,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             >
               <source src={heroWebm} type="video/webm" />
               <source src={heroMp4} type="video/mp4" />
-            </video>
+            </m.video>
           )}
 
           {/* Overlay para legibilidad del texto en PC */}
@@ -571,6 +574,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
               <p>&copy; 2026 VisiMap - Museo MUVI. Sistema de Gestión de Visitantes.</p>
+              <p>&copy; 2026 Vídeo - Alberto Serrano Salas.</p>
             </div>
           </div>
         </footer>

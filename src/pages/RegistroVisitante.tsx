@@ -6,7 +6,7 @@ import { TablaRegistroEventos } from '@/components/app/TablaRegistroEventos';
 import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
 import { ModalEditarCantidad } from '@/components/app/modales/ModalEditarCantidad';
 import { ModalDetalleRegistro } from '@/components/app/modales/ModalDetalleRegistro';
-import { Toast } from '@/components/ui/Toast';
+import { Snackbar, Alert } from '@mui/material';
 
 /**
  * Vista de Gestión de Registros.
@@ -57,6 +57,11 @@ export const RegistroVisitante: React.FC = () => {
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning') => {
     setToast({ message, type });
+  };
+
+  const handleCerrarNotificacion = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') return;
+    setToast(null);
   };
 
   // ── Borrado individual (abre modal de confirmación) ──
@@ -240,12 +245,22 @@ export const RegistroVisitante: React.FC = () => {
       />
 
       {/* Toast */}
-      <Toast
+      <Snackbar
         open={!!toast}
-        mensaje={toast?.message || ''}
-        tipo={toast?.type}
-        onClose={() => setToast(null)}
-      />
+        autoHideDuration={4000}
+        onClose={handleCerrarNotificacion}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        className="z-[100]"
+      >
+        <Alert
+          onClose={handleCerrarNotificacion}
+          severity={toast?.type || 'success'}
+          variant="filled"
+          sx={{ width: '100%', minWidth: '300px', boxShadow: 4, fontSize: '0.95rem' }}
+        >
+          {toast?.message || ''}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Check, Clock, Trash2 } from 'lucide-react';
+import { Check, Clock, Trash2, Pencil } from 'lucide-react';
 import { Nota } from "@/interfaces/Nota";
 import { useAuthStore } from "@/stores/authStore";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
+import { ModalConfirmacion } from '@/components/app/modales/ModalConfirmacion';
 
 /**
  * Interfaz para las propiedades del componente NotaCard.
@@ -12,6 +13,10 @@ interface NotaCardProps {
   nota: Nota;
   /** Callback para notificar al componente padre que los datos han cambiado y debe refrescar la lista. */
   onNotaUpdated: () => void;
+  /** Callback opcional para notificar que se desea editar la nota. */
+  onEditClick?: (nota: Nota) => void;
+  /** Callback para mostrar notificaciones toast desde el componente padre. */
+  showToast?: (mensaje: string, tipo: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
 /**
@@ -22,9 +27,16 @@ interface NotaCardProps {
  * - Los destinatarios específicos de una nota son los únicos (junto a notas globales) que pueden cambiar el estado.
  * @param props - Propiedades del componente (nota y callback de actualización).
  */
-export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
+export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditClick, showToast }) => {
   const { userProfile } = useAuthStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    tipo: 'danger' | 'warning' | 'success' | 'info';
+    onConfirm: () => void;
+  } | null>(null);
 
   const isAdmin = userProfile?.role_id === 1;
   const isCreator = userProfile?.id === nota.creado_por;
@@ -44,9 +56,16 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
     try {
       const repo = RepositoryFactory.getNotaRepository();
       await repo.updateNota(nota.id, { estado: nuevoEstado });
+      showToast?.(
+        nuevoEstado === 'pendiente'
+          ? 'Nota marcada como pendiente correctamente'
+          : 'Nota finalizada correctamente',
+        'success'
+      );
       onNotaUpdated();
     } catch (error) {
       console.error('Error al actualizar nota', error);
+      showToast?.('No se pudo actualizar el estado de la nota. Comprueba tu conexión e inténtalo de nuevo.', 'error');
       setIsProcessing(false);
     }
   };
@@ -57,9 +76,11 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
     try {
       const repo = RepositoryFactory.getNotaRepository();
       await repo.deleteNota(nota.id);
+      showToast?.('Nota eliminada correctamente', 'success');
       onNotaUpdated();
     } catch (error) {
       console.error('Error al borrar nota', error);
+      showToast?.('No se pudo eliminar la nota. Comprueba tu conexión e inténtalo de nuevo.', 'error');
       setIsProcessing(false);
     }
   };
@@ -107,10 +128,30 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
 
         <div className="flex gap-1 shrink-0 bg-white/50 dark:bg-slate-800/50 rounded-lg p-1 items-center">
 
+          {/* Botón Editar: Solo visible si somos el creador de la nota y su estado es 'normal' */}
+          {isCreator && nota.estado === 'normal' && (
+            <button
+              onClick={() => onEditClick?.(nota)}
+              disabled={isProcessing}
+              className="p-1.5 rounded-md transition-colors tooltip bg-blue-200 dark:bg-blue-900/60 text-blue-800 dark:text-blue-100 hover:bg-blue-300 dark:hover:bg-blue-800 font-medium scale-105 active:scale-95"
+              title="Editar Nota"
+            >
+              <Pencil size={16} strokeWidth={2.5} />
+            </button>
+          )}
+
           {/* Botón Pendiente: Solo visible si está normal y tiene permiso */}
           {nota.estado === 'normal' && hasTogglePermission && (
             <button
-              onClick={() => handleSetEstado('pendiente')}
+              onClick={() => {
+                setConfirmModal({
+                  open: true,
+                  title: '¿Mover a Pendiente?',
+                  message: '¿Estás seguro de que quieres marcar esta tarea como pendiente?',
+                  tipo: 'warning',
+                  onConfirm: () => handleSetEstado('pendiente')
+                });
+              }}
               disabled={isProcessing}
               className="p-1.5 rounded-md transition-colors tooltip bg-orange-200 dark:bg-orange-900 text-orange-800 dark:text-orange-100 hover:bg-orange-300 dark:hover:bg-orange-800 font-medium scale-105"
               title="Mover a Pendiente"
@@ -122,7 +163,15 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
           {/* Botón Finalizar: Visible si está normal o pendiente y tiene permiso */}
           {(nota.estado === 'normal' || nota.estado === 'pendiente') && hasTogglePermission && (
             <button
-              onClick={() => handleSetEstado('finalizada')}
+              onClick={() => {
+                setConfirmModal({
+                  open: true,
+                  title: '¿Marcar como Finalizada?',
+                  message: '¿Estás seguro de que quieres finalizar esta tarea?',
+                  tipo: 'success',
+                  onConfirm: () => handleSetEstado('finalizada')
+                });
+              }}
               disabled={isProcessing}
               className="p-1.5 rounded-md transition-colors tooltip bg-green-300 dark:bg-green-900 text-green-900 dark:text-green-100 hover:bg-green-400 dark:hover:bg-green-800 font-medium scale-105"
               title="Marcar como Finalizada"
@@ -138,7 +187,15 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
                 <div className="w-px h-5 bg-black/10 dark:bg-white/10 mx-1"></div>
               )}
               <button
-                onClick={handleDelete}
+                onClick={() => {
+                  setConfirmModal({
+                    open: true,
+                    title: '¿Eliminar Nota?',
+                    message: 'Esta acción es permanente y no se podrá recuperar el contenido de la nota.',
+                    tipo: 'danger',
+                    onConfirm: handleDelete
+                  });
+                }}
                 disabled={isProcessing}
                 className="p-1.5 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
                 title="Borrar Nota"
@@ -167,6 +224,17 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated }) => {
         </div>
         <span className="font-medium opacity-80">{formattedDate}</span>
       </div>
+
+      {confirmModal && (
+        <ModalConfirmacion
+          isOpen={confirmModal.open}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={confirmModal.onConfirm}
+          titulo={confirmModal.title}
+          mensaje={confirmModal.message}
+          tipo={confirmModal.tipo}
+        />
+      )}
     </div>
   );
 };

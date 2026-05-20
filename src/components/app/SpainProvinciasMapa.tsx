@@ -41,28 +41,53 @@ export default function SpainProvincesMap({
         <svg
           viewBox="-10 -20 440 500"
           className="w-full h-auto max-h-[75vh] mapa-shadow"
+          onMouseLeave={() => setHoveredProvince(null)}
         >
-          {Object.entries(SpainProvincePaths).map(([id, province]) => {
-            const isSelected = activeId === id;
-            const isHovered = hoveredProvince?.id === id;
-            const baseColor = getColoresProvincia(id);
+          {Object.entries(SpainProvincePaths)
+            .map(([id, province]) => {
+              const isSelected = activeId === id;
+              const isHovered = hoveredProvince?.id === id;
+              const baseColor = getColoresProvincia(id);
 
-            return (
-              <path
-                key={id}
-                d={province.path}
-                className={`transition-all duration-300 cursor-pointer stroke-black stroke-[0.5] ${isSelected
-                  ? 'fill-purple-700 stroke-purple-900 z-10'
-                  : isHovered
-                    ? 'fill-blue-500 stroke-blue-300 z-10'
-                    : `${baseColor} hover:opacity-90`
-                  }`}
-                onMouseEnter={() => setHoveredProvince({ id, ...province })}
-                onMouseLeave={() => setHoveredProvince(null)}
-                onClick={() => onProvinceClick && onProvinceClick({ id, ...province })}
-              />
-            );
-          })}
+              return (
+                <g key={id}>
+                  {/* Capa invisible estática para capturar eventos de ratón sin parpadeos (evita que el desplazamiento altere las coordenadas del cursor) */}
+                  <path
+                    d={province.path}
+                    className="fill-transparent cursor-pointer"
+                    onMouseEnter={() => setHoveredProvince({ id, ...province })}
+                    onMouseLeave={() => setHoveredProvince(prev => prev?.id === id ? null : prev)}
+                    onClick={() => onProvinceClick && onProvinceClick({ id, ...province })}
+                  />
+                  {/* Capa visual que se desplaza y eleva de forma fluida */}
+                  <path
+                    d={province.path}
+                    className={`pointer-events-none transition-all duration-150 stroke-black stroke-[0.5] ${isSelected
+                      ? 'fill-purple-700 stroke-purple-900 z-10'
+                      : isHovered
+                        ? 'fill-blue-500 stroke-blue-300 z-10 provincia-elevada'
+                        : `${baseColor}`
+                      }`}
+                  />
+                </g>
+              );
+            })}
+
+          {/* Overlay para la provincia seleccionada para asegurar que sus bordes se dibujen por encima de las demás */}
+          {activeId && activeId in SpainProvincePaths && (
+            <path
+              d={SpainProvincePaths[activeId as keyof typeof SpainProvincePaths].path}
+              className="pointer-events-none transition-all duration-150 stroke-purple-900 stroke-[0.5] fill-purple-700 z-10"
+            />
+          )}
+
+          {/* Overlay para la provincia en hover (si la hay y no es la seleccionada) */}
+          {hoveredProvince && hoveredProvince.id !== activeId && (
+            <path
+              d={hoveredProvince.path}
+              className="pointer-events-none transition-all duration-150 stroke-blue-300 stroke-[0.5] fill-blue-500 z-10 provincia-elevada"
+            />
+          )}
         </svg>
 
         {/* Leyenda para Escritorio (LG+) */}
