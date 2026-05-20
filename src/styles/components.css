@@ -567,23 +567,40 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 }
 
 .chat-grafico-tooltip {
-  @apply bg-white/90 backdrop-blur-md border border-slate-200/70 rounded-xl shadow-lg p-3 text-xs z-50;
+  @apply bg-white/95 backdrop-blur-md border border-slate-200/70 rounded-xl shadow-lg p-3 text-xs z-50;
+}
+
+.dark .chat-grafico-tooltip {
+  @apply bg-slate-800/95 border-slate-700/70 shadow-2xl;
 }
 
 .chat-grafico-tooltip-label {
   @apply font-bold text-slate-800 mb-1.5 border-b border-slate-100 pb-1;
 }
 
+.dark .chat-grafico-tooltip-label {
+  @apply text-white border-slate-700;
+}
+
 .chat-grafico-tooltip-row {
   @apply flex items-center justify-between gap-3 font-semibold mt-1;
+  color: #475569; /* slate-600 */
+}
+
+.dark .chat-grafico-tooltip-row {
+  color: #cbd5e1; /* slate-300 */
 }
 
 .chat-grafico-tooltip-dot {
-  @apply w-2 h-2 rounded-full inline-block mr-1;
+  @apply w-2 h-2 rounded-full inline-block mr-1 shrink-0;
 }
 
 .chat-grafico-tooltip-value {
-  @apply text-slate-900;
+  @apply text-slate-900 font-bold;
+}
+
+.dark .chat-grafico-tooltip-value {
+  @apply text-white;
 }
 
 /* ── Typing dots ─────────────────────────────────────────────────────────── */
