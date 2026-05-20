@@ -112,7 +112,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
       <CardContent className="p-0 sm:p-4 h-full min-h-[800px]">
 
         <div className="flex flex-col gap-4 mb-4 sm:mb-8 px-1 sm:px-2">
-          
+
           <div className="flex justify-center w-full">
             <h2 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight bg-slate-50 dark:bg-slate-800 px-4 sm:px-6 py-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
               {fechaActual.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
@@ -120,7 +120,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
           </div>
 
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            
+
             <div className="flex items-center gap-2 w-full lg:w-auto justify-center">
               <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner border border-slate-200/50 dark:border-slate-700">
                 <button
@@ -211,31 +211,50 @@ export const Calendario: React.FC<CalendarioProps> = ({
         </div>
 
 
-        <div className={vista === 'semana' || vista === 'dia' ? 'h-[600px] sm:h-[750px] overflow-auto custom-scrollbar' : 'hidden'}>
-          <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 min-w-full">
-            <table className="min-w-[600px] sm:w-full border-collapse">
-              <thead>
+        {/* Vista Semana / Día */}
+        <div className={vista === 'semana' || vista === 'dia' ? 'relative' : 'hidden'}>
+          <div className="h-[600px] sm:h-[750px] overflow-y-auto sm:overflow-y-hidden overflow-x-auto sm:overflow-x-hidden custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
+            <table
+              className="border-collapse w-full sm:h-full"
+              style={{ minWidth: vista === 'semana' ? '520px' : '260px' }}
+            >
+              {/*sticky en móvil (scroll), normal en desktop */}
+              <thead className="sticky top-0 z-20 sm:static">
                 <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                  <th className="w-20 p-2 text-[10px] font-black text-slate-400 uppercase">Hora</th>
+                  {/* Columna HORA — sticky-left en móvil, normal en desktop */}
+                  <th
+                    className="bg-slate-50 dark:bg-slate-800/50 p-2 text-[10px] font-black text-slate-400 uppercase text-center"
+                    style={{ position: 'sticky', left: 0, zIndex: 30, width: '64px', minWidth: '52px', maxWidth: '80px' }}
+                  >
+                    HORA
+                  </th>
                   {(vista === 'semana' ? diasSemana : [diasSemana.find(d => d.raw.toDateString() === fechaActual.toDateString()) || diasSemana[0]]).map((diaObj) => (
-                    <th key={diaObj.id} className="p-3 text-center border-l border-slate-200 dark:border-slate-800">
+                    <th key={diaObj.id} className="p-2 sm:p-3 text-center border-l border-slate-200 dark:border-slate-800">
                       <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{diaObj.label}</div>
-                      <div className={`text-base sm:text-lg font-black ${diaObj.raw.toDateString() === new Date().toDateString() ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
+                      <div className={`text-sm sm:text-lg font-black ${diaObj.raw.toDateString() === new Date().toDateString() ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {HORAS.map((h) => (
-                  <tr key={h} className="group border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
-                    <td className="p-2 text-center text-xs font-bold text-slate-400 align-top pt-4">
+                  <tr
+                    key={h}
+                    className="group border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                    style={{ height: `${100 / HORAS.length}%` }}
+                  >
+                    {/* Celda HORA — sticky-left en móvil, normal en desktop */}
+                    <td
+                      className="bg-white dark:bg-slate-900 p-1 text-center text-[11px] font-bold text-slate-400 align-top pt-3 select-none"
+                      style={{ position: 'sticky', left: 0, zIndex: 10, width: '64px', minWidth: '52px', maxWidth: '80px', borderRight: '1px solid rgba(148,163,184,0.15)' }}
+                    >
                       {h}:00
                     </td>
                     {(vista === 'semana' ? diasSemana : [diasSemana.find(d => d.raw.toDateString() === fechaActual.toDateString()) || diasSemana[0]]).map((diaObj) => {
                       const cellKey = `${diaObj.key}-${h}`;
                       const evs = mapEventos.get(cellKey) || [];
                       return (
-                        <td key={diaObj.id} className="p-1 border-l border-slate-100 dark:border-slate-800 align-top min-h-[60px]">
+                        <td key={diaObj.id} className="p-1 border-l border-slate-100 dark:border-slate-800 align-top">
                           <div className="flex flex-col gap-1.5 h-full">
                             {evs.map((ev) => {
                               const start = new Date(ev.start);
@@ -243,16 +262,16 @@ export const Calendario: React.FC<CalendarioProps> = ({
                                 <div
                                   key={ev.id}
                                   onClick={() => onEventClick?.({ event: { id: ev.id, title: ev.title, extendedProps: ev.extendedProps, backgroundColor: ev.backgroundColor, textColor: ev.textColor } })}
-                                  className="p-2 rounded-lg shadow-sm border-l-4 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer group/item relative overflow-hidden"
+                                  className="p-1.5 sm:p-2 rounded-lg shadow-sm border-l-4 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer relative overflow-hidden"
                                   style={{ backgroundColor: ev.backgroundColor, color: ev.textColor, borderLeftColor: ev.color || 'transparent' }}
                                 >
-                                  <div className="flex items-center gap-2">
-                                    {ev.extendedProps?.finalizado && <Check size={12} strokeWidth={4} className="text-emerald-400" />}
-                                    <span className="text-[10px] font-black whitespace-nowrap opacity-60">
+                                  <div className="flex items-center gap-1">
+                                    {ev.extendedProps?.finalizado && <Check size={10} strokeWidth={4} className="text-emerald-400 shrink-0" />}
+                                    <span className="text-[9px] sm:text-[10px] font-black whitespace-nowrap opacity-60">
                                       {start.getHours()}:{start.getMinutes().toString().padStart(2, '0')}
                                     </span>
                                   </div>
-                                  <div className="text-[11px] font-bold uppercase leading-tight mt-1 truncate">
+                                  <div className="text-[10px] sm:text-[11px] font-bold uppercase leading-tight mt-0.5 line-clamp-2">
                                     {ev.title}
                                   </div>
                                 </div>
