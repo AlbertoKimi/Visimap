@@ -71,10 +71,18 @@ async function ejecutarConsultaDB(consulta: ConsultaDB): Promise<{ datos: unknow
     .select(columnas);
 
   if (consulta.campoFecha && consulta.rangoInicio) {
-    query = query.gte(consulta.campoFecha, consulta.rangoInicio);
+    let inicio = consulta.rangoInicio;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(inicio)) {
+      inicio = `${inicio}T00:00:00`;
+    }
+    query = query.gte(consulta.campoFecha, inicio);
   }
   if (consulta.campoFecha && consulta.rangoFin) {
-    query = query.lte(consulta.campoFecha, consulta.rangoFin);
+    let fin = consulta.rangoFin;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(fin)) {
+      fin = `${fin}T23:59:59.999`;
+    }
+    query = query.lte(consulta.campoFecha, fin);
   }
   if (consulta.filtros) {
     for (const [clave, valor] of Object.entries(consulta.filtros)) {
@@ -212,21 +220,759 @@ export function useChatIA() {
     scrollAlFinal();
 
 
-    // INTERCEPTOR DE CONSULTAS DE VISITANTES
+    // INTERCEPTOR DE CONSULTAS DE VISITANTES Y ESTADÍSTICAS EN TIEMPO REAL
 
     const lowerText = texto.toLowerCase().trim();
+    const ahora = new Date();
+    const currentYear = ahora.getFullYear();
+    const currentMonthIndex = ahora.getMonth();
+    const mesesNombres = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const matchAnio = lowerText.match(/\b(20\d{2})\b/);
+    // targetYear: se recalculará tras detectar matchFechaCompleta, por ahora tomamos del año suelto
+    const targetYearBase = matchAnio ? parseInt(matchAnio[1], 10) : currentYear;
+
     const tieneVisitantes = lowerText.includes('visitante') || lowerText.includes('visita') || lowerText.includes('persona') || lowerText.includes('gente');
-    const tieneAnio = lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este')));
+    const tieneAnio = (matchAnio !== null) || lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este') || lowerText.includes('el') || lowerText.includes('en')));
     const tieneTotalHistorico = lowerText.includes('total') || lowerText.includes('histórico') || lowerText.includes('historico') || lowerText.includes('acumulado') || lowerText.includes('todos los tiempos');
+    const tieneMes = lowerText.includes('mes') || lowerText.includes('mensual');
+    const tienePersonal = lowerText.includes('personal') || lowerText.includes('rendimiento') || lowerText.includes('trabajador') || lowerText.includes('empleado');
+    const tieneProvincias = lowerText.includes('provincia') || lowerText.includes('provincias');
+    const tieneMundo = lowerText.includes('españa') || lowerText.includes('mundo') || lowerText.includes('extranjero') || lowerText.includes('nacional') || lowerText.includes('internacional');
+    const tieneEventos = lowerText.includes('evento') && !tienePersonal && !tieneProvincias && !tieneMundo;
 
-    // Palabras clave que indican que el usuario quiere un reporte mensual, semanal, diario o desgloses gráficos.
-    // Si contiene alguna de estas, NO interceptamos y dejamos que la IA haga su trabajo con gráficos.
-    const exclusiones = ['mes', 'semana', 'diario', 'día', 'dia', 'provincia', 'país', 'pais', 'grafico', 'gráfico', 'chart', 'mensual', 'semanal', 'diaria'];
-    const tieneExclusiones = exclusiones.some(palabra => lowerText.includes(palabra));
+    // Consultas por día específico
+    const tieneHoy = lowerText.includes('hoy');
+    const tieneAyer = lowerText.includes('ayer');
 
-    if (tieneVisitantes && (tieneAnio || tieneTotalHistorico) && !tieneExclusiones) {
+    // Detección de fecha completa en formato DD/MM/YYYY o DD-MM-YYYY (tiene preferencia sobre el resto)
+    const matchFechaCompleta = lowerText.match(/\b(\d{1,2})[/\-](\d{1,2})[/\-](\d{4})\b/);
+    const matchDia = matchFechaCompleta ? null : lowerText.match(/\b(?:d[ií]a|el)\s+(\d{1,2})\b/);
+    const tieneDiaEspecifico = tieneHoy || tieneAyer || matchFechaCompleta !== null || (matchDia !== null && parseInt(matchDia[1], 10) >= 1 && parseInt(matchDia[1], 10) <= 31);
+
+    // Parsear mes y año específicos si se mencionan en la consulta
+    // Si hay fecha completa DD/MM/YYYY, toma mes y año de ahí con prioridad absoluta
+    const indiceMesSolicitado = matchFechaCompleta
+      ? parseInt(matchFechaCompleta[2], 10) - 1
+      : mesesNombres.findIndex(m => lowerText.includes(m));
+    const targetMonthIndex = indiceMesSolicitado !== -1 ? indiceMesSolicitado : currentMonthIndex;
+    const targetMesNombre = mesesNombres[targetMonthIndex];
+
+    // targetYear definitivo: fecha completa > año suelto (matchAnio) > año actual
+    const targetYear = matchFechaCompleta
+      ? parseInt(matchFechaCompleta[3], 10)
+      : targetYearBase;
+
+    // Calcular las fechas de inicio y fin para el mes solicitado
+    const inicioMes = `${targetYear}-${pad(targetMonthIndex + 1)}-01`;
+    let finMes = '';
+    if (targetMonthIndex === currentMonthIndex && targetYear === currentYear) {
+      finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`;
+    } else {
+      const ultimoDia = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+      finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ultimoDia)}T23:59:59.999`;
+    }
+
+    // Consultar provincias y países en la BD
+    let todasProvincias: { id_provincia: number; nombre_provincia: string }[] = [];
+    let todosPaises: { id_pais: number; nombre_pais: string }[] = [];
+    try {
+      const [resProv, resPais] = await Promise.all([
+        supabase.from('provincia').select('id_provincia, nombre_provincia'),
+        supabase.from('pais').select('id_pais, nombre_pais')
+      ]);
+      todasProvincias = resProv.data || [];
+      todosPaises = resPais.data || [];
+    } catch (e) {
+      console.error('Error cargando catálogos de provincias/países:', e);
+    }
+
+    const provEncontrada = todasProvincias.find(p => 
+      lowerText.includes(p.nombre_provincia.toLowerCase())
+    );
+    const paisEncontrado = !provEncontrada 
+      ? todosPaises.find(p => lowerText.includes(p.nombre_pais.toLowerCase())) 
+      : undefined;
+
+    const esComparativaEspaniaMundo = (lowerText.includes('españa') || lowerText.includes('nacionales')) && 
+      (lowerText.includes('mundo') || lowerText.includes('internacionales') || lowerText.includes('vs') || lowerText.includes('compar'));
+
+    const tieneLugarEspecifico = (!!provEncontrada || !!paisEncontrado) && !esComparativaEspaniaMundo;
+
+    // INTERCEPTOR: EVENTOS ACTIVOS
+    if (tieneEventos) {
       try {
-        // Consultamos directamente la vista del historial de visitantes (la fuente de verdad de la app)
+        const { data: eventos, error } = await supabase
+          .from('evento')
+          .select('nombre_evento, fecha_inicio, finalizado')
+          .neq('finalizado', true)
+          .order('fecha_inicio', { ascending: true });
+
+        if (error) throw error;
+
+        let respuestaTexto = '';
+        if (!eventos || eventos.length === 0) {
+          respuestaTexto = 'No hay eventos activos o próximos.';
+        } else {
+          respuestaTexto = eventos.map((ev: any) => {
+            const d = new Date(ev.fecha_inicio);
+            const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+            return `• ${ev.nombre_evento}: ${fechaFormateada}`;
+          }).join('\n');
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de eventos activos:', dbErr);
+      }
+    }
+
+    // INTERCEPTOR: CONSULTA DE PROVINCIA/PAÍS ESPECÍFICO
+    if (tieneLugarEspecifico && tieneVisitantes) {
+      try {
+        let inicio = '';
+        let fin = '';
+        let labelPeriodo = '';
+
+        if (tieneDiaEspecifico) {
+          let targetDate = new Date();
+          let labelDia = 'hoy';
+          if (tieneHoy) {
+            targetDate = new Date();
+            labelDia = 'hoy';
+          } else if (tieneAyer) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            targetDate = d;
+            labelDia = 'ayer';
+          } else if (matchFechaCompleta) {
+            const numeroDia = parseInt(matchFechaCompleta[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          } else if (matchDia) {
+            const numeroDia = parseInt(matchDia[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          }
+          const y = targetDate.getFullYear();
+          const m = pad(targetDate.getMonth() + 1);
+          const d = pad(targetDate.getDate());
+          inicio = `${y}-${m}-${d}T00:00:00`;
+          fin = `${y}-${m}-${d}T23:59:59.999`;
+          labelPeriodo = `${labelDia} (${d}/${m}/${y})`;
+        } else if ((lowerText.includes('año') || lowerText.includes('año actual') || matchAnio) && indiceMesSolicitado === -1 && !tieneMes) {
+          inicio = `${targetYear}-01-01T00:00:00`;
+          fin = `${targetYear}-12-31T23:59:59.999`;
+          labelPeriodo = `en el año ${targetYear}`;
+        } else {
+          inicio = `${inicioMes}T00:00:00`;
+          fin = finMes;
+          labelPeriodo = `en ${targetMesNombre} de ${targetYear}`;
+        }
+
+        let totalIndividuales = 0;
+        let totalGrupos = 0;
+        let nombreLugar = '';
+
+        if (provEncontrada) {
+          nombreLugar = provEncontrada.nombre_provincia;
+          
+          const [resNorm, resGrp] = await Promise.all([
+            supabase.from('registro_visitante')
+              .select('cantidad')
+              .eq('id_provincia', provEncontrada.id_provincia)
+              .gte('creado_en', inicio)
+              .lte('creado_en', fin),
+            supabase.from('grupo_visitante')
+              .select(`
+                num_visitantes,
+                tipo_origen,
+                origen,
+                evento!inner (
+                  fecha_inicio
+                )
+              `)
+              .eq('tipo_origen', 'provincia')
+              .eq('origen', provEncontrada.nombre_provincia)
+              .gte('evento.fecha_inicio', inicio)
+              .lte('evento.fecha_inicio', fin)
+          ]);
+
+          if (resNorm.error) throw resNorm.error;
+          if (resGrp.error) throw resGrp.error;
+
+          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+        } else if (paisEncontrado) {
+          nombreLugar = paisEncontrado.nombre_pais;
+
+          const [resNorm, resGrp] = await Promise.all([
+            supabase.from('registro_visitante')
+              .select('cantidad')
+              .eq('id_pais', paisEncontrado.id_pais)
+              .gte('creado_en', inicio)
+              .lte('creado_en', fin),
+            supabase.from('grupo_visitante')
+              .select(`
+                num_visitantes,
+                tipo_origen,
+                origen,
+                evento!inner (
+                  fecha_inicio
+                )
+              `)
+              .eq('tipo_origen', 'pais')
+              .eq('origen', paisEncontrado.nombre_pais)
+              .gte('evento.fecha_inicio', inicio)
+              .lte('evento.fecha_inicio', fin)
+          ]);
+
+          if (resNorm.error) throw resNorm.error;
+          if (resGrp.error) throw resGrp.error;
+
+          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+        }
+
+        const totalGeneral = totalIndividuales + totalGrupos;
+
+        let respuestaTexto = `El número total de visitantes registrado procedentes de **${nombreLugar}** **${labelPeriodo}** es de **${totalGeneral.toLocaleString('es-ES')}** personas.\n\n`;
+        respuestaTexto += `**Desglose de visitas:**\n`;
+        respuestaTexto += `- 🎫 **Ventanilla (individuales)**: **${totalIndividuales.toLocaleString('es-ES')}** visitantes\n`;
+        respuestaTexto += `- 🎭 **Eventos / Grupos**: **${totalGrupos.toLocaleString('es-ES')}** visitantes\n\n`;
+        respuestaTexto += `*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de provincia/país específico:', dbErr);
+      }
+    }
+
+    // 1. INTERCEPTOR: RENDIMIENTO DEL PERSONAL
+    if (tienePersonal) {
+      try {
+        const [resPerfiles, resReg, resEvt, resNot] = await Promise.all([
+          supabase.from('profiles').select('id, nombre, nombre_usuario').eq('active', true),
+          supabase.from('registro_visitante').select('id_usuario, creado_en').gte('creado_en', inicioMes).lte('creado_en', finMes),
+          supabase.from('evento').select('id_usuario, fecha_inicio').gte('fecha_inicio', inicioMes).lte('fecha_inicio', finMes),
+          supabase.from('notas').select('creado_por, creado_en').gte('creado_en', inicioMes).lte('creado_en', finMes)
+        ]);
+
+        if (resPerfiles.error) throw resPerfiles.error;
+
+        const perfiles = resPerfiles.data || [];
+        const mapa: Record<string, { nombre: string; registros: number; eventos: number; notas: number; total: number }> = {};
+        
+        perfiles.forEach((p: any) => {
+          mapa[p.id] = {
+            nombre: p.nombre || p.nombre_usuario || 'Desconocido',
+            registros: 0,
+            eventos: 0,
+            notas: 0,
+            total: 0
+          };
+        });
+
+        if (resReg.data) {
+          resReg.data.forEach((r: any) => {
+            if (mapa[r.id_usuario]) mapa[r.id_usuario].registros += 1;
+          });
+        }
+        if (resEvt.data) {
+          resEvt.data.forEach((e: any) => {
+            if (mapa[e.id_usuario]) mapa[e.id_usuario].eventos += 1;
+          });
+        }
+        if (resNot.data) {
+          resNot.data.forEach((n: any) => {
+            if (mapa[n.creado_por]) mapa[n.creado_por].notas += 1;
+          });
+        }
+
+        const listaActividad = Object.entries(mapa).map(([id, val]) => ({
+          id,
+          name: val.nombre,
+          registros: val.registros,
+          eventos: val.eventos,
+          notas: val.notas,
+          total: val.registros + val.eventos + val.notas
+        })).sort((a, b) => b.total - a.total);
+
+        let respuestaTexto = `Aquí tienes el rendimiento detallado del personal durante el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
+        listaActividad.forEach((t, idx) => {
+          respuestaTexto += `${idx + 1}. **${t.name}**: **${t.total}** acciones en total (${t.registros} registros de visitas, ${t.eventos} eventos, ${t.notas} notas)\n`;
+        });
+        respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const chartDatos = listaActividad.map(t => ({
+          name: t.name,
+          registros: t.registros,
+          eventos: t.eventos,
+          notas: t.notas,
+          total: t.total
+        }));
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}`,
+            tipo: 'bar',
+            titulo: `Actividad y Rendimiento del Personal (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+            subtitulo: `Suma total de acciones por empleado`,
+            datos: chartDatos,
+            claves: ['registros', 'eventos', 'notas'],
+            claveX: 'name',
+            colores: ['#3b82f6', '#f59e0b', '#10b981']
+          }
+        ];
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de rendimiento:', dbErr);
+      }
+    }
+
+    // 2. INTERCEPTOR: DESGLOSE NACIONAL POR PROVINCIAS
+    if (tieneProvincias) {
+      try {
+        const [resNorm, resGrp] = await Promise.all([
+          supabase.from('registro_visitante')
+            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
+            .gte('creado_en', inicioMes).lte('creado_en', finMes),
+          supabase.from('grupo_visitante')
+            .select(`
+              num_visitantes,
+              tipo_origen,
+              origen,
+              evento!inner (
+                fecha_inicio
+              )
+            `)
+            .gte('evento.fecha_inicio', inicioMes).lte('evento.fecha_inicio', finMes)
+        ]);
+
+        const mapaProvincias: Record<string, { normales: number; eventos: number }> = {};
+
+        if (resNorm.data) {
+          resNorm.data.forEach((r: any) => {
+            if (r.pais?.nombre_pais !== 'España') return;
+            const prov = r.provincia?.nombre_provincia ?? 'Desconocida';
+            if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
+            mapaProvincias[prov].normales += (r.cantidad || 0);
+          });
+        }
+
+        if (resGrp.data) {
+          resGrp.data.forEach((g: any) => {
+            if (g.tipo_origen === 'provincia') {
+              const prov = g.origen;
+              if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
+              mapaProvincias[prov].eventos += (g.num_visitantes || 0);
+            }
+          });
+        }
+
+        const listaProvincias = Object.entries(mapaProvincias).map(([provincia, val]) => ({
+          provincia,
+          individuales: val.normales,
+          grupos: val.eventos,
+          total: val.normales + val.eventos
+        })).filter(p => p.total > 0).sort((a, b) => b.total - a.total);
+
+        let respuestaTexto = `Desglose de visitantes nacionales por provincias durante el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
+        if (listaProvincias.length === 0) {
+          respuestaTexto += `No se han registrado visitas nacionales durante este mes.\n`;
+        } else {
+          listaProvincias.forEach((p, idx) => {
+            respuestaTexto += `${idx + 1}. **${p.provincia}**: **${p.total}** visitantes (${p.individuales} individuales, ${p.grupos} en eventos)\n`;
+          });
+        }
+        respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}`,
+            tipo: 'bar',
+            titulo: `Procedencia Nacional por Provincias (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+            subtitulo: `Total: ${listaProvincias.reduce((acc, curr) => acc + curr.total, 0)} visitantes`,
+            datos: listaProvincias.slice(0, 10),
+            claves: ['individuales', 'grupos'],
+            claveX: 'provincia',
+            colores: ['#3b82f6', '#9333ea']
+          }
+        ];
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de provincias:', dbErr);
+      }
+    }
+
+    // 3. INTERCEPTOR: COMPARATIVA ESPAÑA VS MUNDO (PROCEDENCIA)
+    if (tieneMundo && !tienePersonal && !tieneProvincias && !tieneDiaEspecifico && !tieneAnio && !tieneTotalHistorico) {
+      try {
+        const [resNorm, resGrp] = await Promise.all([
+          supabase.from('registro_visitante')
+            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
+            .gte('creado_en', inicioMes).lte('creado_en', finMes),
+          supabase.from('grupo_visitante')
+            .select(`
+              num_visitantes,
+              tipo_origen,
+              origen,
+              evento!inner (
+                fecha_inicio
+              )
+            `)
+            .gte('evento.fecha_inicio', inicioMes).lte('evento.fecha_inicio', finMes)
+        ]);
+
+        if (resNorm.error) throw resNorm.error;
+        if (resGrp.error) throw resGrp.error;
+
+        let totalEspana = 0;
+        let totalMundo = 0;
+        const provMap: Record<string, number> = {};
+        const paisMap: Record<string, number> = {};
+
+        if (resNorm.data) {
+          resNorm.data.forEach((r: any) => {
+            const paisNombre = r.pais?.nombre_pais || 'España';
+            const cantidad = r.cantidad || 0;
+            if (paisNombre === 'España') {
+              totalEspana += cantidad;
+              const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
+              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+            } else {
+              totalMundo += cantidad;
+              paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+            }
+          });
+        }
+
+        if (resGrp.data) {
+          resGrp.data.forEach((g: any) => {
+            const cantidad = g.num_visitantes || 0;
+            if (g.tipo_origen === 'provincia') {
+              totalEspana += cantidad;
+              const provNombre = g.origen || 'Desconocida';
+              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+            } else if (g.tipo_origen === 'pais') {
+              const paisNombre = g.origen || 'Otros';
+              if (paisNombre === 'España') {
+                totalEspana += cantidad;
+                provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
+              } else {
+                totalMundo += cantidad;
+                paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+              }
+            }
+          });
+        }
+
+        const totalUnico = totalEspana + totalMundo;
+
+        const listaProvincias = Object.entries(provMap)
+          .map(([nombre, total]) => ({ nombre, total }))
+          .sort((a, b) => b.total - a.total);
+
+        const listaPaises = Object.entries(paisMap)
+          .map(([nombre, total]) => ({ nombre, total }))
+          .sort((a, b) => b.total - a.total);
+
+        let respuestaTexto = `Comparativa de procedencia de visitantes para el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
+        respuestaTexto += `- 🇪🇸 **España (Nacionales)**: **${totalEspana.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalEspana / totalUnico) * 100).toFixed(1) : 0}%)\n`;
+        respuestaTexto += `- 🌎 **Resto del Mundo (Internacionales)**: **${totalMundo.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalMundo / totalUnico) * 100).toFixed(1) : 0}%)\n\n`;
+
+        respuestaTexto += `### 🇪🇸 Desglose por Provincias (España):\n`;
+        if (listaProvincias.length === 0) {
+          respuestaTexto += `No se han registrado visitas nacionales durante este mes.\n`;
+        } else {
+          listaProvincias.forEach((p) => {
+            respuestaTexto += `• **${p.nombre}**: ${p.total.toLocaleString('es-ES')} visitantes\n`;
+          });
+        }
+
+        respuestaTexto += `\n### 🌎 Desglose por Países (Internacional):\n`;
+        if (listaPaises.length === 0) {
+          respuestaTexto += `No se han registrado visitas internacionales durante este mes.\n`;
+        } else {
+          listaPaises.forEach((p) => {
+            respuestaTexto += `• **${p.nombre}**: ${p.total.toLocaleString('es-ES')} visitantes\n`;
+          });
+        }
+
+        respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}`,
+            tipo: 'bar',
+            titulo: `Procedencia de Visitantes (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+            subtitulo: `Total: ${totalUnico.toLocaleString('es-ES')} visitantes`,
+            datos: [
+              {
+                name: targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1),
+                España: totalEspana,
+                'Resto del Mundo': totalMundo
+              }
+            ],
+            claves: ['España', 'Resto del Mundo'],
+            claveX: 'name',
+            colores: ['#3b82f6', '#ec4899']
+          }
+        ];
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor España vs Mundo:', dbErr);
+      }
+    }
+
+    // 4. INTERCEPTOR: VISITANTES POR DÍA ESPECÍFICO (HOY, AYER, DÍA X)
+    if (tieneDiaEspecifico && tieneVisitantes) {
+      try {
+        let targetDate = new Date();
+        let labelDia = 'hoy';
+
+        if (tieneHoy) {
+          targetDate = new Date();
+          labelDia = 'hoy';
+        } else if (tieneAyer) {
+          const d = new Date();
+          d.setDate(d.getDate() - 1);
+          targetDate = d;
+          labelDia = 'ayer';
+        } else if (matchFechaCompleta) {
+          const numeroDia = parseInt(matchFechaCompleta[1], 10);
+          targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+          labelDia = `el día ${numeroDia}`;
+        } else if (matchDia) {
+          const numeroDia = parseInt(matchDia[1], 10);
+          targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+          labelDia = `el día ${numeroDia}`;
+        }
+
+        const { data: vistaData, error: vistaError } = await supabase
+          .from('vista_visitantes_totales')
+          .select('total_personas, fecha, origen');
+
+        if (vistaError) throw vistaError;
+
+        const dia = targetDate.getDate();
+        const mesIndex = targetDate.getMonth();
+        const anio = targetDate.getFullYear();
+
+        const registrosDia = (vistaData || []).filter(item => {
+          const f = new Date(item.fecha);
+          return f.getDate() === dia && f.getMonth() === mesIndex && f.getFullYear() === anio;
+        });
+
+        const totalDia = registrosDia.reduce((acc, curr) => acc + (curr.total_personas || 0), 0);
+
+        let ventanilla = 0;
+        let eventos = 0;
+        registrosDia.forEach(item => {
+          const origen = String(item.origen || '').toLowerCase();
+          if (origen.includes('individual') || origen.includes('ventanilla') || origen.includes('registro_visitante')) {
+            ventanilla += (item.total_personas || 0);
+          } else {
+            eventos += (item.total_personas || 0);
+          }
+        });
+
+        const fechaFormateada = `${pad(dia)}/${pad(mesIndex + 1)}/${anio}`;
+        let respuestaTexto = `El número total de visitantes registrado **${labelDia} (${fechaFormateada})** es de **${totalDia}** personas.\n\n`;
+        respuestaTexto += `**Desglose de visitas:**\n`;
+        respuestaTexto += `- 🎫 **Ventanilla (individuales)**: **${ventanilla}** visitantes\n`;
+        respuestaTexto += `- 🎭 **Eventos / Grupos**: **${eventos}** visitantes\n\n`;
+        respuestaTexto += `*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}`,
+            tipo: 'pie',
+            titulo: `Visitas del Día (${fechaFormateada})`,
+            subtitulo: `Total: ${totalDia} visitantes`,
+            datos: [
+              { name: 'Ventanilla', value: ventanilla },
+              { name: 'Eventos/Grupos', value: eventos }
+            ],
+            claves: ['value'],
+            claveX: 'name',
+            colores: ['#3b82f6', '#f59e0b']
+          }
+        ];
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en el interceptor de visitantes por día:', dbErr);
+      }
+    }
+
+    // 5. INTERCEPTOR: VISITANTES DEL MES (EVOLUCIÓN MENSUAL + DESGLOSE SEMANAL)
+    if (tieneMes && tieneVisitantes) {
+      try {
+        let totalDias = 0;
+        if (targetMonthIndex === currentMonthIndex && targetYear === currentYear) {
+          totalDias = ahora.getDate();
+        } else {
+          totalDias = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+        }
+
+        const { data: vistaData, error: vistaError } = await supabase
+          .from('vista_visitantes_totales')
+          .select('total_personas, fecha');
+
+        if (vistaError) throw vistaError;
+
+        const registrosMes = (vistaData || []).filter(item => {
+          const f = new Date(item.fecha);
+          return f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex;
+        });
+
+        const totalMes = registrosMes.reduce((acc, curr) => acc + (curr.total_personas || 0), 0);
+
+        const datosEvolucion: { dia: string; total: number }[] = [];
+        for (let d = 1; d <= totalDias; d++) {
+          datosEvolucion.push({
+            dia: `Día ${d}`,
+            total: 0
+          });
+        }
+
+        registrosMes.forEach(item => {
+          const f = new Date(item.fecha);
+          const d = f.getDate();
+          if (d >= 1 && d <= totalDias) {
+            datosEvolucion[d - 1].total += (item.total_personas || 0);
+          }
+        });
+
+        let sem1 = 0, sem2 = 0, sem3 = 0, sem4 = 0, sem5 = 0;
+        registrosMes.forEach(item => {
+          const f = new Date(item.fecha);
+          const d = f.getDate();
+          const p = item.total_personas || 0;
+          if (d <= 7) sem1 += p;
+          else if (d <= 14) sem2 += p;
+          else if (d <= 21) sem3 += p;
+          else if (d <= 28) sem4 += p;
+          else sem5 += p;
+        });
+
+        let respuestaTexto = `Durante el mes de **${targetMesNombre} de ${targetYear}** (del 1 al ${totalDias} de ${targetMesNombre}), el museo ha registrado un total de **${totalMes.toLocaleString('es-ES')}** visitantes.\n\n`;
+        respuestaTexto += `Aquí tienes el desglose detallado de visitas por semanas:\n`;
+        respuestaTexto += `- **Semana 1 (01/${pad(targetMonthIndex + 1)} - 07/${pad(targetMonthIndex + 1)}):** **${sem1.toLocaleString('es-ES')}** visitantes\n`;
+        if (totalDias >= 8) {
+          const finSem2 = Math.min(14, totalDias);
+          respuestaTexto += `- **Semana 2 (08/${pad(targetMonthIndex + 1)} - ${pad(finSem2)}/${pad(targetMonthIndex + 1)}):** **${sem2.toLocaleString('es-ES')}** visitantes\n`;
+        }
+        if (totalDias >= 15) {
+          const finSem3 = Math.min(21, totalDias);
+          respuestaTexto += `- **Semana 3 (15/${pad(targetMonthIndex + 1)} - ${pad(finSem3)}/${pad(targetMonthIndex + 1)}):** **${sem3.toLocaleString('es-ES')}** visitantes\n`;
+        }
+        if (totalDias >= 22) {
+          const finSem4 = Math.min(28, totalDias);
+          respuestaTexto += `- **Semana 4 (22/${pad(targetMonthIndex + 1)} - ${pad(finSem4)}/${pad(targetMonthIndex + 1)}):** **${sem4.toLocaleString('es-ES')}** visitantes\n`;
+        }
+        if (totalDias >= 29) {
+          respuestaTexto += `- **Semana 5 (29/${pad(targetMonthIndex + 1)} - ${pad(totalDias)}/${pad(targetMonthIndex + 1)}):** **${sem5.toLocaleString('es-ES')}** visitantes\n`;
+        }
+        respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}`,
+            tipo: 'area',
+            titulo: `Evolución Diaria de Visitantes (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+            subtitulo: `Total acumulado: ${totalMes.toLocaleString('es-ES')} visitantes`,
+            datos: datosEvolucion,
+            claves: ['total'],
+            claveX: 'dia',
+            colores: ['#3b82f6']
+          }
+        ];
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en el interceptor de visitantes del mes:', dbErr);
+      }
+    }
+
+    // 6. INTERCEPTOR ORIGINAL: VISITANTES ANUALES O TOTAL HISTÓRICO
+    if (tieneVisitantes && (tieneAnio || tieneTotalHistorico)) {
+      try {
         const { data: vistaData, error: vistaError } = await supabase
           .from('vista_visitantes_totales')
           .select('total_personas, fecha');
@@ -235,7 +981,6 @@ export function useChatIA() {
 
         let totalAnual = 0;
         let totalHistorico = 0;
-        const currentYear = new Date().getFullYear();
 
         vistaData?.forEach(item => {
           const fecha = new Date(item.fecha);
@@ -243,41 +988,33 @@ export function useChatIA() {
           const personas = item.total_personas || 0;
 
           totalHistorico += personas;
-          if (anio === currentYear) {
+          if (anio === (tieneAnio ? targetYear : currentYear)) {
             totalAnual += personas;
           }
         });
 
-        // Construimos una respuesta súper pulida y natural basada en la pregunta exacta
         let respuestaTexto = '';
         if (tieneAnio) {
-          respuestaTexto = `Actualmente en el año **${currentYear}**, el museo ha registrado un total de **${totalAnual.toLocaleString('es-ES')}** visitantes. \n\nAdemás, si te interesa el acumulado completo, el total histórico de visitas registradas en la plataforma desde el inicio es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.`;
+          respuestaTexto = `Durante el año **${targetYear}**, el museo ha registrado un total de **${totalAnual.toLocaleString('es-ES')}** visitantes. \n\nAdemás, si te interesa el acumulado completo, el total histórico de visitas registradas en la plataforma desde el inicio es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.`;
         } else {
           respuestaTexto = `El total histórico acumulado de visitas registradas en el museo desde el inicio de los registros es de **${totalHistorico.toLocaleString('es-ES')}** visitantes.\n\nDurante el año actual (**${currentYear}**), hemos recibido un total de **${totalAnual.toLocaleString('es-ES')}** visitantes.`;
         }
 
         respuestaTexto += `\n\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
 
-        // Pequeña pausa de 600ms para simular que el asistente (mascota) está analizando, mejorando la experiencia de usuario
         await new Promise(resolve => setTimeout(resolve, 600));
-
         setMensajes(prev =>
           prev.map(m =>
             m.id === idPlaceholder
-              ? {
-                ...m,
-                texto: respuestaTexto,
-                cargando: false,
-              }
+              ? { ...m, texto: respuestaTexto, cargando: false }
               : m
           )
         );
         setIsLoading(false);
         scrollAlFinal();
-        return; // Finalizamos el flujo exitosamente sin consumir tokens del LLM ni arriesgar fallos
+        return;
       } catch (dbErr) {
         console.error('Error en el interceptor de visitantes de la IA:', dbErr);
-        // Si hay algún fallo con la base de datos local, dejamos que continúe el flujo normal hacia el LLM
       }
     }
 

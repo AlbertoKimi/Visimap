@@ -142,13 +142,13 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
   // Contenido del formulario en móvil y escritorio
   const contenidoFormulario = (
     <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
-      <div className="flex items-start justify-between mb-[var(--spacing-xs)] md:mb-[var(--spacing-sm)]">
+      <div className="flex items-start justify-between mb-4 md:mb-5">
         <div className="w-full text-center md:text-left">
           <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             <span className="md:hidden">Registro Visitantes</span>
             <span className="hidden md:inline">Registro Internacional</span>
           </h3>
-          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-0.5 opacity-80">Visitantes de todo el mundo</p>
+          <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest mt-2 opacity-80">Visitantes de todo el mundo</p>
         </div>
         {/* La X solo se muestra en escritorio */}
         <button
@@ -227,9 +227,9 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         onClose={() => setShowForm(false)}
         size="md"
         title={
-          <div>
+          <div className="pb-1.5 md:pb-2">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
-            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-1">{selectedProvince?.name}</p>
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-2">{selectedProvince?.name}</p>
           </div>
         }
       >

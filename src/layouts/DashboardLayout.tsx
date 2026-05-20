@@ -39,7 +39,7 @@ export const DashboardLayout: React.FC = () => {
     };
 
     return (
-        <SidebarProvider>
+        <SidebarProvider className="h-screen max-h-screen overflow-hidden">
             <AppSidebar />
             <SidebarInset className="flex flex-col overflow-hidden w-full">
                 <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4">
