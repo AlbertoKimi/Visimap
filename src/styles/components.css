@@ -794,18 +794,13 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   transform-box: fill-box;
   transform-origin: center;
   transform: translate(-3px, -3px) scale(1.015) !important;
-  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.25)) 
-          drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2)) 
-          drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.45)) !important;
+  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.25)) drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2)) drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.45)) !important;
   will-change: transform, filter;
   transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.15s ease, fill 0.15s ease !important;
 }
 
 .dark .provincia-elevada {
-  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.35)) 
-          drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.3)) 
-          drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.75)) 
-          drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.18)) !important;
+  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.35)) drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.3)) drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.75)) drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.18)) !important;
 }
 
 
@@ -828,6 +823,7 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 /* ========================================================================== */
 
 @media (max-width: 768px) {
+
   /* Evitar zoom automático al enfocar inputs/textareas/selects en iOS Safari */
   input,
   textarea,
@@ -839,15 +835,18 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 }
 
 @media (max-width: 640px) {
+
   /* Establecer un padding moderado en el contenedor principal */
   #dashboard-scroll-container {
-    padding: 0.5rem !important; /* 8px de padding */
+    padding: 0.5rem !important;
+    /* 8px de padding */
   }
 
   /* Reducir padding de contenedores de las páginas para sumar un margen equilibrado (total de 16px) */
   #dashboard-scroll-container .container,
-  #dashboard-scroll-container > .container {
-    padding-left: 0.5rem !important; /* 8px a los lados */
+  #dashboard-scroll-container>.container {
+    padding-left: 0.5rem !important;
+    /* 8px a los lados */
     padding-right: 0.5rem !important;
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
@@ -856,11 +855,14 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   /* Ajustar para pantallas muy estrechas (como 320px) manteniendo un margen limpio de 12px en total */
   @media (max-width: 340px) {
     #dashboard-scroll-container {
-      padding: 0.375rem !important; /* 6px */
+      padding: 0.375rem !important;
+      /* 6px */
     }
+
     #dashboard-scroll-container .container,
-    #dashboard-scroll-container > .container {
-      padding-left: 0.375rem !important; /* 6px a los lados */
+    #dashboard-scroll-container>.container {
+      padding-left: 0.375rem !important;
+      /* 6px a los lados */
       padding-right: 0.375rem !important;
       padding-top: 0.75rem !important;
       padding-bottom: 0.75rem !important;
@@ -873,15 +875,17 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   }
 
   /* ── TablaGenerica en móvil ────────────────────────────────────────────── */
-  
+
   /* Reducir padding de tbody en móvil */
   tbody.flex.flex-col {
-    padding: 0.5rem !important; /* p-2 */
+    padding: 0.5rem !important;
+    /* p-2 */
   }
 
   /* Reducir padding interno de cada fila/tarjeta en móvil */
   tbody .tabla-fila-alterna {
-    padding: 0.75rem !important; /* p-3 */
+    padding: 0.75rem !important;
+    /* p-3 */
     margin-bottom: 0.5rem !important;
   }
 
@@ -891,7 +895,7 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     padding-bottom: 0.375rem !important;
     border-bottom: 1px solid rgba(226, 232, 240, 0.08) !important;
   }
-  
+
   .dark tbody .tabla-fila-alterna td {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
   }
@@ -902,7 +906,7 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   }
 
   /* ── Chat del Asistente en móvil ───────────────────────────────────────── */
-  
+
   /* Ampliar ancho de burbujas en móvil para evitar efecto "estrujado" */
   .chat-burbuja-contenido {
     max-width: 90% !important;
@@ -917,12 +921,14 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
   /* Reducir el padding de la zona de mensajes del asistente */
   .chat-mensajes-area {
-    padding: 0.75rem !important; /* 12px */
+    padding: 0.75rem !important;
+    /* 12px */
   }
 
   @media (max-width: 340px) {
     .chat-mensajes-area {
-      padding: 0.5rem !important; /* 8px */
+      padding: 0.5rem !important;
+      /* 8px */
     }
   }
 
@@ -943,4 +949,4 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     padding-top: 0.25rem !important;
     padding-bottom: 0.25rem !important;
   }
-}
+}
