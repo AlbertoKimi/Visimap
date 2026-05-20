@@ -83,7 +83,7 @@ export const Notas: React.FC = () => {
   const notasFinalizadas = notas.filter(n => n.estado === 'finalizada');
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="container mx-auto p-4 sm:p-8 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
