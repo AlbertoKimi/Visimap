@@ -821,5 +821,126 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
 .historial-desgloses {
   @apply flex flex-col gap-6;
-
 }
+
+/* ========================================================================== */
+/*  Ajustes y Optimizaciones para Dispositivos Móviles (Resoluciones 320px - 425px) */
+/* ========================================================================== */
+
+@media (max-width: 768px) {
+  /* Evitar zoom automático al enfocar inputs/textareas/selects en iOS Safari */
+  input,
+  textarea,
+  select,
+  .input-style-comun,
+  .chat-input-textarea {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Establecer un padding moderado en el contenedor principal */
+  #dashboard-scroll-container {
+    padding: 0.5rem !important; /* 8px de padding */
+  }
+
+  /* Reducir padding de contenedores de las páginas para sumar un margen equilibrado (total de 16px) */
+  #dashboard-scroll-container .container,
+  #dashboard-scroll-container > .container {
+    padding-left: 0.5rem !important; /* 8px a los lados */
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Ajustar para pantallas muy estrechas (como 320px) manteniendo un margen limpio de 12px en total */
+  @media (max-width: 340px) {
+    #dashboard-scroll-container {
+      padding: 0.375rem !important; /* 6px */
+    }
+    #dashboard-scroll-container .container,
+    #dashboard-scroll-container > .container {
+      padding-left: 0.375rem !important; /* 6px a los lados */
+      padding-right: 0.375rem !important;
+      padding-top: 0.75rem !important;
+      padding-bottom: 0.75rem !important;
+    }
+  }
+
+  /* Reducir los radios de borde de 2.5rem (40px) a 1rem (16px) en móvil */
+  .rounded-\[2\.5rem\] {
+    border-radius: 1rem !important;
+  }
+
+  /* ── TablaGenerica en móvil ────────────────────────────────────────────── */
+  
+  /* Reducir padding de tbody en móvil */
+  tbody.flex.flex-col {
+    padding: 0.5rem !important; /* p-2 */
+  }
+
+  /* Reducir padding interno de cada fila/tarjeta en móvil */
+  tbody .tabla-fila-alterna {
+    padding: 0.75rem !important; /* p-3 */
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Reducir espaciado interno de las celdas en el modo colapsado */
+  tbody .tabla-fila-alterna td {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.08) !important;
+  }
+  
+  .dark tbody .tabla-fila-alterna td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  tbody .tabla-fila-alterna td:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0px !important;
+  }
+
+  /* ── Chat del Asistente en móvil ───────────────────────────────────────── */
+  
+  /* Ampliar ancho de burbujas en móvil para evitar efecto "estrujado" */
+  .chat-burbuja-contenido {
+    max-width: 90% !important;
+  }
+
+  @media (max-width: 340px) {
+    .chat-burbuja-contenido {
+      max-width: 94% !important;
+      width: 100%;
+    }
+  }
+
+  /* Reducir el padding de la zona de mensajes del asistente */
+  .chat-mensajes-area {
+    padding: 0.75rem !important; /* 12px */
+  }
+
+  @media (max-width: 340px) {
+    .chat-mensajes-area {
+      padding: 0.5rem !important; /* 8px */
+    }
+  }
+
+  /* Garantizar que el gráfico quepa en resoluciones pequeñas sin desbordar */
+  .chat-grafico-wrapper {
+    min-width: 250px !important;
+  }
+
+  /* Hacer la fila de sugerencias más compacta */
+  .chat-sugerencias-fila {
+    gap: 0.375rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .chat-sugerencia-pill {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+}
