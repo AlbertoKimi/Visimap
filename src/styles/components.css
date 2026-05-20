@@ -832,6 +832,14 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   .chat-input-textarea {
     font-size: 16px !important;
   }
+
+  /* Evitar desplazamiento/scroll a nivel de ventana en iOS */
+  html, body {
+    position: fixed !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 @media (max-width: 640px) {
@@ -948,5 +956,32 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     padding-right: 0.5rem !important;
     padding-top: 0.25rem !important;
     padding-bottom: 0.25rem !important;
+  }
+
+  /* Hacer los botones del panel y modales más compactos en móvil */
+  #dashboard-scroll-container button,
+  .fixed button,
+  #dashboard-scroll-container .container button {
+    padding-top: 0.5rem !important; /* py-2 */
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Reducir altura fija de botones grandes (como h-12) en móviles */
+  #dashboard-scroll-container button.h-12,
+  .fixed button.h-12,
+  #dashboard-scroll-container .h-12,
+  .fixed .h-12 {
+    height: 2.5rem !important; /* 40px en lugar de 48px */
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+
+  #dashboard-scroll-container button.h-10,
+  .fixed button.h-10,
+  #dashboard-scroll-container .h-10,
+  .fixed .h-10 {
+    height: 2.25rem !important; /* 36px en lugar de 40px */
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
   }
 }

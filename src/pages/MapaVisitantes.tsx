@@ -193,7 +193,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
       </AnimatePresence>
 
       {/* Vista de Formulario en MÓVIL */}
-      <div className="md:hidden w-full h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 z-40 flex justify-center">
+      <div className="md:hidden w-full overflow-y-auto bg-slate-50 dark:bg-slate-950 z-40 flex justify-center" style={{ height: 'calc(100dvh - 4rem)' }}>
         <div className="w-full max-w-[400px] bg-white dark:bg-slate-900 min-h-full shadow-2xl overflow-hidden">
           {contenidoFormulario}
         </div>
