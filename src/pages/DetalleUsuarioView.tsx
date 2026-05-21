@@ -85,7 +85,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
   }, [fetchStats, user.id]);
 
