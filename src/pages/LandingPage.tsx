@@ -107,6 +107,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               <div
                 role="button"
                 tabIndex={0}
+                aria-label="Ir al inicio"
                 onClick={scrollToTop}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -535,6 +536,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <div
                   role="button"
                   tabIndex={0}
+                  aria-label="Ir al inicio"
                   onClick={scrollToTop}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
