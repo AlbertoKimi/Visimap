@@ -58,11 +58,11 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
   const handleCerrarNotificacion = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return;
-    setNotificacion({ ...notificacion, open: false });
+    setNotificacion(prev => ({ ...prev, open: false }));
   };
 
   const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info' = 'success') => {
-    setNotificacion({ open: true, mensaje, tipo });
+    setNotificacion(prev => ({ ...prev, open: true, mensaje, tipo }));
   };
 
   const fetchProfiles = async (showLoading = true) => {
@@ -106,11 +106,12 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
       const currentStatus = user.active !== false;
       const newStatus = !currentStatus;
       
-      setConfirmacion({
+      setConfirmacion(prev => ({
+        ...prev,
         isOpen: true,
         user,
         newStatus
-      });
+      }));
       return;
     }
 
@@ -205,9 +206,9 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Equipo de Trabajo</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Equipo de Trabajo</h1>
           <p className="page-subtitle">
             Gestiona los permisos y el personal del museo
           </p>
@@ -215,9 +216,9 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
         <Button
           onClick={onAddUser}
-          className="bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium h-10 px-4 w-full sm:w-auto"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-medium h-10 px-4 w-full sm:w-auto"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="size-4 mr-2" />
           <span className="text-sm">Añadir Trabajador</span>
         </Button>
       </div>
@@ -228,7 +229,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
         size="md"
         title={
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Nuevo Trabajador</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Nuevo Trabajador</h3>
             <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Registro de personal</p>
           </div>
         }
@@ -244,8 +245,8 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-slate-400">
-              <Loader2 className="w-8 h-8 animate-spin mb-2" />
-              <p>Cargando equipo...</p>
+              <Loader2 className="size-8 animate-spin mb-2" />
+              <p>Cargando equipo…</p>
             </div>
           ) : error ? (
             <div className="p-12 text-center text-red-500 bg-red-50">
@@ -294,7 +295,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
       <ModalConfirmacion
         isOpen={confirmacion.isOpen}
-        onClose={() => setConfirmacion({ ...confirmacion, isOpen: false })}
+        onClose={() => setConfirmacion(prev => ({ ...prev, isOpen: false }))}
         onConfirm={() => {
           if (confirmacion.user) {
             handleToggleUserStatus(confirmacion.user, confirmacion.newStatus);

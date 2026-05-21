@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
 import { formatearFecha } from '@/utils/utils';
 import { TablaGenerica } from '@/components/ui/TablaGenerica';
@@ -65,8 +65,8 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       render: (reg) => (
         <div className="flex items-center gap-2">
           {reg.evento?.perfil?.avatar_url && (
-            <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
-              <img src={reg.evento.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
+            <div className="size-7 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
+              <img src={reg.evento.perfil.avatar_url} alt="" className="size-full object-cover" />
             </div>
           )}
           <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
@@ -82,14 +82,14 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
         <div className="flex justify-end gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(reg); }}
-            className="p-1.5 lg:p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-indigo-200 dark:hover:shadow-none active:scale-95"
+            className="p-1.5 lg:p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-xl transition-all shadow-sm active:scale-95"
             title="Modificar"
           >
             <Edit3 size={16} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(reg.id_grupo); }}
-            className="p-1.5 lg:p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white rounded-xl transition-all shadow-sm hover:shadow-red-200 dark:hover:shadow-none active:scale-95"
+            className="p-1.5 lg:p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:text-red-700 dark:hover:text-red-300 rounded-xl transition-all shadow-sm active:scale-95"
             title="Eliminar"
           >
             <Trash2 size={16} />

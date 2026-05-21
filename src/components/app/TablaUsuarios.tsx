@@ -21,10 +21,11 @@ const ActionsCell: React.FC<{
   onAction: (action: string, profile: Perfil) => void;
   currentUserId?: string;
 }> = ({ profile, onAction, currentUserId }) => {
-  // Si este perfil es el usuario conectado, no mostramos acciones
-  if (profile.id === currentUserId) return null;
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  if (profile.id === currentUserId) return null;
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -40,10 +41,10 @@ const ActionsCell: React.FC<{
     <div className="flex justify-end">
       <button
         onClick={handleClick}
-        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+        className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
         data-state={open ? 'open' : 'closed'}
       >
-        <MoreVertical className="w-5 h-5" />
+        <MoreVertical className="size-5" />
       </button>
 
       <Menu
@@ -129,17 +130,25 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         const initial = displayName.charAt(0).toUpperCase();
         return (
           <div
-            className="flex items-center gap-3 cursor-pointer"
+            role="button"
+            tabIndex={0}
+            className="flex items-center gap-3 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-0.5"
             onClick={() => onAction('view', profile)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onAction('view', profile);
+              }
+            }}
           >
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
                 alt={displayName}
-                className="w-9 h-9 rounded-full object-cover border border-white dark:border-slate-700 shadow-sm flex-shrink-0"
+                className="size-9 rounded-full object-cover border border-white dark:border-slate-700 shadow-sm flex-shrink-0"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold border border-white dark:border-slate-700 shadow-sm flex-shrink-0">
+              <div className="size-9 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-bold border border-white dark:border-slate-700 shadow-sm flex-shrink-0">
                 {initial}
               </div>
             )}
@@ -179,12 +188,12 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       render: (profile) =>
         profile.active !== false ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="size-1.5 rounded-full bg-emerald-500" />
             Activo
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-900/40">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400" />
+            <span className="size-1.5 rounded-full bg-red-500 dark:bg-red-400" />
             Inactivo
           </span>
         ),

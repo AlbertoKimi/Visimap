@@ -119,7 +119,7 @@ export const Modal: React.FC<ModalProps> = ({
               <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-1 shrink-0">
                 {title ? (
                   typeof title === 'string' ? (
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
+                    <h3 className="text-xl font-semibold text-slate-800 dark:text-white tracking-tight">
                       {title}
                     </h3>
                   ) : title
@@ -127,6 +127,7 @@ export const Modal: React.FC<ModalProps> = ({
                 {showCloseButton && (
                   <button
                     onClick={onClose}
+                    aria-label="Cerrar"
                     className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 active:scale-90"
                   >
                     <X size={20} />

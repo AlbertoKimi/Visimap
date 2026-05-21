@@ -102,19 +102,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
     <LazyMotion features={loadFeatures} strict>
       <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
         <nav className="fixed top-0 w-full bg-white dark:bg-slate-950 border-b dark:border-slate-800 z-50">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto p-4">
             <div className="flex items-center justify-between">
-              <div onClick={scrollToTop} className="cursor-pointer">
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label="Ir al inicio"
+                onClick={scrollToTop}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTop();
+                  }
+                }}
+                className="cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+              >
                 <img
                   src={theme === 'dark' ? logoModoOscuroUrl : logoUrl}
                   alt="VisiMap Logo"
-                  className="w-20 h-20 object-contain transition-opacity duration-300"
+                  className="size-20 object-contain transition-opacity duration-300"
                   onError={(e: any) => {
                     e.target.style.display = 'none';
                     const parent = e.target.parentNode;
                     if (parent) {
                       const fallback = document.createElement('div');
-                      fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                      fallback.className = "size-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
                       fallback.innerText = "V";
                       parent.prepend(fallback);
                     }
@@ -125,7 +137,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <ThemeToggle />
                 <Button onClick={onGetStarted} className="btn-gradient-landing">
                   Iniciar Sesión
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </div>
@@ -139,7 +151,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <img
             src={heroPosterWebp}
             alt="Vista del Museo MUVI digitalizada con VisiMap"
-            className="absolute inset-0 w-full h-full object-cover hidden md:block"
+            className="absolute inset-0 size-full object-cover hidden md:block"
             fetchPriority="high"
             aria-hidden="true"
           />
@@ -150,7 +162,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="absolute inset-0 w-full h-full object-cover hidden md:block"
+              className="absolute inset-0 size-full object-cover hidden md:block"
               autoPlay
               loop
               muted
@@ -197,7 +209,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   className="btn-gradient-landing text-lg px-8"
                 >
                   Comenzar Ahora
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 size-5" />
                 </Button>
                 <Button
                   onClick={() => scrollToSection('museo')}
@@ -222,7 +234,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
+                <h2 className="text-4xl md:text-5xl mb-6 font-semibold dark:text-white">
                   Sobre el Museo MUVI
                 </h2>
                 <div className="space-y-4 text-gray-600 dark:text-slate-400 text-lg">
@@ -244,17 +256,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 </div>
                 <div className="mt-8 grid grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border dark:border-blue-900/30">
-                    <Users className="w-8 h-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
+                    <Users className="size-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
                     <p className="text-2xl text-blue-600 dark:text-blue-400 font-bold">+5K</p>
                     <p className="text-sm text-gray-600 dark:text-slate-400">Visitantes/año</p>
                   </div>
                   <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border dark:border-purple-900/30">
-                    <Calendar className="w-8 h-8 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
+                    <Calendar className="size-8 mx-auto mb-2 text-purple-600 dark:text-purple-400" />
                     <p className="text-2xl text-purple-600 dark:text-purple-400 font-bold">50+</p>
                     <p className="text-sm text-gray-600 dark:text-slate-400">Eventos</p>
                   </div>
                   <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border dark:border-indigo-900/30">
-                    <Globe className="w-8 h-8 mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
+                    <Globe className="size-8 mx-auto mb-2 text-indigo-600 dark:text-indigo-400" />
                     <p className="text-2xl text-indigo-600 dark:text-indigo-400 font-bold">15+</p>
                     <p className="text-sm text-gray-600 dark:text-slate-400">Países</p>
                   </div>
@@ -303,7 +315,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               transition={{ duration: 0.6 }}
               className="text-center mb-16"
             >
-              <h2 className="text-4xl md:text-5xl mb-4 font-bold dark:text-white">
+              <h2 className="text-4xl md:text-5xl mb-4 font-semibold dark:text-white">
                 Características de VisiMap
               </h2>
               <p className="text-xl text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
@@ -314,55 +326,55 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-                  icon: <BarChart3 className="w-12 h-12" />,
+                  icon: <BarChart3 className="size-12" />,
                   title: 'Dashboard en Tiempo Real',
                   description: 'Visualiza estadísticas y KPIs actualizados al instante con gráficas interactivas y métricas clave.',
                   color: 'blue'
                 },
                 {
-                  icon: <MapPin className="w-12 h-12" />,
+                  icon: <MapPin className="size-12" />,
                   title: 'Mapas Interactivos',
                   description: 'Geolocalización de visitantes con Leaflet.js para análisis de origen geográfico detallado.',
                   color: 'purple'
                 },
                 {
-                  icon: <Users className="w-12 h-12" />,
+                  icon: <Users className="size-12" />,
                   title: 'Registro Digital',
                   description: 'Captura rápida y eficiente de datos de visitantes con formularios intuitivos.',
                   color: 'indigo'
                 },
                 {
-                  icon: <Calendar className="w-12 h-12" />,
+                  icon: <Calendar className="size-12" />,
                   title: 'Gestión de Eventos',
                   description: 'Calendario completo para planificar y gestionar exposiciones y actividades del museo.',
                   color: 'pink'
                 },
                 {
-                  icon: <Shield className="w-12 h-12" />,
+                  icon: <Shield className="size-12" />,
                   title: 'Seguridad y Roles',
                   description: 'Sistema robusto con autenticación y permisos diferenciados para administradores y trabajadores.',
                   color: 'green'
                 },
                 {
-                  icon: <TrendingUp className="w-12 h-12" />,
+                  icon: <TrendingUp className="size-12" />,
                   title: 'Análisis Avanzado',
                   description: 'Informes detallados con Recharts para tomar decisiones basadas en datos reales.',
                   color: 'orange'
                 }
-              ].map((feature, index) => (
+              ].map((feature) => (
                 <m.div
-                  key={index}
+                  key={feature.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  transition={{ delay: 0.1, duration: 0.6 }}
                 >
                   <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-blue-200 dark:bg-slate-900 dark:border-slate-800 dark:hover:border-blue-900/50">
                     <CardContent className="p-6">
-                      <div className={`w-16 h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-lg flex items-center justify-center mb-4 text-${feature.color}-600 dark:text-${feature.color}-400`}>
+                      <div className={`size-16 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-lg flex items-center justify-center mb-4 text-${feature.color}-600 dark:text-${feature.color}-400`}>
                         {feature.icon}
                       </div>
-                      <h3 className="text-xl mb-3 font-bold dark:text-slate-100">{feature.title}</h3>
+                      <h3 className="text-xl mb-3 font-semibold dark:text-slate-100">{feature.title}</h3>
                       <p className="text-gray-600 dark:text-slate-400">{feature.description}</p>
                     </CardContent>
                   </Card>
@@ -398,45 +410,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
+                <h2 className="text-4xl md:text-5xl mb-6 font-semibold dark:text-white">
                   Beneficios de la Digitalización
                 </h2>
                 <div className="space-y-4">
                   {[
                     {
-                      icon: <Clock className="w-6 h-6" />,
+                      icon: <Clock className="size-6" />,
                       title: 'Ahorro de Tiempo',
                       description: 'Reduce el tiempo de registro hasta un 70% con formularios digitales optimizados.'
                     },
                     {
-                      icon: <Activity className="w-6 h-6" />,
+                      icon: <Activity className="size-6" />,
                       title: 'Datos en Tiempo Real',
                       description: 'Accede instantáneamente a estadísticas actualizadas para tomar mejores decisiones.'
                     },
                     {
-                      icon: <Globe className="w-6 h-6" />,
+                      icon: <Globe className="size-6" />,
                       title: 'Análisis Geográfico',
                       description: 'Conoce el origen de tus visitantes y adapta estrategias de marketing cultural.'
                     },
                     {
-                      icon: <CheckCircle2 className="w-6 h-6" />,
+                      icon: <CheckCircle2 className="size-6" />,
                       title: 'Trazabilidad Completa',
                       description: 'Mantén un registro histórico completo con auditoría de todas las acciones.'
                     }
-                  ].map((benefit, index) => (
+                  ].map((benefit) => (
                     <m.div
-                      key={index}
+                      key={benefit.title}
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.1, duration: 0.6 }}
+                      transition={{ duration: 0.6 }}
                       className="flex gap-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-900 transition-colors"
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
+                      <div className="flex-shrink-0 size-12 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
                         {benefit.icon}
                       </div>
                       <div>
-                        <h3 className="text-lg mb-1 font-bold dark:text-slate-100">{benefit.title}</h3>
+                        <h3 className="text-lg mb-1 font-semibold dark:text-slate-100">{benefit.title}</h3>
                         <p className="text-gray-600 dark:text-slate-400">{benefit.description}</p>
                       </div>
                     </m.div>
@@ -457,7 +469,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="text-4xl md:text-5xl mb-4 font-bold">
+              <h2 className="text-4xl md:text-5xl mb-4 font-semibold">
                 VisiMap en Números
               </h2>
               <p className="text-xl text-blue-100">
@@ -471,13 +483,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 { number: '100%', label: 'Datos digitalizados' },
                 { number: '24/7', label: 'Acceso a información' },
                 { number: '∞', label: 'Capacidad de análisis' }
-              ].map((stat, index) => (
+              ].map((stat) => (
                 <m.div
-                  key={index}
+                  key={stat.label}
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.6 }}
+                  transition={{ duration: 0.6 }}
                   className="text-center"
                 >
                   <div className="text-5xl md:text-6xl mb-2 font-bold">{stat.number}</div>
@@ -498,7 +510,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               transition={{ duration: 0.8 }}
               className="max-w-3xl mx-auto text-center"
             >
-              <h2 className="text-4xl md:text-5xl mb-6 font-bold dark:text-white">
+              <h2 className="text-4xl md:text-5xl mb-6 font-semibold dark:text-white">
                 Listo para Digitalizar tu Museo
               </h2>
               <p className="text-xl text-gray-600 dark:text-slate-400 mb-10">
@@ -510,7 +522,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 className="btn-gradient-landing text-lg px-12 py-6"
               >
                 Comenzar Ahora
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 size-5" />
               </Button>
             </m.div>
           </div>
@@ -521,17 +533,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="container mx-auto">
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <div onClick={scrollToTop} className="flex items-center gap-2 mb-4 cursor-pointer">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Ir al inicio"
+                  onClick={scrollToTop}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      scrollToTop();
+                    }
+                  }}
+                  className="flex items-center gap-2 mb-4 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+                >
                   <img
                     src={logoModoOscuroUrl}
                     alt="VisiMap Logo"
-                    className="w-20 h-20 object-contain"
+                    className="size-20 object-contain"
                     onError={(e: any) => {
                       e.target.style.display = 'none';
                       const parent = e.target.parentNode;
                       if (parent) {
                         const fallback = document.createElement('div');
-                        fallback.className = "w-16 h-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                        fallback.className = "size-16 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
                         fallback.innerText = "V";
                         parent.prepend(fallback);
                       }
@@ -544,7 +568,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </div>
 
               <div>
-                <h4 className="mb-4 font-bold">Museo MUVI</h4>
+                <h4 className="mb-4 font-semibold">Museo MUVI</h4>
                 <ul className="space-y-2 text-gray-400">
                   <li>Villafranca de los Barros</li>
                   <li>Extremadura, España</li>
@@ -562,7 +586,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </div>
 
               <div>
-                <h4 className="mb-4 font-bold">Tecnología</h4>
+                <h4 className="mb-4 font-semibold">Tecnología</h4>
                 <ul className="space-y-2 text-gray-400">
                   <li>React + Tailwind CSS</li>
                   <li>Supabase Backend</li>

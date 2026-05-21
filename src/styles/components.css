@@ -18,7 +18,11 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
 
 
-/* ─── Subtítulo de página ──────────────────────────────────────────────────── */
+/* ─── Encabezados de página ────────────────────────────────────────────────── */
+
+.page-header {
+  @apply flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-300 dark:border-neutral-800 pb-8;
+}
 
 .page-subtitle {
   color: var(--color-subtitle);
@@ -584,11 +588,13 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
 .chat-grafico-tooltip-row {
   @apply flex items-center justify-between gap-3 font-semibold mt-1;
-  color: #475569; /* slate-600 */
+  color: #475569;
+  /* slate-600 */
 }
 
 .dark .chat-grafico-tooltip-row {
-  color: #cbd5e1; /* slate-300 */
+  color: #cbd5e1;
+  /* slate-300 */
 }
 
 .chat-grafico-tooltip-dot {
@@ -864,8 +870,9 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     box-sizing: border-box !important;
   }
 
-  /* Evitar desplazamiento/scroll a nivel de ventana en iOS */
-  html, body {
+  /* Evitar desplazamiento/scroll a nivel de ventana en iOS solo en el panel de control */
+  html.dashboard-scroll-lock,
+  body.dashboard-scroll-lock {
     position: fixed !important;
     overflow: hidden !important;
     width: 100% !important;
@@ -993,16 +1000,18 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   #dashboard-scroll-container button,
   .fixed button,
   #dashboard-scroll-container .container button {
-    padding-top: 0.5rem !important; /* py-2 */
+    padding-top: 0.5rem !important;
+    /* py-2 */
     padding-bottom: 0.5rem !important;
   }
-  
+
   /* Reducir altura fija de botones grandes (como h-12) en móviles */
   #dashboard-scroll-container button.h-12,
   .fixed button.h-12,
   #dashboard-scroll-container .h-12,
   .fixed .h-12 {
-    height: 2.5rem !important; /* 40px en lugar de 48px */
+    height: 2.5rem !important;
+    /* 40px en lugar de 48px */
     padding-top: 0px !important;
     padding-bottom: 0px !important;
   }
@@ -1011,8 +1020,40 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   .fixed button.h-10,
   #dashboard-scroll-container .h-10,
   .fixed .h-10 {
-    height: 2.25rem !important; /* 36px en lugar de 40px */
+    height: 2.25rem !important;
+    /* 36px en lugar de 40px */
     padding-top: 0px !important;
     padding-bottom: 0px !important;
   }
+}
+
+/* ── Animación de borrado de tarjeta de nota */
+@keyframes fallDelete {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+    max-height: 500px;
+    transform-origin: top left;
+  }
+
+  15% {
+    transform: translateY(0) rotate(-5deg) scale(1);
+    transform-origin: top left;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(350px) rotate(-15deg) scale(0.9);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
+}
+
+.animate-delete {
+  animation: fallDelete 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+  pointer-events: none;
 }

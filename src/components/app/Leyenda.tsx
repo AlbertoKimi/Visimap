@@ -13,7 +13,7 @@ export const LeyendaColores: React.FC<LeyendaColoresProps> = ({ className }) => 
   return (
     <div className={cn("z-30 pointer-events-none select-none transition-all duration-500", className)}>
       <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-4 rounded-2xl border border-white/60 dark:border-slate-800 shadow-sm transition-colors duration-300">
-        <h4 className="text-[10px] font-black text-gray-600 dark:text-slate-400 uppercase tracking-widest mb-3 pb-1 border-b border-gray-200/50 dark:border-slate-800">
+        <h4 className="text-[10px] font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-widest mb-3 pb-1 border-b border-gray-200/50 dark:border-slate-800">
           Comunidades
         </h4>
 

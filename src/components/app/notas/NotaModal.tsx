@@ -153,7 +153,7 @@ export const NotaModal: React.FC<NotaModalProps> = ({ onClose, onNotaCreated, no
             type="button"
             onClick={() => handleSubmit()}
             disabled={isSubmitting || !titulo.trim() || !contenido.trim()}
-            className="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-200/50 dark:shadow-none disabled:opacity-50"
+            className="px-6 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-blue-200/50 dark:shadow-none disabled:opacity-50"
           >
             {isSubmitting ? 'Guardando...' : (nota ? 'Guardar' : 'Aceptar')}
           </button>

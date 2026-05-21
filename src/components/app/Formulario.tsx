@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ICONOS } from '@/constantes/iconos';
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export function Formulario({
   const [paises, setPaises] = useState<Pais[]>([]);
   const [loadingPaises, setLoadingPaises] = useState(true);
 
-  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const formErrors = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, provincia: provinciaInicial }));
@@ -89,13 +89,13 @@ export function Formulario({
   };
 
   const manejarError = (name: string, hasError: boolean) => {
-    setFormErrors(prev => ({ ...prev, [name]: hasError }));
+    formErrors.current[name] = hasError;
   };
 
   const handleSubmit = (e: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
 
-    if (Object.values(formErrors).some(v => v)) {
+    if (Object.values(formErrors.current).some(v => v)) {
       return;
     }
 
@@ -115,7 +115,7 @@ export function Formulario({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setFormData({ ...formData, tipoVisita: 'individual', numPersonas: 1 })}
+              onClick={() => setFormData(prev => ({ ...prev, tipoVisita: 'individual', numPersonas: 1 }))}
               className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'individual'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-md scale-[1.03] hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-700 hover:scale-[1.03]'
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'
@@ -128,7 +128,7 @@ export function Formulario({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setFormData({ ...formData, tipoVisita: 'grupo', numPersonas: 2 })}
+              onClick={() => setFormData(prev => ({ ...prev, tipoVisita: 'grupo', numPersonas: 2 }))}
               className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'grupo'
                 ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 shadow-md scale-[1.03] hover:bg-purple-50 dark:hover:bg-blue-900/40 hover:text-purple-700 hover:scale-[1.03]'
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'

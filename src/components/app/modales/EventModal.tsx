@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Trash2, Loader2, CheckCircle2, Plus, Edit3, X } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { supabase } from "@/database/supabase/client";
@@ -43,7 +43,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     fecha_fin: event?.fecha_fin || '',
   });
 
-  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const formErrors = useRef<Record<string, boolean>>({});
   const [editando, setEditando] = useState(isNew);
   const [guardando, setGuardando] = useState(false);
   const [errorLocal, setErrorLocal] = useState('');
@@ -129,7 +129,7 @@ export const EventModal: React.FC<EventModalProps> = ({
   };
 
   const manejarError = (name: string, hasError: boolean) => {
-    setFormErrors(prev => ({ ...prev, [name]: hasError }));
+    formErrors.current[name] = hasError;
   };
 
   const handleGuardar = async () => {
@@ -138,7 +138,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     if (!formulario.fecha_inicio || !formulario.fecha_fin) return setErrorLocal('Las fechas son obligatorias.');
     if (new Date(formulario.fecha_fin) <= new Date(formulario.fecha_inicio)) return setErrorLocal('La fecha de fin debe ser posterior a la de inicio.');
 
-    if (Object.values(formErrors).some(v => v)) {
+    if (Object.values(formErrors.current).some(v => v)) {
       return setErrorLocal('Por favor, corrige los errores en el formulario.');
     }
 
@@ -204,9 +204,9 @@ export const EventModal: React.FC<EventModalProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => setEditando(true)}
-          className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors h-7 w-7"
+          className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors size-7"
         >
-          <Edit3 className="w-4 h-4" />
+          <Edit3 className="size-4" />
         </Button>
       )}
     </div>
@@ -220,7 +220,7 @@ export const EventModal: React.FC<EventModalProps> = ({
           onClick={() => onDelete(event)}
           className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
         >
-          <Trash2 className="w-4 h-4" /> Eliminar
+          <Trash2 className="size-4" /> Eliminar
         </Button>
       )}
       <div className={`flex gap-2 flex-wrap ${!isNew ? 'ml-auto' : ''}`}>
@@ -230,7 +230,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             onClick={handleFinalizar}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors border border-emerald-100 dark:border-emerald-900/30"
           >
-            <CheckCircle2 className="w-4 h-4" /> Finalizar evento
+            <CheckCircle2 className="size-4" /> Finalizar evento
           </Button>
         )}
         {editando && !confirmarCierre && (
@@ -239,7 +239,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             disabled={guardando}
             className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-60 shadow-lg shadow-blue-200 dark:shadow-none"
           >
-            {guardando && <Loader2 className="w-4 h-4 animate-spin" />}
+            {guardando && <Loader2 className="size-4 animate-spin" />}
             {guardando ? 'Guardando...' : 'Guardar'}
           </Button>
         )}
@@ -258,7 +258,7 @@ export const EventModal: React.FC<EventModalProps> = ({
       {confirmarCierre ? (
         <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
           <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 rounded-xl p-4">
-            <h4 className="text-amber-800 dark:text-amber-400 font-bold mb-2">
+            <h4 className="text-amber-800 dark:text-amber-400 font-semibold mb-2">
               ¿Finalizar este evento?
             </h4>
             <p className="text-amber-700 dark:text-amber-500 text-xs leading-relaxed">
@@ -303,15 +303,15 @@ export const EventModal: React.FC<EventModalProps> = ({
               variant="ghost"
               onClick={handleFinalizar}
               disabled={enProcesoFinalizacion}
-              className="w-full flex items-center justify-center gap-2 px-6 py-6 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 dark:shadow-none disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 p-6 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 dark:shadow-none disabled:opacity-60"
             >
-              {enProcesoFinalizacion ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+              {enProcesoFinalizacion ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
               {enProcesoFinalizacion ? 'Confirmando...' : 'Sí, confirmar y finalizar'}
             </Button>
             <Button
               variant="ghost"
               onClick={() => { setConfirmarCierre(false); setEditando(true); }}
-              className="w-full px-6 py-6 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors border border-blue-100 dark:border-blue-900/30"
+              className="w-full p-6 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors border border-blue-100 dark:border-blue-900/30"
             >
               Modificar datos por si acaso
             </Button>
@@ -337,7 +337,7 @@ export const EventModal: React.FC<EventModalProps> = ({
               placeholder="Ej: Visita Escolar"
             />
           ) : (
-            <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 tracking-tight">{formulario.nombre_evento}</h3>
+            <h3 className="text-2xl font-semibold text-slate-800 dark:text-white mb-6 tracking-tight">{formulario.nombre_evento}</h3>
           )}
 
           <div className="space-y-5 text-sm text-slate-600 dark:text-slate-400 pt-2">
@@ -411,14 +411,14 @@ export const EventModal: React.FC<EventModalProps> = ({
                     onClick={añadirGrupo}
                     className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 transition-colors h-7"
                   >
-                    <Plus className="w-3.5 h-3.5" /> Añadir grupo
+                    <Plus className="size-3.5" /> Añadir grupo
                   </Button>
                 )}
               </div>
 
               {cargandoGrupos ? (
                 <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Cargando...
+                  <Loader2 className="size-3.5 animate-spin" /> Cargando…
                 </div>
               ) : grupos.length === 0 ? (
                 <p className="text-xs text-slate-300 dark:text-slate-600 italic">
@@ -436,7 +436,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                               onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'provincia')}
                               className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'provincia' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
-                              <img src={ICONOS.spain} className="w-3.5 h-3.5 object-contain" alt="" />
+                              <img src={ICONOS.spain} className="size-3.5 object-contain" alt="" />
                               España
                             </button>
                             <button
@@ -444,7 +444,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                               onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'pais')}
                               className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'pais' ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
-                              <img src={ICONOS.mundo} className="w-3.5 h-3.5 object-contain" alt="" />
+                              <img src={ICONOS.mundo} className="size-3.5 object-contain" alt="" />
                               Internacional
                             </button>
                           </div>
@@ -487,7 +487,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                               onClick={() => eliminarGrupo(g._key)}
                               className="text-slate-300 dark:text-slate-600 hover:text-red-400 dark:hover:text-red-500 transition-colors shrink-0 mt-6"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="size-4" />
                             </Button>
                           </div>
                         </>

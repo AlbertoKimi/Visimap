@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/Select";
@@ -28,7 +28,7 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
     email: '',
     rol: 'trabajador'
   });
-  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const formErrors = useRef<Record<string, boolean>>({});
 
   const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -36,13 +36,13 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
   };
 
   const manejarError = (name: string, hasError: boolean) => {
-    setFormErrors(prev => ({ ...prev, [name]: hasError }));
+    formErrors.current[name] = hasError;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (Object.values(formErrors).some(v => v)) {
+    if (Object.values(formErrors.current).some(v => v)) {
       mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
       return;
     }

@@ -59,17 +59,17 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
   if (isLoading || !userProfile) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-slate-400 min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin mb-2" />
-        <p>Cargando tu perfil...</p>
+        <Loader2 className="size-8 animate-spin mb-2" />
+        <p>Cargando tu perfil…</p>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Mi Perfil</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Mi Perfil</h1>
           <p className="page-subtitle">
             Administra tu información personal y visualiza tu actividad
           </p>

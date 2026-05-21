@@ -73,7 +73,7 @@ export const Notas: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="size-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -84,16 +84,16 @@ export const Notas: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
+      <div className="page-header shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
           <p className="page-subtitle">
             Gestiona tus recordatorios y tareas del museo
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all shadow-md font-medium w-full sm:w-auto"
         >
           <Plus size={18} />
           <span className="text-sm">Añadir nota</span>

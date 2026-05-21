@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CheckCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 import Input from "@/components/ui/input";
@@ -21,7 +21,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
     });
     const [username, setUsername] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+    const formErrors = useRef<Record<string, boolean>>({});
 
     const [notification, setNotification] = useState<{
         open: boolean;
@@ -56,14 +56,15 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
     const handleCloseNotification = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') return;
-        setNotification({ ...notification, open: false });
+        setNotification(prev => ({ ...prev, open: false }));
     };
 
     const manejarCambioPasswords = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPasswords({
-            ...passwords,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+        setPasswords(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const manejarCambioUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +72,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
     };
 
     const manejarError = (name: string, hasError: boolean) => {
-        setFormErrors(prev => ({ ...prev, [name]: hasError }));
+        formErrors.current[name] = hasError;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -82,7 +83,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
             return;
         }
 
-        if (Object.values(formErrors).some(v => v)) {
+        if (Object.values(formErrors.current).some(v => v)) {
             setNotification({ open: true, message: 'Por favor, cumple con los requisitos de la contraseña.', severity: 'error' });
             return;
         }
@@ -146,7 +147,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                 <img
                     src={fachadaMuviImg}
                     alt="Fachada Museo MUVI"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 size-full object-cover"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
@@ -154,9 +155,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                 <div className="relative z-10 flex flex-col h-full p-10 text-white">
 
                     {/* Bloque principal*/}
-                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                    <div className="flex-1 flex flex-col justify-center gap-6">
                         <div>
-                            <h1 className="text-5xl font-bold leading-tight mb-4">
+                            <h1 className="text-5xl font-semibold leading-tight mb-4">
                                 ¡Bienvenido<br />
                                 al equipo{session?.user?.user_metadata?.nombre ? `, ${session.user.user_metadata.nombre}` : ''}!
                             </h1>
@@ -177,10 +178,10 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                                 'Acceso completo al dashboard',
                                 'Gestión de visitantes en tiempo real',
                                 'Análisis y estadísticas avanzadas'
-                            ].map((item, idx) => (
-                                <div key={idx} className="flex items-center gap-3">
-                                    <div className="w-5 h-5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-                                        <CheckCircle className="w-3 h-3 text-green-400" />
+                            ].map((item) => (
+                                <div key={item} className="flex items-center gap-3">
+                                    <div className="size-5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                                        <CheckCircle className="size-3 text-green-400" />
                                     </div>
                                     <span className="text-white/80 text-sm font-medium">{item}</span>
                                 </div>
@@ -198,8 +199,8 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
             {/* Panel derecho: Formulario */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white dark:bg-slate-900 relative overflow-hidden transition-colors duration-300">
 
-                <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
-                <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-indigo-50 dark:bg-indigo-900/10 rounded-full blur-3xl opacity-40 pointer-events-none" />
+                <div className="absolute -top-32 -right-32 size-96 bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl opacity-60 pointer-events-none" />
+                <div className="absolute -bottom-32 -left-32 size-80 bg-indigo-50 dark:bg-indigo-900/10 rounded-full blur-3xl opacity-40 pointer-events-none" />
 
                 {/* Botón Theme Toggle */}
                 <button
@@ -213,7 +214,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                 <div className="relative z-10 w-full max-w-md space-y-8">
                     {/* Encabezado del formulario */}
                     <div className="space-y-1">
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Configura tu perfil</h2>
+                        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">Configura tu perfil</h2>
                         <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
                             Establece tu nombre de usuario y contraseña para acceder a{' '}
                             <span className="font-bold text-indigo-600 dark:text-blue-400">VisiMap</span>
@@ -263,8 +264,8 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                                    Guardando...
+                                    <div className="animate-spin rounded-full size-4 border-b-2 border-white" />
+                                    Guardando…
                                 </div>
                             ) : (
                                 <span className="flex items-center justify-center gap-2">
@@ -277,10 +278,10 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                     {/* Info seguridad */}
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-100 dark:border-blue-800/50 flex gap-3 items-start">
                         <div className="bg-blue-100 dark:bg-blue-800/50 p-1.5 rounded-lg text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0">
-                            <ShieldCheck className="w-4 h-4" />
+                            <ShieldCheck className="size-4" />
                         </div>
                         <div>
-                            <h4 className="font-bold text-blue-900 dark:text-blue-100 text-sm">Cuenta segura</h4>
+                            <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Cuenta segura</h4>
                             <p className="text-blue-700/80 dark:text-blue-400/70 text-xs mt-0.5 leading-relaxed font-medium">
                                 Tu contraseña será almacenada de forma segura siguiendo estándares modernos.
                             </p>

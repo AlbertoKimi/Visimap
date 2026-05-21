@@ -40,6 +40,23 @@ const renderEventContent = (arg: any) => {
   );
 };
 
+const handleSelectAllow = (selectInfo: any) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return selectInfo.start >= today;
+};
+
+const handleEventAllow = (dropInfo: any) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return dropInfo.start >= today;
+};
+
+const formatEventTime = (startStr: string) => {
+  const start = new Date(startStr);
+  return `${start.getHours()}:${start.getMinutes().toString().padStart(2, '0')}`;
+};
+
 
 
 /**
@@ -58,8 +75,21 @@ export const Calendario: React.FC<CalendarioProps> = ({
 }) => {
   const [vista, setVista] = useState<'mes' | 'semana' | 'dia' | 'año' | 'agenda'>('mes');
   const [fechaActual, setFechaActual] = useState(new Date());
+  const [todayStr, setTodayStr] = useState('');
+
+  React.useEffect(() => {
+    setTodayStr(new Date().toDateString());
+  }, []);
 
   const calendarRef = React.useRef<any>(null);
+
+  const handleIrAHoy = () => {
+    if (calendarRef.current && (vista === 'mes' || vista === 'año' || vista === 'agenda')) {
+      calendarRef.current.getApi().today();
+    } else {
+      setFechaActual(new Date());
+    }
+  };
 
   const diasSemana = React.useMemo(() => {
     const inicioSemana = new Date(fechaActual);
@@ -114,7 +144,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
         <div className="flex flex-col gap-4 mb-4 sm:mb-8 px-1 sm:px-2">
 
           <div className="flex justify-center w-full">
-            <h2 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight bg-slate-50 dark:bg-slate-800 px-4 sm:px-6 py-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <h2 className="text-lg sm:text-2xl font-semibold text-slate-800 dark:text-white uppercase tracking-tight bg-slate-50 dark:bg-slate-800 px-4 sm:px-6 py-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
               {fechaActual.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
             </h2>
           </div>
@@ -139,14 +169,8 @@ export const Calendario: React.FC<CalendarioProps> = ({
                 </button>
               </div>
               <button
-                onClick={() => {
-                  if (calendarRef.current && (vista === 'mes' || vista === 'año' || vista === 'agenda')) {
-                    calendarRef.current.getApi().today();
-                  } else {
-                    setFechaActual(new Date());
-                  }
-                }}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-all shadow-sm border border-blue-100 dark:border-blue-900/50"
+                onClick={handleIrAHoy}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:text-blue-700 dark:hover:text-blue-300 transition-all shadow-sm border border-blue-100 dark:border-blue-900/50 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Hoy
               </button>
@@ -168,7 +192,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
 
         {cargando && (
           <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] z-50 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" />
+            <Loader2 className="size-8 animate-spin text-blue-600 dark:text-blue-400" />
           </div>
         )}
 
@@ -191,16 +215,8 @@ export const Calendario: React.FC<CalendarioProps> = ({
             eventClick={onEventClick}
             eventClassNames={(arg: any) => arg.event.extendedProps.finalizado ? ['event-finalizado'] : []}
             eventContent={renderEventContent}
-            selectAllow={(selectInfo) => {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return selectInfo.start >= today;
-            }}
-            eventAllow={(dropInfo) => {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return dropInfo.start >= today;
-            }}
+            selectAllow={handleSelectAllow}
+            eventAllow={handleEventAllow}
 
             datesSet={(arg) => {
               if (arg.view.calendar.getDate().toDateString() !== fechaActual.toDateString()) {
@@ -231,7 +247,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
                   {(vista === 'semana' ? diasSemana : [diasSemana.find(d => d.raw.toDateString() === fechaActual.toDateString()) || diasSemana[0]]).map((diaObj) => (
                     <th key={diaObj.id} className="p-2 sm:p-3 text-center border-l border-slate-200 dark:border-slate-800">
                       <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{diaObj.label}</div>
-                      <div className={`text-sm sm:text-lg font-black ${diaObj.raw.toDateString() === new Date().toDateString() ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
+                      <div suppressHydrationWarning className={`text-sm sm:text-lg font-black ${diaObj.raw.toDateString() === todayStr ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>{diaObj.num}</div>
                     </th>
                   ))}
                 </tr>
@@ -257,18 +273,25 @@ export const Calendario: React.FC<CalendarioProps> = ({
                         <td key={diaObj.id} className="p-1 border-l border-slate-100 dark:border-slate-800 align-top">
                           <div className="flex flex-col gap-1.5 h-full">
                             {evs.map((ev) => {
-                              const start = new Date(ev.start);
                               return (
                                 <div
                                   key={ev.id}
+                                  role="button"
+                                  tabIndex={0}
                                   onClick={() => onEventClick?.({ event: { id: ev.id, title: ev.title, extendedProps: ev.extendedProps, backgroundColor: ev.backgroundColor, textColor: ev.textColor } })}
-                                  className="p-1.5 sm:p-2 rounded-lg shadow-sm border-l-4 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer relative overflow-hidden"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      onEventClick?.({ event: { id: ev.id, title: ev.title, extendedProps: ev.extendedProps, backgroundColor: ev.backgroundColor, textColor: ev.textColor } });
+                                    }
+                                  }}
+                                  className="p-1.5 sm:p-2 rounded-lg shadow-sm border-l-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer relative overflow-hidden"
                                   style={{ backgroundColor: ev.backgroundColor, color: ev.textColor, borderLeftColor: ev.color || 'transparent' }}
                                 >
                                   <div className="flex items-center gap-1">
                                     {ev.extendedProps?.finalizado && <Check size={10} strokeWidth={4} className="text-emerald-400 shrink-0" />}
-                                    <span className="text-[9px] sm:text-[10px] font-black whitespace-nowrap opacity-60">
-                                      {start.getHours()}:{start.getMinutes().toString().padStart(2, '0')}
+                                    <span suppressHydrationWarning className="text-[9px] sm:text-[10px] font-black whitespace-nowrap opacity-60">
+                                      {formatEventTime(ev.start)}
                                     </span>
                                   </div>
                                   <div className="text-[10px] sm:text-[11px] font-bold uppercase leading-tight mt-0.5 line-clamp-2">

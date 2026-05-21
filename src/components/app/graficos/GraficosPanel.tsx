@@ -24,10 +24,10 @@ const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; pa
     <div className="bg-white/90 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-800 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-4 text-sm z-50">
       {label && <p className="font-bold text-slate-800 dark:text-slate-100 mb-2 border-b border-slate-100 dark:border-slate-800 pb-1">{label}</p>}
       <div className="flex flex-col gap-1.5">
-        {payload.map((entry: { name: string; value: number; color: string }, i: number) => (
-          <div key={i} className="flex items-center justify-between gap-4 font-semibold">
+        {payload.map((entry: { name: string; value: number; color: string }) => (
+          <div key={entry.name} className="flex items-center justify-between gap-4 font-semibold">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }}></span>
+              <span className="size-2.5 rounded-full" style={{ backgroundColor: entry.color }}></span>
               <span className="text-slate-600 dark:text-slate-400">{entry.name}:</span>
             </div>
             <span className="text-slate-900 dark:text-white">{entry.value?.toLocaleString('es-ES')}</span>
@@ -41,13 +41,13 @@ const TooltipPersonalizado = ({ active, payload, label }: { active?: boolean; pa
 const LeyendaConTotal = ({ payload, total }: { payload?: { value: string | number; color?: string }[]; total: number | string }) => (
   <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium mt-4">
     {payload?.map((entry, index) => (
-      <div key={`item-${index}`} className="flex items-center gap-2 transition-opacity hover:opacity-80 cursor-default">
-        <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: entry.color }}></span>
+      <div key={`legend-${entry.value || index}`} className="flex items-center gap-2 transition-opacity hover:opacity-80 cursor-default">
+        <span className="size-3 rounded-full shadow-sm" style={{ backgroundColor: entry.color }}></span>
         <span className="text-slate-600 dark:text-slate-400">{entry.value}</span>
       </div>
     ))}
     <div className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 pl-6 ml-2">
-      <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
+      <span className="size-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span>
       <span className="text-slate-900 dark:text-slate-200 font-bold">Total: {typeof total === 'number' ? total.toLocaleString('es-ES') : total}</span>
     </div>
   </div>
@@ -179,8 +179,8 @@ export const GraficosPanel: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
 
   // Calculamos estos valores directamente en cada renderizado
   const nombreMes = getNombreMes(selectedMonth);
@@ -523,7 +523,7 @@ export const GraficosPanel: React.FC = () => {
           className="btn-secondary h-11 px-4 mb-0.5 flex items-center gap-2"
           title="Refrescar datos manualmente"
         >
-          <RefreshCw className={`w-4 h-4 ${loadingEvolucion ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`size-4 ${loadingEvolucion ? 'animate-spin' : ''}`} />
           <span>Actualizar datos</span>
         </button>
       </div>
@@ -609,7 +609,7 @@ export const GraficosPanel: React.FC = () => {
               {datosProvincias.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-slate-400">Sin datos de provincias registrados este mes</div>
               ) : (
-                <div className="w-full h-full overflow-y-auto pr-2 custom-scrollbar">
+                <div className="size-full overflow-y-auto pr-2 custom-scrollbar">
                   <ResponsiveContainer width="100%" height={Math.max(300, datosProvincias.length * 40)}>
                     <BarChart
                       data={datosProvincias}
@@ -653,7 +653,7 @@ export const GraficosPanel: React.FC = () => {
           {datosTrabajadores.length === 0 ? (
             <div className="flex items-center justify-center h-full text-slate-400">Sin actividad registrada este mes</div>
           ) : (
-            <div className="w-full h-full overflow-y-auto pr-2 overflow-x-hidden custom-scrollbar">
+            <div className="size-full overflow-y-auto pr-2 overflow-x-hidden custom-scrollbar">
               <ResponsiveContainer width="100%" height={Math.max(200, datosTrabajadores.length * 60 + 60)}>
                 <BarChart
                   data={datosTrabajadores}
@@ -747,8 +747,8 @@ export const GraficosPanel: React.FC = () => {
                       labelLine={true}
                       label={({ name, value }) => `${name}: ${value}`}
                     >
-                      {datosEventosMes.map((_, i) => (
-                        <Cell key={`cell-${i}`} fill={COLORES_PIE[i % COLORES_PIE.length]} />
+                      {datosEventosMes.map((entry, i) => (
+                        <Cell key={`cell-${entry.name}`} fill={COLORES_PIE[i % COLORES_PIE.length]} />
                       ))}
                     </Pie>
                     <Tooltip content={<TooltipPersonalizado />} />

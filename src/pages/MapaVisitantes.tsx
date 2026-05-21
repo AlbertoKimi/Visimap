@@ -48,7 +48,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
 
   const handleCerrarNotificacion = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') return;
-    setNotificacion({ ...notificacion, open: false });
+    setNotificacion(prev => ({ ...prev, open: false }));
   };
 
   const mostrarNotificacion = (mensaje: string, tipo: any = 'success') => {
@@ -144,7 +144,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
     <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
       <div className="flex items-start justify-between mb-4 md:mb-5">
         <div className="w-full text-center md:text-left">
-          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-semibold text-slate-900 dark:text-white tracking-tight leading-tight">
             <span className="md:hidden">Registro Visitantes</span>
             <span className="hidden md:inline">Registro Internacional</span>
           </h3>
@@ -155,7 +155,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
           onClick={() => setEstaAbierto(false)}
           className="hidden md:flex p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
         >
-          <X className="w-5 h-5" />
+          <X className="size-5" />
         </button>
       </div>
 
@@ -211,9 +211,9 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
           className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-l-2xl shadow-xl dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-16 group transition-all"
         >
           {estaAbierto ? (
-            <ChevronRight className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <ChevronRight className="size-6 group-hover:scale-110 transition-transform" />
           ) : (
-            <ChevronLeft className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <ChevronLeft className="size-6 group-hover:scale-110 transition-transform" />
           )}
         </button>
 
@@ -228,7 +228,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         size="md"
         title={
           <div className="pb-1.5 md:pb-2">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white leading-none">Nuevo Visitante</h3>
             <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-2">{selectedProvince?.name}</p>
           </div>
         }

@@ -54,7 +54,7 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
       onClose={onClose}
       title={
         <div className="flex items-center gap-2 w-full">
-          <Info className="w-5 h-5 text-blue-500" />
+          <Info className="size-5 text-blue-500" />
           <span className="flex-1">{title}</span>
           {onEdit && (
             <button
@@ -62,10 +62,10 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
                 onClose();
                 onEdit();
               }}
-              className="p-1.5 mr-6 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+              className="p-1.5 mr-6 rounded-lg text-slate-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
               title="Modificar registro"
             >
-              <Edit2 className="w-4 h-4" />
+              <Edit2 className="size-4" />
             </button>
           )}
         </div>
@@ -77,13 +77,13 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
         <div className="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 border border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl text-blue-600 dark:text-blue-400">
-              <img src={isMapa ? ICONOS.punto : ICONOS.calendario} className="w-6 h-6 object-contain" alt="" />
+              <img src={isMapa ? ICONOS.punto : ICONOS.calendario} className="size-6 object-contain" alt="" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                 {isMapa ? 'Provincia / Procedencia' : 'Nombre del Evento'}
               </p>
-              <h4 className="text-xl font-bold text-slate-800 dark:text-white capitalize">
+              <h4 className="text-xl font-semibold text-slate-800 dark:text-white capitalize">
                 {isMapa 
                   ? (data.provincia?.nombre_provincia || data.pais?.nombre_pais || '—') 
                   : (data.nombre_evento || data.evento?.nombre_evento || 'Evento')}
@@ -137,15 +137,15 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
             </p>
             {loading ? (
               <div className="flex items-center justify-center p-8">
-                <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                <Loader2 className="size-6 text-blue-500 animate-spin" />
               </div>
             ) : (
               <div className="grid gap-2">
                 {grupos.length > 0 ? grupos.map((g, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                  <div key={g.id_grupo || `subgrupo-${g.origen}-${idx}`} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-2 h-2 rounded-full",
+                        "size-2 rounded-full",
                         g.tipo_origen === 'provincia' ? "bg-blue-500" : "bg-purple-500"
                       )} />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">{g.origen}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { ICONOS } from "@/constantes/iconos";
 
 /**
@@ -41,9 +41,9 @@ export const ThemeToggle: React.FC = () => {
       aria-label="Cambiar tema"
     >
       {theme === "dark" ? (
-        <img src={ICONOS.sol} className="w-[26px] h-[26px] object-contain" alt="" />
+        <img src={ICONOS.sol} className="size-[26px] object-contain" alt="" />
       ) : (
-        <img src={ICONOS.luna} className="w-[26px] h-[26px] object-contain" alt="" />
+        <img src={ICONOS.luna} className="size-[26px] object-contain" alt="" />
       )}
     </button>
   );
