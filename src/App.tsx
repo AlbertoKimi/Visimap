@@ -94,8 +94,32 @@ export default function App() {
       setIsRecoveryMode(true);
     }
 
+    // Corrección para el bug de desplazamiento del viewport en iOS Safari (cierre de teclado)
+    // Cuando body es position:fixed, window.scrollY siempre es 0 — hay que usar visualViewport
+    const resetIOSViewport = () => {
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
+                    ((navigator as any).platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1);
+      if (!isIOS) return;
+      // Esperar a que el teclado se cierre completamente (~300ms en iOS)
+      setTimeout(() => {
+        // La API visualViewport es la única forma fiable de detectar y resetear el offset de iOS
+        if (window.visualViewport) {
+          const vv = window.visualViewport;
+          // Si el viewport visual está desplazado hacia arriba, lo forzamos a volver
+          if (vv.offsetTop !== 0 || vv.pageTop !== 0) {
+            window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+          }
+        } else {
+          window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        }
+      }, 300);
+    };
+    const handleFocusOut = () => resetIOSViewport();
+    document.addEventListener('focusout', handleFocusOut);
+
     return () => {
       subscription.unsubscribe();
+      document.removeEventListener('focusout', handleFocusOut);
     };
   }, []);
 

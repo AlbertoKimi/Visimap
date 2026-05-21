@@ -567,23 +567,40 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 }
 
 .chat-grafico-tooltip {
-  @apply bg-white/90 backdrop-blur-md border border-slate-200/70 rounded-xl shadow-lg p-3 text-xs z-50;
+  @apply bg-white/95 backdrop-blur-md border border-slate-200/70 rounded-xl shadow-lg p-3 text-xs z-50;
+}
+
+.dark .chat-grafico-tooltip {
+  @apply bg-slate-800/95 border-slate-700/70 shadow-2xl;
 }
 
 .chat-grafico-tooltip-label {
   @apply font-bold text-slate-800 mb-1.5 border-b border-slate-100 pb-1;
 }
 
+.dark .chat-grafico-tooltip-label {
+  @apply text-white border-slate-700;
+}
+
 .chat-grafico-tooltip-row {
   @apply flex items-center justify-between gap-3 font-semibold mt-1;
+  color: #475569; /* slate-600 */
+}
+
+.dark .chat-grafico-tooltip-row {
+  color: #cbd5e1; /* slate-300 */
 }
 
 .chat-grafico-tooltip-dot {
-  @apply w-2 h-2 rounded-full inline-block mr-1;
+  @apply w-2 h-2 rounded-full inline-block mr-1 shrink-0;
 }
 
 .chat-grafico-tooltip-value {
-  @apply text-slate-900;
+  @apply text-slate-900 font-bold;
+}
+
+.dark .chat-grafico-tooltip-value {
+  @apply text-white;
 }
 
 /* ── Typing dots ─────────────────────────────────────────────────────────── */
@@ -794,18 +811,13 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   transform-box: fill-box;
   transform-origin: center;
   transform: translate(-3px, -3px) scale(1.015) !important;
-  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.25)) 
-          drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2)) 
-          drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.45)) !important;
+  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.25)) drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2)) drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.45)) !important;
   will-change: transform, filter;
   transition: transform 0.15s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.15s ease, fill 0.15s ease !important;
 }
 
 .dark .provincia-elevada {
-  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.35)) 
-          drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.3)) 
-          drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.75)) 
-          drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.18)) !important;
+  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.35)) drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.3)) drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.75)) drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.18)) !important;
 }
 
 
@@ -821,5 +833,186 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
 .historial-desgloses {
   @apply flex flex-col gap-6;
+}
 
+/* ========================================================================== */
+/*  Ajustes y Optimizaciones para Dispositivos Móviles (Resoluciones 320px - 425px) */
+/* ========================================================================== */
+
+@media (max-width: 768px) {
+
+  /* Evitar zoom automático al enfocar inputs/textareas/selects en iOS Safari */
+  input,
+  textarea,
+  select,
+  .input-style-comun,
+  .chat-input-textarea {
+    font-size: 16px !important;
+  }
+
+  /* Evitar que inputs de fecha y hora nativos desborden la pantalla en Safari/iOS */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Evitar desplazamiento/scroll a nivel de ventana en iOS */
+  html, body {
+    position: fixed !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+
+  /* Establecer un padding moderado en el contenedor principal */
+  #dashboard-scroll-container {
+    padding: 0.5rem !important;
+    /* 8px de padding */
+  }
+
+  /* Reducir padding de contenedores de las páginas para sumar un margen equilibrado (total de 16px) */
+  #dashboard-scroll-container .container,
+  #dashboard-scroll-container>.container {
+    padding-left: 0.5rem !important;
+    /* 8px a los lados */
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Ajustar para pantallas muy estrechas (como 320px) manteniendo un margen limpio de 12px en total */
+  @media (max-width: 340px) {
+    #dashboard-scroll-container {
+      padding: 0.375rem !important;
+      /* 6px */
+    }
+
+    #dashboard-scroll-container .container,
+    #dashboard-scroll-container>.container {
+      padding-left: 0.375rem !important;
+      /* 6px a los lados */
+      padding-right: 0.375rem !important;
+      padding-top: 0.75rem !important;
+      padding-bottom: 0.75rem !important;
+    }
+  }
+
+  /* Reducir los radios de borde de 2.5rem (40px) a 1rem (16px) en móvil */
+  .rounded-\[2\.5rem\] {
+    border-radius: 1rem !important;
+  }
+
+  /* ── TablaGenerica en móvil ────────────────────────────────────────────── */
+
+  /* Reducir padding de tbody en móvil */
+  tbody.flex.flex-col {
+    padding: 0.5rem !important;
+    /* p-2 */
+  }
+
+  /* Reducir padding interno de cada fila/tarjeta en móvil */
+  tbody .tabla-fila-alterna {
+    padding: 0.75rem !important;
+    /* p-3 */
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Reducir espaciado interno de las celdas en el modo colapsado */
+  tbody .tabla-fila-alterna td {
+    padding-top: 0.375rem !important;
+    padding-bottom: 0.375rem !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.08) !important;
+  }
+
+  .dark tbody .tabla-fila-alterna td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  tbody .tabla-fila-alterna td:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0px !important;
+  }
+
+  /* ── Chat del Asistente en móvil ───────────────────────────────────────── */
+
+  /* Ampliar ancho de burbujas en móvil para evitar efecto "estrujado" */
+  .chat-burbuja-contenido {
+    max-width: 90% !important;
+  }
+
+  @media (max-width: 340px) {
+    .chat-burbuja-contenido {
+      max-width: 94% !important;
+      width: 100%;
+    }
+  }
+
+  /* Reducir el padding de la zona de mensajes del asistente */
+  .chat-mensajes-area {
+    padding: 0.75rem !important;
+    /* 12px */
+  }
+
+  @media (max-width: 340px) {
+    .chat-mensajes-area {
+      padding: 0.5rem !important;
+      /* 8px */
+    }
+  }
+
+  /* Garantizar que el gráfico quepa en resoluciones pequeñas sin desbordar */
+  .chat-grafico-wrapper {
+    min-width: 250px !important;
+  }
+
+  /* Hacer la fila de sugerencias más compacta */
+  .chat-sugerencias-fila {
+    gap: 0.375rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .chat-sugerencia-pill {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  /* Hacer los botones del panel y modales más compactos en móvil */
+  #dashboard-scroll-container button,
+  .fixed button,
+  #dashboard-scroll-container .container button {
+    padding-top: 0.5rem !important; /* py-2 */
+    padding-bottom: 0.5rem !important;
+  }
+  
+  /* Reducir altura fija de botones grandes (como h-12) en móviles */
+  #dashboard-scroll-container button.h-12,
+  .fixed button.h-12,
+  #dashboard-scroll-container .h-12,
+  .fixed .h-12 {
+    height: 2.5rem !important; /* 40px en lugar de 48px */
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+
+  #dashboard-scroll-container button.h-10,
+  .fixed button.h-10,
+  #dashboard-scroll-container .h-10,
+  .fixed .h-10 {
+    height: 2.25rem !important; /* 36px en lugar de 40px */
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
 }

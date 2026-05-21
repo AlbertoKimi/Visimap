@@ -83,7 +83,7 @@ export const Notas: React.FC = () => {
   const notasFinalizadas = notas.filter(n => n.estado === 'finalizada');
 
   return (
-    <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="container mx-auto p-4 sm:p-8 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
@@ -93,7 +93,7 @@ export const Notas: React.FC = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium w-full sm:w-auto"
         >
           <Plus size={18} />
           <span className="text-sm">Añadir nota</span>

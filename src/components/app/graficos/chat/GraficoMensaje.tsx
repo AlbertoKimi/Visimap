@@ -74,17 +74,26 @@ export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
     [grafico.colores]
   );
 
+  // Detectar modo oscuro leyendo la clase del elemento raíz
+  const isDark = document.documentElement.classList.contains('dark');
+
+  // Paleta de colores adaptativa según el tema
+  const gridColor    = isDark ? '#334155' : '#e2e8f0'; // slate-700 / slate-200
+  const tickColor    = isDark ? '#94a3b8' : '#64748b'; // slate-400 / slate-500
+  const cursorFill   = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+  const gradientOpacityEnd = isDark ? 0.02 : 0.05;
+
   const renderGrafico = () => {
     switch (grafico.tipo) {
       case 'bar':
         return (
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={grafico.datos} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-neutral-200)" />
-              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} dx={-5} />
-              <Tooltip content={<TooltipIA />} cursor={{ fill: 'var(--color-neutral-50)' }} />
-              <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} dx={-5} />
+              <Tooltip content={<TooltipIA />} cursor={{ fill: cursorFill }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: tickColor }} />
               {grafico.claves.map((clave, i) => (
                 <Bar key={clave} dataKey={clave} fill={colores[i % colores.length]} radius={[4, 4, 0, 0]} barSize={28} />
               ))}
@@ -99,16 +108,16 @@ export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
               <defs>
                 {grafico.claves.map((clave, i) => (
                   <linearGradient key={clave} id={`grad-${clave}-${grafico.id}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={colores[i % colores.length]} stopOpacity={0.7} />
-                    <stop offset="95%" stopColor={colores[i % colores.length]} stopOpacity={0.05} />
+                    <stop offset="5%"  stopColor={colores[i % colores.length]} stopOpacity={0.7} />
+                    <stop offset="95%" stopColor={colores[i % colores.length]} stopOpacity={gradientOpacityEnd} />
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-neutral-200)" />
-              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} dx={-5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} dx={-5} />
               <Tooltip content={<TooltipIA />} />
-              <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: tickColor }} />
               {grafico.claves.map((clave, i) => (
                 <Area
                   key={clave}
@@ -128,11 +137,11 @@ export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
         return (
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={grafico.datos} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-neutral-200)" />
-              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: 'var(--color-neutral-500)' }} axisLine={false} tickLine={false} dx={-5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+              <XAxis dataKey={grafico.claveX} tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: tickColor }} axisLine={false} tickLine={false} dx={-5} />
               <Tooltip content={<TooltipIA />} />
-              <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: tickColor }} />
               {grafico.claves.map((clave, i) => (
                 <Line
                   key={clave}
@@ -168,7 +177,7 @@ export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
                 ))}
               </Pie>
               <Tooltip content={<TooltipIA />} />
-              <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
+              <Legend iconType="circle" wrapperStyle={{ fontSize: 12, color: tickColor }} />
             </PieChart>
           </ResponsiveContainer>
         );

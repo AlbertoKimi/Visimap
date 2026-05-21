@@ -215,7 +215,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
         <Button
           onClick={onAddUser}
-          className="bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium h-10 px-4"
+          className="bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium h-10 px-4 w-full sm:w-auto"
         >
           <Plus className="w-4 h-4 mr-2" />
           <span className="text-sm">Añadir Trabajador</span>

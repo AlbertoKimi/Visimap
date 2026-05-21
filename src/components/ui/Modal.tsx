@@ -27,17 +27,64 @@ export const Modal: React.FC<ModalProps> = ({
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
 
-      // Cuando el modal está abierta
+      // Bloquear scroll en el contenedor principal del dashboard si existe
+      const scrollContainer = document.getElementById('dashboard-scroll-container');
+      let originalScrollContainerOverflow = '';
+      if (scrollContainer) {
+        originalScrollContainerOverflow = scrollContainer.style.overflow;
+        scrollContainer.style.overflow = 'hidden';
+      }
+
+      // Evitar que el gesto de arrastrar (touchmove) en iOS haga scroll en el fondo
+      const handleTouchMove = (e: TouchEvent) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.modal-scroll-content')) {
+          if (e.cancelable) e.preventDefault();
+        }
+      };
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
       const openModals = parseInt(document.body.getAttribute('data-modal-open') || '0', 10);
       document.body.setAttribute('data-modal-open', (openModals + 1).toString());
 
       return () => {
+        document.removeEventListener('touchmove', handleTouchMove);
         const remainingModals = parseInt(document.body.getAttribute('data-modal-open') || '1', 10) - 1;
         document.body.setAttribute('data-modal-open', remainingModals.toString());
 
         if (remainingModals <= 0) {
-          document.body.style.overflow = originalOverflow || 'unset';
+          document.body.style.overflow = originalOverflow || '';
+          if (scrollContainer) {
+            scrollContainer.style.overflow = originalScrollContainerOverflow || 'auto';
+          }
           document.body.removeAttribute('data-modal-open');
+
+          // CLAVE: hacer blur() ANTES de que React desmonte el input.
+          // Si no, Safari nunca dispara focusout y el viewport queda desplazado.
+          const activeEl = document.activeElement as HTMLElement | null;
+          if (activeEl && typeof activeEl.blur === 'function') {
+            activeEl.blur();
+          }
+
+          // Reset del visual viewport de iOS con la API nativa (la única fiable con position:fixed en body)
+          const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+            ((navigator as any).platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1);
+          if (isIOS) {
+            // Intentar inmediatamente y a los 300ms (cuando el teclado se ha cerrado del todo)
+            const doReset = () => {
+              if (window.visualViewport) {
+                const vv = window.visualViewport;
+                if (vv.offsetTop !== 0 || vv.pageTop !== 0) {
+                  window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+                }
+              } else {
+                window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+              }
+            };
+            doReset();
+            setTimeout(doReset, 150);
+            setTimeout(doReset, 350);
+          }
         }
       };
     }
@@ -69,7 +116,7 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {/* Header */}
             {(title || showCloseButton) && (
-              <div className="flex items-center justify-between px-6 pt-5 pb-1 shrink-0">
+              <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-1 shrink-0">
                 {title ? (
                   typeof title === 'string' ? (
                     <h3 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
@@ -89,13 +136,13 @@ export const Modal: React.FC<ModalProps> = ({
             )}
 
             {/* Cuerpo */}
-            <div className="px-6 pb-5 pt-1 overflow-y-auto flex-1 custom-scrollbar">
+            <div className="modal-scroll-content px-4 sm:px-6 pb-5 pt-1 overflow-y-auto flex-1 custom-scrollbar">
               {children}
             </div>
 
             {/* Footer */}
             {footer && (
-              <div className="p-6 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-center gap-3">
+              <div className="p-4 sm:p-6 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-center gap-3">
                 {footer}
               </div>
             )}
