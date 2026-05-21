@@ -250,7 +250,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               {mode === 'view' ? (
                 <Button
                   onClick={handleEdit}
-                  className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-2 sm:px-6 transition-all active:scale-95 w-[165px] sm:w-[180px]"
+                  className="bg-slate-900 dark:bg-gradient-to-r dark:from-blue-600 dark:to-purple-600 hover:bg-slate-800 dark:hover:opacity-90 text-white shadow-lg px-2 sm:px-6 transition-all active:scale-95 w-[165px] sm:w-[180px]"
                 >
                   <Edit2 size={16} /> Editar mi Perfil
                 </Button>
@@ -258,7 +258,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                 <Button
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg px-2 sm:px-6 w-[165px] sm:w-[180px]"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white shadow-lg px-2 sm:px-6 w-[165px] sm:w-[180px]"
                 >
                   {isSaving ? 'Guardando...' : <><Save size={16} /> Guardar Cambios</>}
                 </Button>
@@ -276,7 +276,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   {user.active === false ? <CheckCircle2 size={18} className="mr-2" /> : <XCircle size={18} className="mr-2" />}
                   {user.active === false ? 'Activar Usuario' : 'Desactivar Usuario'}
                 </Button>
-                <Button onClick={handleEdit} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-6 transition-all active:scale-95">
+                <Button onClick={handleEdit} className="bg-slate-900 dark:bg-gradient-to-r dark:from-blue-600 dark:to-purple-600 hover:bg-slate-800 dark:hover:opacity-90 text-white shadow-lg px-6 transition-all active:scale-95">
                   <Edit2 size={18} className="mr-2" /> Editar Perfil
                 </Button>
               </>
@@ -285,7 +285,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                 <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                   <X size={18} className="mr-2" /> Cancelar
                 </Button>
-                <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg px-6">
+                <Button onClick={handleSave} disabled={isSaving} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white shadow-lg px-6">
                   {isSaving ? 'Guardando...' : <><Save size={18} className="mr-2" /> Guardar Cambios</>}
                 </Button>
               </>

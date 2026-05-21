@@ -146,7 +146,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
                     setFechaActual(new Date());
                   }
                 }}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white transition-all shadow-sm border border-blue-100 dark:border-blue-900/50"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:text-blue-700 dark:hover:text-blue-300 transition-all shadow-sm border border-blue-100 dark:border-blue-900/50 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Hoy
               </button>

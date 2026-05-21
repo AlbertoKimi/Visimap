@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { TablaRegistroMapa } from '@/components/app/TablaRegistroMapa';
@@ -23,8 +23,11 @@ export const RegistroVisitante: React.FC = () => {
   // Modales
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaveConfirmOpen, setIsSaveConfirmOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [pendingSaveData, setPendingSaveData] = useState<{ cantidad: number; observaciones?: string } | null>(null);
+  const isSavingRef = useRef(false);
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null);
@@ -108,20 +111,40 @@ export const RegistroVisitante: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveQuantity = async (nuevaCantidad: number, nuevasObservaciones?: string) => {
-    if (!selectedItem) return;
+  const handlePreSaveQuantity = (nuevaCantidad: number, nuevasObservaciones?: string) => {
+    isSavingRef.current = false;
+    setPendingSaveData({ cantidad: nuevaCantidad, observaciones: nuevasObservaciones });
+    setIsEditModalOpen(false);
+    setIsSaveConfirmOpen(true);
+  };
+
+  const handleConfirmSave = async () => {
+    if (!selectedItem || !pendingSaveData) return;
+    isSavingRef.current = true;
     try {
       if (activeTab === 'mapa') {
-        await visitorRepo.updateRegistro(selectedItem.id_registro, nuevaCantidad, nuevasObservaciones);
+        await visitorRepo.updateRegistro(selectedItem.id_registro, pendingSaveData.cantidad, pendingSaveData.observaciones);
       } else {
-        await eventRepo.updateGrupoVisitante(selectedItem.id_grupo, nuevaCantidad, nuevasObservaciones, selectedItem.id_evento);
+        await eventRepo.updateGrupoVisitante(selectedItem.id_grupo, pendingSaveData.cantidad, pendingSaveData.observaciones, selectedItem.id_evento);
       }
       showToast('Registro actualizado correctamente', 'success');
       fetchData();
-      setIsEditModalOpen(false);
+      setPendingSaveData(null);
     } catch (err: any) {
       showToast('No se pudo actualizar la cantidad. El registro puede haber sido eliminado o no tienes permisos para modificarlo.', 'error');
     }
+  };
+
+  const handleCancelSaveConfirm = () => {
+    setIsSaveConfirmOpen(false);
+    if (!isSavingRef.current) {
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setPendingSaveData(null);
   };
 
   // ── Detalle ──
@@ -227,12 +250,21 @@ export const RegistroVisitante: React.FC = () => {
         tipo="danger"
       />
 
+      <ModalConfirmacion
+        isOpen={isSaveConfirmOpen}
+        onClose={handleCancelSaveConfirm}
+        onConfirm={handleConfirmSave}
+        titulo="¿Guardar cambios?"
+        mensaje="¿Estás seguro de que deseas guardar las modificaciones realizadas en este registro?"
+        tipo="success"
+      />
+
       <ModalEditarCantidad
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        onSave={handleSaveQuantity}
-        cantidadActual={(activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes) || 0}
-        observacionesActuales={activeTab === 'mapa' ? selectedItem?.observaciones : selectedItem?.evento?.descripcion}
+        onClose={handleCloseEditModal}
+        onSave={handlePreSaveQuantity}
+        cantidadActual={pendingSaveData ? pendingSaveData.cantidad : ((activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes) || 0)}
+        observacionesActuales={pendingSaveData ? pendingSaveData.observaciones : (activeTab === 'mapa' ? selectedItem?.observaciones : selectedItem?.evento?.descripcion)}
         titulo="Modificar registro"
       />
 

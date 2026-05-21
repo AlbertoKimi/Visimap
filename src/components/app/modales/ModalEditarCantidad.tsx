@@ -36,7 +36,7 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
       </button>
       <button
         onClick={() => onSave(cantidad, observaciones)}
-        className="flex-1 px-6 py-3 rounded-2xl font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+        className="flex-1 px-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >
         Guardar
       </button>

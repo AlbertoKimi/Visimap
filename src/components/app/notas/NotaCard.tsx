@@ -30,6 +30,7 @@ interface NotaCardProps {
 export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditClick, showToast }) => {
   const { userProfile } = useAuthStore();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
     title: string;
@@ -73,14 +74,19 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
   const handleDelete = async () => {
     if (!hasDeletePermission) return;
     setIsProcessing(true);
+    setIsDeleting(true);
+
+    const deletePromise = RepositoryFactory.getNotaRepository().deleteNota(nota.id);
+    const delayPromise = new Promise((resolve) => setTimeout(resolve, 500));
+
     try {
-      const repo = RepositoryFactory.getNotaRepository();
-      await repo.deleteNota(nota.id);
+      await Promise.all([deletePromise, delayPromise]);
       showToast?.('Nota eliminada correctamente', 'success');
       onNotaUpdated();
     } catch (error) {
       console.error('Error al borrar nota', error);
       showToast?.('No se pudo eliminar la nota. Comprueba tu conexión e inténtalo de nuevo.', 'error');
+      setIsDeleting(false);
       setIsProcessing(false);
     }
   };
@@ -112,7 +118,11 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
   };
 
   return (
-    <div className={`p-5 rounded-sm shadow-md border flex flex-col h-full transition-all duration-300 relative overflow-hidden ${getColorClasses()}`}>
+    <div
+      className={`p-5 rounded-sm shadow-md border flex flex-col h-full transition-all duration-300 relative overflow-hidden transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] sm:active:scale-[0.99] origin-center ${
+        isDeleting ? 'animate-delete' : ''
+      } ${getColorClasses()}`}
+    >
       {/* Parte superior de la nota*/}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-3 bg-white/40 dark:bg-slate-700/40 shadow-sm rounded-b-md"></div>
 

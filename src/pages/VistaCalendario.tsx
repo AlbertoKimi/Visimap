@@ -277,7 +277,7 @@ export const VistaCalendario: React.FC = () => {
         </div>
         <CustomButton
           onClick={() => handleClicFecha({ dateStr: formatearFechaInput(new Date()) })}
-          className="bg-blue-600 dark:bg-blue-600 text-white rounded-xl hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors shadow-sm font-medium h-10 px-4"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-medium h-10 px-4"
         >
           <Plus className="w-4 h-4 mr-2" />
           <span className="text-sm">Nuevo Evento</span>
