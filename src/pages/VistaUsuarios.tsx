@@ -206,7 +206,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
+      <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Equipo de Trabajo</h1>
           <p className="page-subtitle">

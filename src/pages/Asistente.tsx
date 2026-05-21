@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ChatIA } from '@/components/app/graficos/ChatIA';
 
 /**
@@ -10,7 +10,7 @@ import { ChatIA } from '@/components/app/graficos/ChatIA';
 export const Asistente: React.FC = () => {
   return (
     <div className="container mx-auto p-3 sm:p-8 max-w-7xl flex flex-col h-[calc(100vh-5rem)] md:h-auto md:min-h-[calc(100vh-6rem)] w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-2 border-b border-slate-100 dark:border-neutral-800 pb-4 md:pb-6 shrink-0">
+      <div className="page-header !mb-4 md:!mb-6 !gap-2 !pb-4 md:!pb-6 shrink-0">
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Asistente Inteligente</h1>
           <p className="page-subtitle text-xs md:text-sm">

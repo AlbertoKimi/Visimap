@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { TablaRegistroMapa } from '@/components/app/TablaRegistroMapa';
@@ -156,7 +156,7 @@ export const RegistroVisitante: React.FC = () => {
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
+      <div className="page-header">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Registro de Visitantes</h1>
           <p className="page-subtitle">

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Nota } from "@/interfaces/Nota";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
@@ -84,7 +84,7 @@ export const Notas: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
+      <div className="page-header shrink-0">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
           <p className="page-subtitle">

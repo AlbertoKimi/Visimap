@@ -18,7 +18,11 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
 
 
 
-/* ─── Subtítulo de página ──────────────────────────────────────────────────── */
+/* ─── Encabezados de página ────────────────────────────────────────────────── */
+
+.page-header {
+  @apply flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-300 dark:border-neutral-800 pb-8;
+}
 
 .page-subtitle {
   color: var(--color-subtitle);
