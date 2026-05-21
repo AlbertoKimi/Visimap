@@ -155,7 +155,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                 <div className="relative z-10 flex flex-col h-full p-10 text-white">
 
                     {/* Bloque principal*/}
-                    <div className="flex-1 flex flex-col justify-center space-y-6">
+                    <div className="flex-1 flex flex-col justify-center gap-6">
                         <div>
                             <h1 className="text-5xl font-semibold leading-tight mb-4">
                                 ¡Bienvenido<br />
@@ -264,8 +264,8 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                                    Guardando...
+                                    <div className="animate-spin rounded-full size-4 border-b-2 border-white" />
+                                    Guardando…
                                 </div>
                             ) : (
                                 <span className="flex items-center justify-center gap-2">

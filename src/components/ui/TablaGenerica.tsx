@@ -31,14 +31,17 @@ const SortIcon = ({
   return <ChevronDown size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
 };
 
+const DEFAULT_COLUMN_FILTERS: any[] = [];
+const DEFAULT_SEARCH_KEYS: any[] = [];
+
 
 export function TablaGenerica<T>({
   data,
   columns,
   getRowId,
-  columnFilters = [],
+  columnFilters = DEFAULT_COLUMN_FILTERS,
   searchPlaceholder = 'Buscar...',
-  searchKeys = [],
+  searchKeys = DEFAULT_SEARCH_KEYS,
   onDeleteSelected,
   deleteSelectedLabel = 'Marcar inactivos',
   onActivateSelected,
@@ -78,7 +81,7 @@ export function TablaGenerica<T>({
   }
 
   const sorted = sortKey && sortDir
-    ? [...filtered].sort((a, b) => {
+    ? filtered.toSorted((a, b) => {
       const va = toStr(getNestedValue(a, sortKey));
       const vb = toStr(getNestedValue(b, sortKey));
       const cmp = va.localeCompare(vb, 'es', { sensitivity: 'base', numeric: true });
@@ -366,7 +369,7 @@ export function TablaGenerica<T>({
                   />
                 </PaginationItem>
 
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center gap-1">
                   {pageItems.map((item) =>
                     item.value === 'ellipsis' ? (
                       <PaginationItem key={item.key}>
@@ -377,7 +380,7 @@ export function TablaGenerica<T>({
                         <PaginationLink
                           onClick={() => setPage(item.value as number)}
                           isActive={item.value === currentPage}
-                          className="h-9 w-9 text-xs lg:text-sm"
+                          className="size-9 text-xs lg:text-sm"
                         >
                           {item.value}
                         </PaginationLink>

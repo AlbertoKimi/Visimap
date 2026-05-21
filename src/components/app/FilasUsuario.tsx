@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
 import { UserRowProps } from "@/interfaces/components";
@@ -91,7 +91,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
       <td className="p-6 text-right">
         <button
           onClick={handleClick}
-          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
+          className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
           data-state={open ? 'open' : 'closed'}
         >
           <MoreVertical className="size-5" />

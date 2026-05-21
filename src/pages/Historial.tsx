@@ -33,8 +33,10 @@ export const Historial: React.FC = () => {
   const [datosPaises, setDatosPaises] = useState<DesgloseItem[]>([]);
   const [totalAnual, setTotalAnual] = useState(0);
   const [paginaHistorial, setPaginaHistorial] = useState(1);
+  const [currentYear, setCurrentYear] = useState<number | string>('');
 
   useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
     fetchHistorial();
   }, []);
 
@@ -226,7 +228,7 @@ export const Historial: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-none shadow-lg">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-100">Total Año {new Date().getFullYear()}</CardTitle>
+            <CardTitle className="text-sm font-medium text-blue-100">Total Año {currentYear}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{loading ? <Skeleton className="h-9 w-24 bg-white/20" /> : totalAnual.toLocaleString()}</div>
@@ -332,7 +334,7 @@ export const Historial: React.FC = () => {
                         })}
                         {totalPaginas > 1 && (
                           <tr>
-                            <td colSpan={4} className="px-0 py-0">
+                            <td colSpan={4} className="p-0">
                               <div className="historial-paginacion">
                                 <p className="historial-paginacion-info">
                                   Mostrando{' '}
@@ -359,7 +361,7 @@ export const Historial: React.FC = () => {
                                           <PaginationLink
                                             onClick={() => setPaginaHistorial(item.value as number)}
                                             isActive={item.value === paginaActual}
-                                            className="h-8 w-8 text-xs"
+                                            className="size-8 text-xs"
                                           >
                                             {item.value}
                                           </PaginationLink>

@@ -60,7 +60,7 @@ export const VistaPerfil: React.FC<VistaPerfilProps> = ({ userProfile, onRefresh
     return (
       <div className="flex flex-col items-center justify-center p-12 text-slate-400 min-h-[400px]">
         <Loader2 className="size-8 animate-spin mb-2" />
-        <p>Cargando tu perfil...</p>
+        <p>Cargando tu perfil…</p>
       </div>
     );
   }

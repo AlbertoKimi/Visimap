@@ -144,7 +144,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
     <div className="p-[var(--spacing-sm)] md:p-[var(--spacing-md)] flex flex-col h-full">
       <div className="flex items-start justify-between mb-4 md:mb-5">
         <div className="w-full text-center md:text-left">
-          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h3 className="text-[var(--font-size-xl)] md:text-[var(--font-size-2xl)] font-semibold text-slate-900 dark:text-white tracking-tight leading-tight">
             <span className="md:hidden">Registro Visitantes</span>
             <span className="hidden md:inline">Registro Internacional</span>
           </h3>

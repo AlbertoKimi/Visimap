@@ -168,7 +168,7 @@ export const RegistroVisitante: React.FC = () => {
           {/* Botón refrescar */}
           <button
             onClick={fetchData}
-            className="p-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+            className="p-2 text-slate-500 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
             disabled={loading}
             title="Actualizar"
           >
@@ -206,7 +206,7 @@ export const RegistroVisitante: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center py-32 animate-pulse">
             <div className="size-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
-            <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Cargando información...</p>
+            <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Cargando información…</p>
           </div>
         )}
 
@@ -260,6 +260,7 @@ export const RegistroVisitante: React.FC = () => {
       />
 
       <ModalEditarCantidad
+        key={selectedItem?.id || 'edit-modal'}
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         onSave={handlePreSaveQuantity}

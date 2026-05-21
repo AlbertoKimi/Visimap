@@ -179,8 +179,8 @@ export const GraficosPanel: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
 
   // Calculamos estos valores directamente en cada renderizado
   const nombreMes = getNombreMes(selectedMonth);

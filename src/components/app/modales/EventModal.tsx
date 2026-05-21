@@ -204,7 +204,7 @@ export const EventModal: React.FC<EventModalProps> = ({
           variant="ghost"
           size="icon"
           onClick={() => setEditando(true)}
-          className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors h-7 w-7"
+          className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors size-7"
         >
           <Edit3 className="size-4" />
         </Button>
@@ -303,7 +303,7 @@ export const EventModal: React.FC<EventModalProps> = ({
               variant="ghost"
               onClick={handleFinalizar}
               disabled={enProcesoFinalizacion}
-              className="w-full flex items-center justify-center gap-2 px-6 py-6 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 dark:shadow-none disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-2 p-6 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 dark:shadow-none disabled:opacity-60"
             >
               {enProcesoFinalizacion ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
               {enProcesoFinalizacion ? 'Confirmando...' : 'Sí, confirmar y finalizar'}
@@ -311,7 +311,7 @@ export const EventModal: React.FC<EventModalProps> = ({
             <Button
               variant="ghost"
               onClick={() => { setConfirmarCierre(false); setEditando(true); }}
-              className="w-full px-6 py-6 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors border border-blue-100 dark:border-blue-900/30"
+              className="w-full p-6 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors border border-blue-100 dark:border-blue-900/30"
             >
               Modificar datos por si acaso
             </Button>
@@ -418,7 +418,7 @@ export const EventModal: React.FC<EventModalProps> = ({
 
               {cargandoGrupos ? (
                 <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                  <Loader2 className="size-3.5 animate-spin" /> Cargando...
+                  <Loader2 className="size-3.5 animate-spin" /> Cargando…
                 </div>
               ) : grupos.length === 0 ? (
                 <p className="text-xs text-slate-300 dark:text-slate-600 italic">

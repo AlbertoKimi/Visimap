@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { UserX, Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
 import { Perfil } from '@/interfaces/Perfil';
 import { TablaGenerica } from '@/components/ui/TablaGenerica';
@@ -41,7 +41,7 @@ const ActionsCell: React.FC<{
     <div className="flex justify-end">
       <button
         onClick={handleClick}
-        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+        className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
         data-state={open ? 'open' : 'closed'}
       >
         <MoreVertical className="size-5" />
@@ -130,8 +130,16 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         const initial = displayName.charAt(0).toUpperCase();
         return (
           <div
-            className="flex items-center gap-3 cursor-pointer"
+            role="button"
+            tabIndex={0}
+            className="flex items-center gap-3 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-0.5"
             onClick={() => onAction('view', profile)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onAction('view', profile);
+              }
+            }}
           >
             {profile.avatar_url ? (
               <img

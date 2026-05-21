@@ -246,7 +246,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
           {isLoading ? (
             <div className="flex flex-col items-center justify-center p-12 text-slate-400">
               <Loader2 className="size-8 animate-spin mb-2" />
-              <p>Cargando equipo...</p>
+              <p>Cargando equipo…</p>
             </div>
           ) : error ? (
             <div className="p-12 text-center text-red-500 bg-red-50">

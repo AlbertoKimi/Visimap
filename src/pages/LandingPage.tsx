@@ -102,9 +102,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
     <LazyMotion features={loadFeatures} strict>
       <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
         <nav className="fixed top-0 w-full bg-white dark:bg-slate-950 border-b dark:border-slate-800 z-50">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto p-4">
             <div className="flex items-center justify-between">
-              <div onClick={scrollToTop} className="cursor-pointer">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={scrollToTop}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    scrollToTop();
+                  }
+                }}
+                className="cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+              >
                 <img
                   src={theme === 'dark' ? logoModoOscuroUrl : logoUrl}
                   alt="VisiMap Logo"
@@ -125,7 +136,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 <ThemeToggle />
                 <Button onClick={onGetStarted} className="btn-gradient-landing">
                   Iniciar Sesión
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </div>
@@ -197,7 +208,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   className="btn-gradient-landing text-lg px-8"
                 >
                   Comenzar Ahora
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 size-5" />
                 </Button>
                 <Button
                   onClick={() => scrollToSection('museo')}
@@ -510,7 +521,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 className="btn-gradient-landing text-lg px-12 py-6"
               >
                 Comenzar Ahora
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 size-5" />
               </Button>
             </m.div>
           </div>
@@ -521,7 +532,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="container mx-auto">
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <div onClick={scrollToTop} className="flex items-center gap-2 mb-4 cursor-pointer">
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={scrollToTop}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      scrollToTop();
+                    }
+                  }}
+                  className="flex items-center gap-2 mb-4 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+                >
                   <img
                     src={logoModoOscuroUrl}
                     alt="VisiMap Logo"
