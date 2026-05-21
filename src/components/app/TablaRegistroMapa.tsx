@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
 import { formatearFecha } from '@/utils/utils';
 import { TablaGenerica } from '@/components/ui/TablaGenerica';
@@ -68,8 +68,8 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       render: (reg) => (
         <div className="flex items-center gap-2">
           {reg.perfil?.avatar_url && (
-            <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
-              <img src={reg.perfil.avatar_url} alt="" className="w-full h-full object-cover" />
+            <div className="size-7 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
+              <img src={reg.perfil.avatar_url} alt="" className="size-full object-cover" />
             </div>
           )}
           <span className="text-sm font-medium text-slate-600 dark:text-slate-300">

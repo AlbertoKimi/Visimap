@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { ICONOS } from '@/constantes/iconos';
 import { Card } from '@/components/ui/card';
@@ -50,8 +50,8 @@ export const ChatIA: React.FC = () => {
 
       {/* ── Cabecera ──────────────────────────────────────────────────────── */}
       <div className="chat-ia-header">
-        <div className="flex items-center justify-center w-8 h-8 shrink-0">
-          <img src={ICONOS.asistente} className="w-7 h-7 object-contain" alt="" />
+        <div className="flex items-center justify-center size-8 shrink-0">
+          <img src={ICONOS.asistente} className="size-7 object-contain" alt="" />
         </div>
         <div className="chat-ia-header-textos">
           <h3 className="chat-ia-header-titulo">Asistente</h3>
@@ -65,7 +65,7 @@ export const ChatIA: React.FC = () => {
               aria-label="Limpiar chat"
               id="btn-limpiar-chat"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="size-4" />
               <span>Limpiar</span>
             </button>
           )}

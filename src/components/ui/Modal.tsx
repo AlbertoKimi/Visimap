@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -119,7 +119,7 @@ export const Modal: React.FC<ModalProps> = ({
               <div className="flex items-center justify-between px-4 sm:px-6 pt-5 pb-1 shrink-0">
                 {title ? (
                   typeof title === 'string' ? (
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
+                    <h3 className="text-xl font-semibold text-slate-800 dark:text-white tracking-tight">
                       {title}
                     </h3>
                   ) : title

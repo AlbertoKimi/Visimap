@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Nota } from "@/interfaces/Nota";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
@@ -73,7 +73,7 @@ export const Notas: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="size-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export const Notas: React.FC = () => {
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Notas y Tareas</h1>
           <p className="page-subtitle">
             Gestiona tus recordatorios y tareas del museo
           </p>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { SpainProvincePaths } from "@/utils/SpainProvinciasPaths";
 import { getColoresProvincia } from "@/utils/ProvinciasColores";
 import { LeyendaColores } from "@/components/app/Leyenda";
@@ -33,7 +33,7 @@ export default function SpainProvincesMap({
   }, []);
 
   return (
-    <div className={`flex flex-col md:flex-row justify-center items-center w-full h-full gap-8 md:gap-4 lg:gap-0 ${className}`}>
+    <div className={`flex flex-col md:flex-row justify-center items-center size-full gap-8 md:gap-4 lg:gap-0 ${className}`}>
 
       <LeyendaColores className="hidden md:block lg:hidden shrink-0" />
 

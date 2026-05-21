@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { ICONOS } from '@/constantes/iconos';
 import { useAuthStore } from '@/stores/authStore';
@@ -107,8 +107,8 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
     <div className={`chat-burbuja-fila ${esUsuario ? 'chat-burbuja-fila--user' : 'chat-burbuja-fila--model'}`}>
       {/* Avatar */}
       {!esUsuario && (
-        <div className="chat-avatar shrink-0 overflow-hidden flex items-center justify-center w-10 h-10 mt-1">
-          <img src={ICONOS.asistente} alt="Asistente" className="w-full h-full object-contain drop-shadow-sm" />
+        <div className="chat-avatar shrink-0 overflow-hidden flex items-center justify-center size-10 mt-1">
+          <img src={ICONOS.asistente} alt="Asistente" className="size-full object-contain drop-shadow-sm" />
         </div>
       )}
 
@@ -132,7 +132,7 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
               {/* Texto renderizado en markdown */}
               {mensaje.texto && (
                 <div className="flex items-start gap-2">
-                  {mensaje.error && <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />}
+                  {mensaje.error && <AlertCircle className="size-4 text-red-500 shrink-0 mt-0.5" />}
                   <div
                     className="chat-burbuja-texto"
                     dangerouslySetInnerHTML={{ __html: `<p class="chat-md-p">${htmlTexto}</p>` }}
@@ -160,7 +160,7 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
       {esUsuario && (
         <div className="chat-avatar chat-avatar--user overflow-hidden">
           {userProfile?.avatar_url ? (
-            <img src={userProfile.avatar_url} alt="User" className="w-full h-full object-cover" />
+            <img src={userProfile.avatar_url} alt="User" className="size-full object-cover" />
           ) : (
             <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
               {userProfile?.nombre?.charAt(0).toUpperCase() || 'U'}

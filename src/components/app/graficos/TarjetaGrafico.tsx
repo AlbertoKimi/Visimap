@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+﻿import React, { useRef } from 'react';
 import { Loader2, RefreshCw, Download } from 'lucide-react';
 import { TarjetaGraficoProps } from "@/interfaces/components";
 import html2canvas from 'html2canvas';
@@ -94,12 +94,12 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {icono && (
-            <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${colorIcono} flex items-center justify-center text-white shadow-sm shrink-0`}>
+            <div className={`size-9 rounded-xl bg-gradient-to-br ${colorIcono} flex items-center justify-center text-white shadow-sm shrink-0`}>
               {icono}
             </div>
           )}
           <div>
-            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight">{titulo}</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight">{titulo}</h3>
             {subtitulo && <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{subtitulo}</p>}
           </div>
         </div>
@@ -111,7 +111,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
             title="Descargar como imagen"
             className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
           >
-            <Download className="w-4 h-4" />
+            <Download className="size-4" />
           </button>
           {onRefresh && (
             <button
@@ -119,7 +119,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
               title="Actualizar gráfico"
               className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="size-4" />
             </button>
           )}
         </div>
@@ -129,11 +129,11 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
       <div className={`${altura} w-full relative flex items-center justify-center chart-content-container`}>
         {isLoading ? (
           <div className="flex flex-col items-center gap-2 text-slate-400">
-            <Loader2 className="w-7 h-7 animate-spin text-blue-400" />
+            <Loader2 className="size-7 animate-spin text-blue-400" />
             <span className="text-xs">Cargando datos...</span>
           </div>
         ) : (
-          <div className="w-full h-full">
+          <div className="size-full">
             {children}
           </div>
         )}

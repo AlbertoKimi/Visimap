@@ -92,6 +92,12 @@ export function TablaGenerica<T>({
   const paginated = sorted.slice(start, start + pageSize);
 
   const pageNumbers = calcularPaginas(totalPages, currentPage);
+  const pageItems = pageNumbers.map((p, index) => {
+    const key = p === 'ellipsis'
+      ? (index < pageNumbers.indexOf(currentPage) ? 'ellipsis-left' : 'ellipsis-right')
+      : `page-${p}`;
+    return { value: p, key };
+  });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -246,7 +252,7 @@ export function TablaGenerica<T>({
         {paginated.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-16 text-center">
             {emptyIcon && (
-              <div className="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
+              <div className="size-14 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
                 {emptyIcon}
               </div>
             )}
@@ -361,19 +367,19 @@ export function TablaGenerica<T>({
                 </PaginationItem>
 
                 <div className="flex items-center space-x-1">
-                  {pageNumbers.map((p, i) =>
-                    p === 'ellipsis' ? (
-                      <PaginationItem key={`ellipsis-${i}`}>
+                  {pageItems.map((item) =>
+                    item.value === 'ellipsis' ? (
+                      <PaginationItem key={item.key}>
                         <PaginationEllipsis />
                       </PaginationItem>
                     ) : (
-                      <PaginationItem key={p}>
+                      <PaginationItem key={item.key}>
                         <PaginationLink
-                          onClick={() => setPage(p)}
-                          isActive={p === currentPage}
+                          onClick={() => setPage(item.value as number)}
+                          isActive={item.value === currentPage}
                           className="h-9 w-9 text-xs lg:text-sm"
                         >
-                          {p}
+                          {item.value}
                         </PaginationLink>
                       </PaginationItem>
                     )

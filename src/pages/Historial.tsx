@@ -205,7 +205,7 @@ export const Historial: React.FC = () => {
     <div className="container mx-auto p-4 sm:p-8 max-w-7xl flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Historial de Datos</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Historial de Datos</h1>
           <p className="page-subtitle">
             Registro histórico completo de visitantes y desgloses geográficos
           </p>
@@ -216,7 +216,7 @@ export const Historial: React.FC = () => {
             disabled={loading || datosMensuales.length === 0}
             className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm font-medium disabled:opacity-50"
           >
-            <FileText className="w-4 h-4 text-red-500" />
+            <FileText className="size-4 text-red-500" />
             <span className="text-sm">Exportar PDF</span>
           </button>
         </div>
@@ -266,7 +266,7 @@ export const Historial: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle className="text-base font-bold flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-500" />
+                  <Calendar className="size-4 text-blue-500" />
                   Evolución Mensual Detallada
                 </CardTitle>
                 <CardDescription>Resumen de visitantes por mes y año</CardDescription>
@@ -286,8 +286,8 @@ export const Historial: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {loading ? (
-                    Array(HISTORIAL_PAGE_SIZE).fill(0).map((_, i) => (
-                      <tr key={i}>
+                    ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5', 'sk-6', 'sk-7', 'sk-8', 'sk-9', 'sk-10'].map((skId) => (
+                      <tr key={skId}>
                         <td className="px-6 py-4"><Skeleton className="h-4 w-12" /></td>
                         <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
                         <td className="px-6 py-4 text-right"><Skeleton className="h-4 w-16 ml-auto" /></td>
@@ -300,6 +300,12 @@ export const Historial: React.FC = () => {
                     const inicio = (paginaActual - 1) * HISTORIAL_PAGE_SIZE;
                     const paginados = datosMensuales.slice(inicio, inicio + HISTORIAL_PAGE_SIZE);
                     const numeros = calcularPaginas(totalPaginas, paginaActual);
+                    const pageItems = numeros.map((p, index) => {
+                      const key = p === 'ellipsis'
+                        ? (index < numeros.indexOf(paginaActual) ? 'ellipsis-left' : 'ellipsis-right')
+                        : `page-${p}`;
+                      return { value: p, key };
+                    });
                     return (
                       <>
                         {paginados.map((item, i) => {
@@ -343,19 +349,19 @@ export const Historial: React.FC = () => {
                                         className={paginaActual === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                                       />
                                     </PaginationItem>
-                                    {numeros.map((p, i) =>
-                                      p === 'ellipsis' ? (
-                                        <PaginationItem key={`ellipsis-${i}`}>
+                                    {pageItems.map((item) =>
+                                      item.value === 'ellipsis' ? (
+                                        <PaginationItem key={item.key}>
                                           <PaginationEllipsis />
                                         </PaginationItem>
                                       ) : (
-                                        <PaginationItem key={p}>
+                                        <PaginationItem key={item.key}>
                                           <PaginationLink
-                                            onClick={() => setPaginaHistorial(p)}
-                                            isActive={p === paginaActual}
+                                            onClick={() => setPaginaHistorial(item.value as number)}
+                                            isActive={item.value === paginaActual}
                                             className="h-8 w-8 text-xs"
                                           >
-                                            {p}
+                                            {item.value}
                                           </PaginationLink>
                                         </PaginationItem>
                                       )
@@ -391,14 +397,14 @@ export const Historial: React.FC = () => {
           <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
             <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <MapIcon className="w-4 h-4 text-purple-500" />
+                <MapIcon className="size-4 text-purple-500" />
                 Top 10 Provincias
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {loading ? (
-                  Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)
+                  ['prov-sk-1', 'prov-sk-2', 'prov-sk-3', 'prov-sk-4', 'prov-sk-5'].map((skId) => <Skeleton key={skId} className="h-8 w-full" />)
                 ) : datosProvincias.map((p, i) => (
                   <div key={p.nombre} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -416,14 +422,14 @@ export const Historial: React.FC = () => {
           <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm">
             <CardHeader className="pb-3 border-b border-slate-100 dark:border-slate-800 mb-2">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Globe className="w-4 h-4 text-emerald-500" />
+                <Globe className="size-4 text-emerald-500" />
                 Top 10 Países
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {loading ? (
-                  Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)
+                  ['pais-sk-1', 'pais-sk-2', 'pais-sk-3', 'pais-sk-4', 'pais-sk-5'].map((skId) => <Skeleton key={skId} className="h-8 w-full" />)
                 ) : datosPaises.map((p, i) => (
                   <div key={p.nombre} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

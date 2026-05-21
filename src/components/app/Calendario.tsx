@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -168,7 +168,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
 
         {cargando && (
           <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-[2px] z-50 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600 dark:text-blue-400" />
+            <Loader2 className="size-8 animate-spin text-blue-600 dark:text-blue-400" />
           </div>
         )}
 

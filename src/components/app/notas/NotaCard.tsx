@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Check, Clock, Trash2, Pencil } from 'lucide-react';
 import { Nota } from "@/interfaces/Nota";
 import { useAuthStore } from "@/stores/authStore";
@@ -224,9 +224,9 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
       <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 mt-auto pt-3 border-t border-black/10 dark:border-white/10">
         <div className="flex items-center gap-2">
           {autorBase?.avatar_url ? (
-            <img src={autorBase.avatar_url} alt="Avatar" className="w-5 h-5 rounded-full object-cover shadow-sm border border-white/50 dark:border-slate-700" />
+            <img src={autorBase.avatar_url} alt="Avatar" className="size-5 rounded-full object-cover shadow-sm border border-white/50 dark:border-slate-700" />
           ) : (
-            <div className="w-5 h-5 rounded-full flex items-center justify-center font-bold bg-white/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm">
+            <div className="size-5 rounded-full flex items-center justify-center font-bold bg-white/60 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shadow-sm">
               {autorBase?.nombre?.charAt(0) || '?'}
             </div>
           )}

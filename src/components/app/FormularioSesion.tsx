@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Input from "@/components/ui/input";
 import fondoLoginImg from "@/assets/Fondo_Login.webp";
 import { FormularioSesionProps } from "@/interfaces/components";
@@ -18,25 +18,23 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorStatus, setErrorStatus] = useState<Record<string, boolean>>({});
+  const errorStatus = useRef<Record<string, boolean>>({});
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
-  // Estado para almacenar el número de intentos fallidos (se recupera de localStorage)
-  const [intentos, setIntentos] = useState(() => Number(localStorage.getItem('visimap_intentos') || 0));
-  // Estado para almacenar el momento en el que se quita el bloqueo
-  const [bloqueadoHasta, setBloqueadoHasta] = useState(() => Number(localStorage.getItem('visimap_bloqueado_hasta') || 0));
-  // Estado para controlar los minutos que está bloqueado
-  const [minutosBloqueo, setMinutosBloqueo] = useState(() => Number(localStorage.getItem('visimap_minutos_bloqueo') || 1));
-  // Estado para saber cuántos segundos le queda de bloqueo.
+  // Refs para variables de control que no desencadenan renderizado por sí mismas
+  const intentos = useRef<number>(Number(localStorage.getItem('visimap_intentos') || 0));
+  const bloqueadoHasta = useRef<number>(Number(localStorage.getItem('visimap_bloqueado_hasta') || 0));
+  const minutosBloqueo = useRef<number>(Number(localStorage.getItem('visimap_minutos_bloqueo') || 1));
+  // Estado para saber cuántos segundos le queda de bloqueo (desencadena re-render para actualizar el temporizador)
   const [segundosRestantes, setSegundosRestantes] = useState(0);
 
   // Cuenta atrás del bloqueo cada segundo en tiempo real
   React.useEffect(() => {
     const verificarTiempoRestante = () => {
       const ahora = Date.now();
-      if (bloqueadoHasta > ahora) {
+      if (bloqueadoHasta.current > ahora) {
         // Diferencia y la convertimos a segundos (redondeando hacia arriba)
-        setSegundosRestantes(Math.ceil((bloqueadoHasta - ahora) / 1000));
+        setSegundosRestantes(Math.ceil((bloqueadoHasta.current - ahora) / 1000));
       } else {
         setSegundosRestantes(0);
       }
@@ -46,7 +44,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
     const timerInterval = setInterval(verificarTiempoRestante, 1000);
 
     return () => clearInterval(timerInterval);
-  }, [bloqueadoHasta]);
+  }, []);
 
   React.useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -66,7 +64,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
   };
 
   const manejarError = (name: string, hasError: boolean) => {
-    setErrorStatus(prev => ({ ...prev, [name]: hasError }));
+    errorStatus.current[name] = hasError;
   };
 
   // Envío del formulario con la seguridad de los bloqueos.
@@ -80,7 +78,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
       return;
     }
 
-    if (Object.values(errorStatus).some(v => v)) {
+    if (Object.values(errorStatus.current).some(v => v)) {
       setSubmissionError('Por favor, corrige los errores en el formulario.');
       return;
     }
@@ -93,39 +91,42 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
       localStorage.removeItem('visimap_intentos');
       localStorage.removeItem('visimap_bloqueado_hasta');
       localStorage.removeItem('visimap_minutos_bloqueo');
-      setIntentos(0);
-      setBloqueadoHasta(0);
-      setMinutosBloqueo(1);
+      intentos.current = 0;
+      bloqueadoHasta.current = 0;
+      minutosBloqueo.current = 1;
       setSegundosRestantes(0);
 
     } catch (err: any) {
       // ¡LOGIN INCORRECTO!
-      const nuevosIntentos = intentos + 1;
+      const nuevosIntentos = intentos.current + 1;
 
       if (nuevosIntentos >= 5) {
         // Si falla 5 veces consecutivas, calculamos la penalización
-        const tiempoBloqueoMs = minutosBloqueo * 60 * 1000;
+        const minutosActuales = minutosBloqueo.current;
+        const tiempoBloqueoMs = minutosActuales * 60 * 1000;
         const nuevaFechaBloqueo = Date.now() + tiempoBloqueoMs;
 
         // Bloqueamos el login guardando la fecha de desbloqueo en estado y localStorage
-        setBloqueadoHasta(nuevaFechaBloqueo);
+        bloqueadoHasta.current = nuevaFechaBloqueo;
         localStorage.setItem('visimap_bloqueado_hasta', String(nuevaFechaBloqueo));
 
         // Reseteamos los intentos para la siguiente ronda de pruebas tras desbloquearse
-        setIntentos(0);
+        intentos.current = 0;
         localStorage.setItem('visimap_intentos', '0');
 
         // Aumentamos los minutos progresivamente para el siguiente bloqueo (+1 minuto más)
-        const siguienteMinuto = minutosBloqueo + 1;
-        setMinutosBloqueo(siguienteMinuto);
+        const siguienteMinuto = minutosActuales + 1;
+        minutosBloqueo.current = siguienteMinuto;
         localStorage.setItem('visimap_minutos_bloqueo', String(siguienteMinuto));
 
+        // Actualizamos segundosRestantes para reflejarlo en el botón inmediatamente
+        setSegundosRestantes(Math.ceil(tiempoBloqueoMs / 1000));
         setSubmissionError(
-          `Has alcanzado el límite de 5 intentos fallidos. Acceso bloqueado durante ${minutosBloqueo} minuto(s).`
+          `Has alcanzado el límite de 5 intentos fallidos. Acceso bloqueado durante ${minutosActuales} minuto(s).`
         );
       } else {
         // Si aún le quedan intentos, simplemente actualizamos el contador
-        setIntentos(nuevosIntentos);
+        intentos.current = nuevosIntentos;
         localStorage.setItem('visimap_intentos', String(nuevosIntentos));
         const intentosRestantes = 5 - nuevosIntentos;
 
@@ -146,20 +147,20 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
             <img
               src={theme === 'dark' ? (logoModoOscuroUrl || logoUrl) : logoUrl}
               alt="VisiMap Logo"
-              className="w-32 h-32 object-contain transition-opacity duration-300"
+              className="size-32 object-contain transition-opacity duration-300"
               onError={(e: any) => {
                 e.target.style.display = 'none';
                 const parent = e.target.parentNode;
                 if (parent) {
                   const fallback = document.createElement('div');
-                  fallback.className = "w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
+                  fallback.className = "size-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-lg";
                   fallback.innerText = "V";
                   parent.prepend(fallback);
                 }
               }}
             />
           )}
-          <h2 className="text-3xl font-bold text-slate-800 dark:text-white">Acceso Personal</h2>
+          <h2 className="text-3xl font-semibold text-slate-800 dark:text-white">Acceso Personal</h2>
           <p className="text-slate-500 dark:text-slate-400 mt-2">Introduce tus credenciales para continuar</p>
         </div>
 

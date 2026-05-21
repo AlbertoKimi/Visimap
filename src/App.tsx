@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -38,7 +38,7 @@ import logoModoOscuroUrl from "@/assets/Logo-MO-opt.webp";
 const LoadingScreen = () => (
   <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+      <div className="size-12 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
       <p className="text-slate-500 dark:text-slate-400 font-medium">Cargando...</p>
     </div>
   </div>

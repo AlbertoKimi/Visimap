@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ICONOS } from '@/constantes/iconos';
 import { StickyNote, Calendar, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -192,11 +192,11 @@ export const NotificationBell: React.FC = () => {
     }
   }, [userProfile]);
 
-  const [wasOpen, setWasOpen] = useState(false);
+  const wasOpen = useRef(false);
 
   useEffect(() => {
     // Si el panel estaba abierto y ahora se cierra...
-    if (wasOpen && !isOpen) {
+    if (wasOpen.current && !isOpen) {
       if (hasUnread && userProfile) {
         const storageKey = `visimap_alerts_read_ids_${userProfile.id}`;
         const allIds = alertas.map(a => a.id);
@@ -204,12 +204,12 @@ export const NotificationBell: React.FC = () => {
         setHasUnread(false);
         setAlertas(prev => prev.map(a => ({ ...a, leido: true })));
       }
-      setWasOpen(false);
-    } else if (isOpen && !wasOpen) {
+      wasOpen.current = false;
+    } else if (isOpen && !wasOpen.current) {
       // Si se acaba de abrir, guardamos el estado
-      setWasOpen(true);
+      wasOpen.current = true;
     }
-  }, [isOpen, wasOpen, hasUnread, userProfile, alertas]);
+  }, [isOpen, hasUnread, userProfile, alertas]);
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
@@ -227,9 +227,9 @@ export const NotificationBell: React.FC = () => {
         className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         aria-label="Notificaciones"
       >
-        <img src={ICONOS.campana} className="w-[26px] h-[26px] object-contain" alt="" />
+        <img src={ICONOS.campana} className="size-[26px] object-contain" alt="" />
         {hasUnread && (
-          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white shadow-sm animate-bounce"></span>
+          <span className="absolute top-1.5 right-1.5 size-2.5 bg-red-600 rounded-full border-2 border-white shadow-sm animate-bounce"></span>
         )}
       </button>
 
@@ -251,7 +251,7 @@ export const NotificationBell: React.FC = () => {
             <div className="max-h-[60vh] overflow-y-auto">
               {alertas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <img src={ICONOS.campana} className="w-10 h-10 object-contain opacity-40 mb-3 grayscale" alt="" />
+                  <img src={ICONOS.campana} className="size-10 object-contain opacity-40 mb-3 grayscale" alt="" />
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No hay avisos recientes</p>
                   <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-[200px]">Cuando haya nueva actividad en Notas o Eventos, aparecerá aquí.</p>
                 </div>
@@ -301,7 +301,7 @@ export const NotificationBell: React.FC = () => {
                         </div>
 
                         {!alerta.leido && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-blue-500/90 shadow-sm shrink-0 mt-1.5 animate-pulse" />
+                          <div className="size-2.5 rounded-full bg-blue-500/90 shadow-sm shrink-0 mt-1.5 animate-pulse" />
                         )}
                       </button>
                     );

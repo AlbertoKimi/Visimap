@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
 import { UserRowProps } from "@/interfaces/components";
@@ -50,10 +50,10 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
             <img
               src={profile.avatar_url}
               alt={displayName}
-              className="w-10 h-10 rounded-full object-cover border border-white shadow-sm"
+              className="size-10 rounded-full object-cover border border-white shadow-sm"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-blue-700 font-bold border border-white shadow-sm">
+            <div className="size-10 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-blue-700 font-bold border border-white shadow-sm">
               {initial}
             </div>
           )}
@@ -77,12 +77,12 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
       <td className="p-6">
         {(profile.active !== false) ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span className="size-1.5 rounded-full bg-emerald-500"></span>
             Activo
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-500 border border-slate-200">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            <span className="size-1.5 rounded-full bg-slate-400"></span>
             Inactivo
           </span>
         )}
@@ -94,7 +94,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
           data-state={open ? 'open' : 'closed'}
         >
-          <MoreVertical className="w-5 h-5" />
+          <MoreVertical className="size-5" />
         </button>
 
         <Menu

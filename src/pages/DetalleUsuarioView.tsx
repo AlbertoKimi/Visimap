@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ArrowLeft,
   Mail,
@@ -49,14 +49,14 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   const [editData, setEditData] = useState<Partial<Perfil>>({ ...initialUser });
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
+  const formErrors = useRef<Record<string, boolean>>({});
 
   // Estados para contraseñas
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   // Estados para imagen pendiente (vista previa local antes de guardar)
-  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const pendingImageFile = useRef<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Estados para datos reales
@@ -105,7 +105,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     setMode('edit');
     setNewPassword('');
     setConfirmPassword('');
-    setPendingImageFile(null);
+    pendingImageFile.current = null;
     setPreviewUrl(null);
   };
   const handleCancel = () => {
@@ -113,7 +113,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     setEditData({ ...user });
     setNewPassword('');
     setConfirmPassword('');
-    setPendingImageFile(null);
+    pendingImageFile.current = null;
     setPreviewUrl(null);
   };
 
@@ -129,7 +129,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   };
 
   const manejarError = (name: string, hasError: boolean) => {
-    setFormErrors(prev => ({ ...prev, [name]: hasError }));
+    formErrors.current[name] = hasError;
   };
 
   const handleSave = async () => {
@@ -143,7 +143,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       }
     }
 
-    if (Object.values(formErrors).some(v => v)) {
+    if (Object.values(formErrors.current).some(v => v)) {
       return mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
     }
 
@@ -152,9 +152,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       let finalAvatarUrl = user.avatar_url;
 
       // Si hay imagen pendiente, la subimos primero
-      if (pendingImageFile) {
+      if (pendingImageFile.current) {
         setIsUploading(true);
-        finalAvatarUrl = await userRepo.uploadAvatar(user.id, pendingImageFile);
+        finalAvatarUrl = await userRepo.uploadAvatar(user.id, pendingImageFile.current);
       }
 
       // Actualizar datos de perfil (incluyendo el nuevo avatar si se subió)
@@ -166,11 +166,11 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         await authRepo.updatePassword(newPassword);
       }
 
-      setUser({ ...user, ...dataToUpdate } as Perfil);
+      setUser(prev => ({ ...prev, ...dataToUpdate } as Perfil));
       setMode('view');
       setNewPassword('');
       setConfirmPassword('');
-      setPendingImageFile(null);
+      pendingImageFile.current = null;
       setPreviewUrl(null);
       mostrarNotificacion('Perfil actualizado correctamente', 'success');
       onUpdate();
@@ -194,7 +194,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     }
 
     // Guardar el archivo localmente para subirlo al darle a "Guardar"
-    setPendingImageFile(file);
+    pendingImageFile.current = file;
     // Generar una URL local para la vista previa instantánea sin subir nada aún
     setPreviewUrl(URL.createObjectURL(file));
   };
@@ -204,7 +204,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     if (window.confirm(`¿Seguro que quieres ${newStatus ? 'activar' : 'desactivar'} a este usuario?`)) {
       try {
         await userRepo.toggleStatus(user.id, newStatus);
-        setUser({ ...user, active: newStatus });
+        setUser(prev => ({ ...prev, active: newStatus }));
         mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'}`, 'success');
         onUpdate();
       } catch (error: any) {
@@ -305,10 +305,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     <img
                       src={previewUrl || user.avatar_url || ''}
                       alt="Avatar"
-                      className="w-32 h-32 rounded-3xl object-cover border-4 border-white dark:border-slate-800 shadow-2xl"
+                      className="size-32 rounded-3xl object-cover border-4 border-white dark:border-slate-800 shadow-2xl"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-3xl bg-white dark:bg-slate-800 flex items-center justify-center text-4xl font-bold text-blue-600 border-4 border-white dark:border-slate-800 shadow-2xl">
+                    <div className="size-32 rounded-3xl bg-white dark:bg-slate-800 flex items-center justify-center text-4xl font-bold text-blue-600 border-4 border-white dark:border-slate-800 shadow-2xl">
                       {user.nombre?.charAt(0)}
                     </div>
                   )}
@@ -333,7 +333,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               </div>
             </div>
             <div className="pt-20 pb-8 px-6 text-center">
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">{fullName || user.nombre_usuario}</h1>
+              <h1 className="text-2xl font-semibold text-slate-800 dark:text-white">{fullName || user.nombre_usuario}</h1>
               <p className="text-slate-600 dark:text-slate-400 font-medium">@{user.nombre_usuario}</p>
 
               <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -357,7 +357,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
+                <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Mail size={16} />
                 </div>
                 <div>
@@ -366,7 +366,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                 </div>
               </div>
               <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
+                <div className="size-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500">
                   <Phone size={16} />
                 </div>
                 <div>
@@ -382,8 +382,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         <div className="lg:col-span-2 space-y-6 w-full">
           {/* Estadísticas */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-            {stats.map((stat, i) => (
-              <Card key={i} className="w-full border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
+            {stats.map((stat) => (
+              <Card key={stat.label} className="w-full border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
                 <CardContent className="p-6">
                   <p className="text-3xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</p>
                   <p className="text-sm text-slate-600 dark:text-slate-400 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
@@ -458,7 +458,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
                   {/* Sección de cambio de contraseña */}
                   <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                       <Key size={16} className="text-blue-500" /> Cambiar Contraseña
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>

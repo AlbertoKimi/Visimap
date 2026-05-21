@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { TablaRegistroMapa } from '@/components/app/TablaRegistroMapa';
@@ -158,7 +158,7 @@ export const RegistroVisitante: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b border-slate-100 dark:border-neutral-800 pb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Registro de Visitantes</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white tracking-tight">Registro de Visitantes</h1>
           <p className="page-subtitle">
             Control de flujo y actividad
           </p>
@@ -205,7 +205,7 @@ export const RegistroVisitante: React.FC = () => {
       <div className="relative">
         {loading && (
           <div className="flex flex-col items-center justify-center py-32 animate-pulse">
-            <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
+            <div className="size-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4" />
             <p className="text-slate-400 font-bold tracking-widest uppercase text-xs">Cargando información...</p>
           </div>
         )}

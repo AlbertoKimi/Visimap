@@ -25,8 +25,8 @@ const TooltipIA = ({
   return (
     <div className="chat-grafico-tooltip">
       {label && <p className="chat-grafico-tooltip-label">{label}</p>}
-      {payload.map((entry, i) => (
-        <div key={i} className="chat-grafico-tooltip-row">
+      {payload.map((entry) => (
+        <div key={entry.name} className="chat-grafico-tooltip-row">
           <span className="chat-grafico-tooltip-dot" style={{ backgroundColor: entry.color }} />
           <span>{entry.name}:</span>
           <span className="chat-grafico-tooltip-value">{entry.value?.toLocaleString('es-ES')}</span>
@@ -172,8 +172,8 @@ export const GraficoMensaje: React.FC<GraficoMensajeProps> = ({ grafico }) => {
                 nameKey={grafico.claveX}
                 stroke="none"
               >
-                {grafico.datos.map((_, i) => (
-                  <Cell key={`cell-${i}`} fill={colores[i % colores.length]} />
+                {grafico.datos.map((entry, i) => (
+                  <Cell key={`cell-${(entry as any)[grafico.claveX] || i}`} fill={colores[i % colores.length]} />
                 ))}
               </Pie>
               <Tooltip content={<TooltipIA />} />

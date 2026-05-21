@@ -1,4 +1,4 @@
-import React, { useRef, KeyboardEvent, useCallback } from 'react';
+﻿import React, { useRef, KeyboardEvent, useCallback } from 'react';
 import { ArrowUp, Paperclip, X, Loader2 } from 'lucide-react';
 
 /**
@@ -88,7 +88,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
           {adjuntos.map(adj => (
             <div key={adj.nombre} className="chat-adjunto-chip">
               {adj.tipo.startsWith('image/') ? (
-                <img src={adj.previewUrl} alt={adj.nombre} className="w-6 h-6 rounded object-cover" />
+                <img src={adj.previewUrl} alt={adj.nombre} className="size-6 rounded object-cover" />
               ) : (
                 <span className="text-base">
                   {adj.tipo.includes('pdf') ? '📄' : adj.tipo.includes('csv') ? '📊' : '📎'}
@@ -102,7 +102,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
                 title="Eliminar archivo"
                 aria-label={`Eliminar ${adj.nombre}`}
               >
-                <X className="w-3 h-3" />
+                <X className="size-3" />
               </button>
             </div>
           ))}
@@ -121,7 +121,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
           aria-label="Adjuntar archivo"
           id="btn-adjuntar-chat"
         >
-          <Paperclip className="w-4 h-4" />
+          <Paperclip className="size-4" />
         </button>
         <input
           ref={fileInputRef}
@@ -157,9 +157,9 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
           id="btn-enviar-chat"
         >
           {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="size-4 animate-spin" />
           ) : (
-            <ArrowUp className="w-4 h-4" />
+            <ArrowUp className="size-4" />
           )}
         </button>
       </div>
