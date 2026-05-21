@@ -866,9 +866,9 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
     box-sizing: border-box !important;
   }
 
-  /* Evitar desplazamiento/scroll a nivel de ventana en iOS */
-  html,
-  body {
+  /* Evitar desplazamiento/scroll a nivel de ventana en iOS solo en el panel de control */
+  html.dashboard-scroll-lock,
+  body.dashboard-scroll-lock {
     position: fixed !important;
     overflow: hidden !important;
     width: 100% !important;

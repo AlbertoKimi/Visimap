@@ -26,6 +26,16 @@ import {
 export const DashboardLayout: React.FC = () => {
     const location = useLocation();
 
+    React.useEffect(() => {
+        // Evitar desplazamiento a nivel de ventana en iOS/móviles
+        document.documentElement.classList.add('dashboard-scroll-lock');
+        document.body.classList.add('dashboard-scroll-lock');
+        return () => {
+            document.documentElement.classList.remove('dashboard-scroll-lock');
+            document.body.classList.remove('dashboard-scroll-lock');
+        };
+    }, []);
+
     const getTitle = () => {
         const path = location.pathname;
         if (path.includes('mapa')) return 'Mapa de Visitantes';
