@@ -78,7 +78,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     fetchStats();
 
     const channel = supabase
-      .channel('schema-db-changes')
+      .channel(`detalle-usuario-stats-${user.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'registro_visitante' }, () => fetchStats())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'evento' }, () => fetchStats())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'grupo_visitante' }, () => fetchStats())
@@ -87,7 +87,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchStats]);
+  }, [fetchStats, user.id]);
 
   const stats = [
     { label: 'Eventos Creados', value: realStats.eventos, color: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },

@@ -21,10 +21,11 @@ const ActionsCell: React.FC<{
   onAction: (action: string, profile: Perfil) => void;
   currentUserId?: string;
 }> = ({ profile, onAction, currentUserId }) => {
-  // Si este perfil es el usuario conectado, no mostramos acciones
-  if (profile.id === currentUserId) return null;
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  if (profile.id === currentUserId) return null;
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

@@ -15,6 +15,22 @@ import { getNestedValue, toStr, calcularPaginas, cn } from '@/utils/utils';
 
 type SortDir = 'asc' | 'desc' | null;
 
+const SortIcon = ({
+  colKey,
+  sortKey,
+  sortDir,
+}: {
+  colKey: string;
+  sortKey: string | null;
+  sortDir: SortDir;
+}) => {
+  if (sortKey !== colKey)
+    return <ChevronsUpDown size={14} className="text-slate-300 dark:text-slate-600 ml-1 flex-shrink-0" />;
+  if (sortDir === 'asc')
+    return <ChevronUp size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
+  return <ChevronDown size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
+};
+
 
 export function TablaGenerica<T>({
   data,
@@ -162,14 +178,6 @@ export function TablaGenerica<T>({
     }
   };
 
-  const SortIcon = ({ colKey }: { colKey: string }) => {
-    if (sortKey !== colKey)
-      return <ChevronsUpDown size={14} className="text-slate-300 dark:text-slate-600 ml-1 flex-shrink-0" />;
-    if (sortDir === 'asc')
-      return <ChevronUp size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
-    return <ChevronDown size={14} className="text-blue-500 dark:text-blue-400 ml-1 flex-shrink-0" />;
-  };
-
   return (
     <div className="flex flex-col gap-0">
       <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-800">
@@ -270,7 +278,7 @@ export function TablaGenerica<T>({
                   >
                     <span className="inline-flex items-center gap-0.5">
                       {col.header}
-                      {col.sortable && <SortIcon colKey={col.key} />}
+                      {col.sortable && <SortIcon colKey={col.key} sortKey={sortKey} sortDir={sortDir} />}
                     </span>
                   </th>
                 ))}
