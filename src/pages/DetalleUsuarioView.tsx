@@ -222,7 +222,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   const fullName = `${user.nombre || ''} ${user.primer_apellido || ''} ${user.segundo_apellido || ''}`.trim();
 
   return (
-    <div className={`max-w-6xl mx-auto pb-12 ${!hideBack ? 'pt-4' : 'pt-2'}`}>
+    <div className={`w-full max-w-6xl mx-auto pb-12 ${!hideBack ? 'pt-4' : 'pt-2'}`}>
       {/* Header / Navegación */}
       <div className={`flex mb-8 gap-2 ${hideBack ? 'justify-end items-center' : 'flex-col md:flex-row md:items-center md:justify-between'}`}>
         {!hideBack && (
@@ -236,9 +236,38 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         )}
 
         <div className="flex flex-wrap gap-2 shrink-0">
-          {mode === 'view' ? (
+          {hideBack ? (
             <>
-              {!hideBack && (
+              {/* Para "Mi Perfil", renderizamos siempre ambos botones para mantener el tamaño del contenedor estable en móvil */}
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isSaving}
+                className={`w-[125px] sm:w-[130px] px-2 sm:px-4 ${mode === 'view' ? "invisible pointer-events-none" : ""}`}
+              >
+                <X size={16} /> Cancelar
+              </Button>
+              {mode === 'view' ? (
+                <Button
+                  onClick={handleEdit}
+                  className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-2 sm:px-6 transition-all active:scale-95 w-[165px] sm:w-[180px]"
+                >
+                  <Edit2 size={16} /> Editar mi Perfil
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg px-2 sm:px-6 w-[165px] sm:w-[180px]"
+                >
+                  {isSaving ? 'Guardando...' : <><Save size={16} /> Guardar Cambios</>}
+                </Button>
+              )}
+            </>
+          ) : (
+            // Vista de administrador para gestionar otros usuarios (mantiene el comportamiento original)
+            mode === 'view' ? (
+              <>
                 <Button
                   variant="outline"
                   onClick={toggleStatus}
@@ -247,28 +276,28 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   {user.active === false ? <CheckCircle2 size={18} className="mr-2" /> : <XCircle size={18} className="mr-2" />}
                   {user.active === false ? 'Activar Usuario' : 'Desactivar Usuario'}
                 </Button>
-              )}
-              <Button onClick={handleEdit} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-6 transition-all active:scale-95">
-                <Edit2 size={18} className="mr-2" /> {hideBack ? 'Editar mi Perfil' : 'Editar Perfil'}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
-                <X size={18} className="mr-2" /> Cancelar
-              </Button>
-              <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg px-6">
-                {isSaving ? 'Guardando...' : <><Save size={18} className="mr-2" /> Guardar Cambios</>}
-              </Button>
-            </>
+                <Button onClick={handleEdit} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white shadow-lg px-6 transition-all active:scale-95">
+                  <Edit2 size={18} className="mr-2" /> Editar Perfil
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+                  <X size={18} className="mr-2" /> Cancelar
+                </Button>
+                <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg px-6">
+                  {isSaving ? 'Guardando...' : <><Save size={18} className="mr-2" /> Guardar Cambios</>}
+                </Button>
+              </>
+            )
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
         {/* Columna Izquierda: Tarjeta de Perfil */}
-        <div className="space-y-6">
-          <Card className="border-none shadow-xl overflow-hidden">
+        <div className="space-y-6 w-full">
+          <Card className="w-full border-none shadow-xl overflow-hidden">
             <div className="h-32 bg-gradient-to-r from-blue-600 to-purple-600 relative">
               <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
                 <div className="relative group">
@@ -322,7 +351,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           </Card>
 
           {/* Infomación de contacto */}
-          <Card className="border-none shadow-xl">
+          <Card className="w-full border-none shadow-xl">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-slate-600 dark:text-slate-400 uppercase tracking-wider font-bold">Información de Contacto</CardTitle>
             </CardHeader>
@@ -350,11 +379,11 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         </div>
 
         {/* Columna Derecha: Detalles y Estadísticas */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 w-full">
           {/* Estadísticas */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             {stats.map((stat, i) => (
-              <Card key={i} className="border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
+              <Card key={i} className="w-full border-none shadow-lg hover:shadow-xl transition-shadow cursor-default">
                 <CardContent className="p-6">
                   <p className="text-3xl font-black text-slate-800 dark:text-white tracking-tighter">{stat.value}</p>
                   <p className="text-sm text-slate-600 dark:text-slate-400 font-bold mt-1 uppercase tracking-wider">{stat.label}</p>
@@ -364,14 +393,14 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           </div>
 
           {/* Información principal */}
-          <Card className="border-none shadow-xl">
+          <Card className="w-full border-none shadow-xl">
             <CardHeader className="border-b border-slate-50 dark:border-slate-800">
               <CardTitle className="text-slate-800 dark:text-slate-100">{mode === 'edit' ? (hideBack ? 'Editar mis datos' : 'Editar Información') : (hideBack ? 'Información de mi Cuenta' : 'Detalles del Perfil')}</CardTitle>
             </CardHeader>
             <CardContent className="p-8">
               {mode === 'edit' ? (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-6 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
                     <Input
                       label="Nombre"
                       name="nombre"
@@ -433,7 +462,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       <Key size={16} className="text-blue-500" /> Cambiar Contraseña
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
                       <Input
                         label="Nueva Contraseña"
                         type="password"
@@ -457,7 +486,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-12 w-full">
                   <DetailItem label="Nombre Completo" value={fullName} />
                   <DetailItem label="Nombre de Usuario" value={`@${user.nombre_usuario}`} />
                   <DetailItem label="Correo Electrónico" value={user.email} />
@@ -477,20 +506,6 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
             </CardContent>
           </Card>
 
-          {/* Zona de Peligro. Todavía no se ha implementado */}
-          {/* {mode === 'view' && showDangerZone && (
-            <Card className="border border-red-100 bg-red-50/30 overflow-hidden">
-              <CardContent className="p-6 flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-bold text-red-800">Zona de Peligro</h4>
-                  <p className="text-xs text-red-600 mt-1">Eliminar permanentemente este usuario y todos sus datos asociados.</p>
-                </div>
-                <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                  <Trash size={16} className="mr-2" /> Eliminar Usuario
-                </Button>
-              </CardContent>
-            </Card>
-          )} */}
         </div>
       </div>
     </div>
