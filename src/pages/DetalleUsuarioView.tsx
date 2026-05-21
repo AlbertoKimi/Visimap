@@ -224,18 +224,18 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   return (
     <div className={`max-w-6xl mx-auto pb-12 ${!hideBack ? 'pt-4' : 'pt-2'}`}>
       {/* Header / Navegación */}
-      <div className={`flex items-center mb-8 ${hideBack ? 'justify-end' : 'justify-between'}`}>
+      <div className={`flex mb-8 gap-2 ${hideBack ? 'justify-end items-center' : 'flex-col md:flex-row md:items-center md:justify-between'}`}>
         {!hideBack && (
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium"
+            className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium self-start"
           >
             <ArrowLeft size={20} />
             Volver al listado
           </button>
         )}
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 shrink-0">
           {mode === 'view' ? (
             <>
               {!hideBack && (
