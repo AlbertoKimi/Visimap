@@ -24,12 +24,14 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
   const footer = (
     <>
       <button
+        type="button"
         onClick={onClose}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all active:scale-[0.98]"
       >
         Cerrar
       </button>
       <button
+        type="button"
         onClick={() => onSave(cantidad, observaciones)}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >

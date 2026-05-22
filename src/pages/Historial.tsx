@@ -214,6 +214,7 @@ export const Historial: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
+            type="button"
             onClick={exportarPDF}
             disabled={loading || datosMensuales.length === 0}
             className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm font-medium disabled:opacity-50"

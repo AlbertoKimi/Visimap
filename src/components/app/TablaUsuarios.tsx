@@ -40,8 +40,9 @@ const ActionsCell: React.FC<{
   return (
     <div className="flex justify-end">
       <button
+        type="button"
         onClick={handleClick}
-        className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+        className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
         data-state={open ? 'open' : 'closed'}
       >
         <MoreVertical className="size-5" />
@@ -129,17 +130,10 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         const displayName = fullName || profile.nombre_usuario || 'Sin nombre';
         const initial = displayName.charAt(0).toUpperCase();
         return (
-          <div
-            role="button"
-            tabIndex={0}
-            className="flex items-center gap-3 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-0.5"
+          <button
+            type="button"
+            className="flex items-center gap-3 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-0.5 bg-transparent border-0 text-left"
             onClick={() => onAction('view', profile)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onAction('view', profile);
-              }
-            }}
           >
             {profile.avatar_url ? (
               <img
@@ -156,7 +150,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{displayName}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500">@{profile.nombre_usuario}</p>
             </div>
-          </div>
+          </button>
         );
       },
     },

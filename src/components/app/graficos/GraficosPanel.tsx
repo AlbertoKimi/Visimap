@@ -519,6 +519,7 @@ export const GraficosPanel: React.FC = () => {
         </div>
         <div className="flex-1" />
         <button
+          type="button"
           onClick={fetchTodo}
           className="btn-secondary h-11 px-4 mb-0.5 flex items-center gap-2"
           title="Refrescar datos manualmente"

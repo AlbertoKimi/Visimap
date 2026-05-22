@@ -209,6 +209,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
           </button>
         </form>
         <button
+          type="button"
           onClick={onBack}
           className="w-full text-slate-600 dark:text-slate-400 text-sm font-medium mt-6 hover:text-blue-700 dark:hover:text-blue-400 hover:underline transition-all duration-200"
         >

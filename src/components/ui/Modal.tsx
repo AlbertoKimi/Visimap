@@ -126,6 +126,7 @@ export const Modal: React.FC<ModalProps> = ({
                 ) : <div />}
                 {showCloseButton && (
                   <button
+                    type="button"
                     onClick={onClose}
                     aria-label="Cerrar"
                     className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 active:scale-90"

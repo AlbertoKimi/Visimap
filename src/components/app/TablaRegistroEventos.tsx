@@ -81,6 +81,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       render: (reg) => (
         <div className="flex justify-end gap-2">
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); onEdit(reg); }}
             className="p-1.5 lg:p-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-xl transition-all shadow-sm active:scale-95"
             title="Modificar"
@@ -88,6 +89,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
             <Edit3 size={16} />
           </button>
           <button
+            type="button"
             onClick={(e) => { e.stopPropagation(); onDelete(reg.id_grupo); }}
             className="p-1.5 lg:p-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 hover:text-red-700 dark:hover:text-red-300 rounded-xl transition-all shadow-sm active:scale-95"
             title="Eliminar"

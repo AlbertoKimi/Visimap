@@ -227,6 +227,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       <div className={`flex mb-8 gap-2 ${hideBack ? 'justify-end items-center' : 'flex-col md:flex-row md:items-center md:justify-between'}`}>
         {!hideBack && (
           <button
+            type="button"
             onClick={onBack}
             className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium self-start"
           >
@@ -314,8 +315,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   )}
                   {mode === 'edit' && (
                     <button
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
+                      aria-label="Cambiar foto de perfil"
                       className="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       {isUploading ? <Loader2 size={24} className="animate-spin" /> : <Camera size={24} />}

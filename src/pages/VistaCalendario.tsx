@@ -321,18 +321,11 @@ export const VistaCalendario: React.FC = () => {
                   const color = obtenerColor(ev.extendedProps?.nombreTipo || '');
                   const fecha = new Date(ev.start);
                   return (
-                    <div
+                    <button
                       key={ev.id}
-                      role="button"
-                      tabIndex={0}
-                      className="flex gap-3 items-start px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                      type="button"
+                      className="w-full text-left flex gap-3 items-start px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer bg-transparent border-0"
                       onClick={() => handleAbrirModalEvento(ev)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleAbrirModalEvento(ev);
-                        }
-                      }}
                     >
                       <div suppressHydrationWarning className="shrink-0 flex flex-col items-center justify-center size-12 rounded-xl font-bold text-center" style={{ backgroundColor: color.bg, color: color.text }}>
                         <span className="text-lg leading-none">{fecha.getDate()}</span>
@@ -342,7 +335,7 @@ export const VistaCalendario: React.FC = () => {
                         <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm truncate">{ev.title}</p>
                         <p suppressHydrationWarning className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
-                    </div>
+                    </button>
                   );
                 })
               )}

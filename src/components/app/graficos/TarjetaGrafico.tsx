@@ -107,17 +107,19 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
         {/* Controles */}
         <div className="flex items-center gap-1" data-html2canvas-ignore="true">
           <button
+            type="button"
             onClick={handleDownload}
             title="Descargar como imagen"
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
+            className="p-1.5 rounded-lg text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
           >
             <Download className="size-4" />
           </button>
           {onRefresh && (
             <button
+              type="button"
               onClick={onRefresh}
               title="Actualizar gráfico"
-              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
+              className="p-1.5 rounded-lg text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
             >
               <RefreshCw className="size-4" />
             </button>

@@ -152,7 +152,9 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </div>
         {/* La X solo se muestra en escritorio */}
         <button
+          type="button"
           onClick={() => setEstaAbierto(false)}
+          aria-label="Cerrar panel"
           className="hidden md:flex p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
         >
           <X className="size-5" />
@@ -207,7 +209,9 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         className="hidden md:block absolute lg:relative right-0 top-0 bottom-0 bg-white dark:bg-slate-900 shadow-2xl flex-shrink-0 z-40 border-l border-slate-100 dark:border-slate-800 md:[--panel-width:350px] lg:[--panel-width:400px]"
       >
         <button
+          type="button"
           onClick={() => setEstaAbierto(!estaAbierto)}
+          aria-label={estaAbierto ? "Cerrar panel" : "Abrir panel"}
           className="absolute top-1/2 left-0 -translate-x-full -translate-y-1/2 p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-l-2xl shadow-xl dark:shadow-[0_0_15px_rgba(59,130,246,0.15)] border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 z-50 flex items-center justify-center w-10 h-16 group transition-all"
         >
           {estaAbierto ? (

@@ -167,10 +167,12 @@ export const RegistroVisitante: React.FC = () => {
         <div className="flex items-center gap-3">
           {/* Botón refrescar */}
           <button
+            type="button"
             onClick={fetchData}
-            className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+            className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
             disabled={loading}
             title="Actualizar"
+            aria-label="Actualizar registros"
           >
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
           </button>
@@ -178,6 +180,7 @@ export const RegistroVisitante: React.FC = () => {
           {/* Pestañas */}
           <div className="inline-flex bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
             <button
+              type="button"
               onClick={() => setActiveTab('mapa')}
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 activeTab === 'mapa'
@@ -188,6 +191,7 @@ export const RegistroVisitante: React.FC = () => {
               Mapa
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('eventos')}
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 activeTab === 'eventos'

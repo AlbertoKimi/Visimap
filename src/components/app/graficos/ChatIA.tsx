@@ -59,6 +59,7 @@ export const ChatIA: React.FC = () => {
         <div className="ml-auto flex items-center gap-3">
           {mensajes.length > 0 && (
             <button
+              type="button"
               onClick={limpiarChat}
               className="chat-btn-limpiar"
               title="Limpiar conversación"

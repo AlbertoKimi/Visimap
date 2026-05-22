@@ -206,6 +206,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
                 {/* Botón Theme Toggle */}
                 <button
+                    type="button"
                     onClick={toggleTheme}
                     className="absolute top-6 right-6 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90 z-20 shadow-sm border border-slate-200 dark:border-slate-700"
                     title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
