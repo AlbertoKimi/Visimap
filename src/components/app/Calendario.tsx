@@ -75,11 +75,8 @@ export const Calendario: React.FC<CalendarioProps> = ({
 }) => {
   const [vista, setVista] = useState<'mes' | 'semana' | 'dia' | 'año' | 'agenda'>('mes');
   const [fechaActual, setFechaActual] = useState(new Date());
-  const [todayStr, setTodayStr] = useState('');
-
-  React.useEffect(() => {
-    setTodayStr(new Date().toDateString());
-  }, []);
+  // Lazy init: se calcula una vez al montar el componente, sin parpadeo entre render inicial y efecto
+  const [todayStr] = useState(() => new Date().toDateString());
 
   const calendarRef = React.useRef<any>(null);
 
