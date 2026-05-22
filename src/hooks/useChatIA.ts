@@ -313,13 +313,15 @@ export function useChatIA() {
 
         let respuestaTexto = '';
         if (!eventos || eventos.length === 0) {
-          respuestaTexto = 'No hay eventos activos o próximos.';
+          respuestaTexto = `## Eventos activos o próximos\n\nNo hay **eventos activos o próximos** registrados en el museo en este momento.`;
         } else {
-          respuestaTexto = eventos.map((ev: any) => {
+          const listado = eventos.map((ev: any) => {
             const d = new Date(ev.fecha_inicio);
             const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-            return `• ${ev.nombre_evento}: ${fechaFormateada}`;
+            return `- **${ev.nombre_evento}** — ${fechaFormateada}`;
           }).join('\n');
+          const total = eventos.length;
+          respuestaTexto = `## Eventos activos o próximos\n\nActualmente hay **${total}** evento${total === 1 ? '' : 's'} ${total === 1 ? 'programado' : 'programados'}:\n\n${listado}`;
         }
 
         await new Promise(resolve => setTimeout(resolve, 600));
