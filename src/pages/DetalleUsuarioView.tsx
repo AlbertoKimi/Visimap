@@ -331,6 +331,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     className="hidden"
                     accept="image/*"
                     onChange={handleImageChange}
+                    aria-label="Subir foto de perfil"
                   />
                 </div>
               </div>

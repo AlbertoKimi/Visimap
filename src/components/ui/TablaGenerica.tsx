@@ -200,6 +200,7 @@ export function TablaGenerica<T>({
             value={search}
             onChange={handleSearch}
             placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder || "Buscar"}
             className="input-style-comun input-border-primario pl-9 w-full sm:max-w-xs"
           />
         </div>
@@ -210,6 +211,7 @@ export function TablaGenerica<T>({
               key={filter.key}
               value={filterValues[filter.key] || '__all__'}
               onChange={e => handleFilter(filter.key, e.target.value)}
+              aria-label={`Filtrar por ${filter.label}`}
               className="input-style-comun select-responsive select-color-text w-full sm:w-auto sm:min-w-[130px] py-2"
             >
               <option value="__all__">{filter.label}: Todos</option>

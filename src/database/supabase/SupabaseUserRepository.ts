@@ -69,17 +69,18 @@ export class SupabaseUserRepository implements UserRepository {
 
   async getStats(id: UUID): Promise<UserStats> {
     try {
-      // Conteo de eventos
-      const resCountE = await supabase.from('evento').select('id_evento', { count: 'exact', head: true }).eq('id_usuario', id);
-
-      // Conteo de registros (visitantes individuales + grupos)
-      const [resCountR, resCountG] = await Promise.all([
+      // Las 6 consultas son independientes — lanzamos todas en paralelo.
+      const [
+        resCountE,
+        resCountR,
+        resCountG,
+        resLastE,
+        resLastR,
+        resLastG
+      ] = await Promise.all([
+        supabase.from('evento').select('id_evento', { count: 'exact', head: true }).eq('id_usuario', id),
         supabase.from('registro_visitante').select('id_registro', { count: 'exact', head: true }).eq('id_usuario', id),
-        supabase.from('grupo_visitante').select('id_grupo, evento!inner(id_usuario)', { count: 'exact', head: true }).eq('evento.id_usuario', id)
-      ]);
-
-      // Obtener el último registro de cada tabla para la "Última Actividad"
-      const [resLastE, resLastR, resLastG] = await Promise.all([
+        supabase.from('grupo_visitante').select('id_grupo, evento!inner(id_usuario)', { count: 'exact', head: true }).eq('evento.id_usuario', id),
         supabase.from('evento').select('fecha_inicio').eq('id_usuario', id).order('id_evento', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('registro_visitante').select('creado_en').eq('id_usuario', id).order('id_registro', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('grupo_visitante').select('created_at, evento!inner(id_usuario)').eq('evento.id_usuario', id).order('created_at', { ascending: false }).limit(1).maybeSingle()

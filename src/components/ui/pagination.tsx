@@ -43,10 +43,17 @@ const PaginationLink = ({
   className,
   isActive,
   size = "icon",
+  children,
   ...props
 }: PaginationLinkProps) => (
   <a
     aria-current={isActive ? "page" : undefined}
+    aria-label={
+      props["aria-label"] ??
+      (typeof children === "string" || typeof children === "number"
+        ? `Ir a la página ${children}`
+        : undefined)
+    }
     className={cn(
       buttonVariants({
         variant: isActive ? "outline" : "ghost",
@@ -57,7 +64,9 @@ const PaginationLink = ({
       className
     )}
     {...props}
-  />
+  >
+    {children}
+  </a>
 )
 PaginationLink.displayName = "PaginationLink"
 
