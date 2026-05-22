@@ -1,9 +1,12 @@
-﻿import React, { useMemo } from 'react';
+﻿import React, { useMemo, lazy, Suspense } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { ICONOS } from '@/constantes/iconos';
 import { useAuthStore } from '@/stores/authStore';
-import { GraficoMensaje } from './GraficoMensaje';
 import type { MensajeChat } from '@/interfaces/ChatIA';
+
+const GraficoMensaje = lazy(() =>
+  import('./GraficoMensaje').then(m => ({ default: m.GraficoMensaje }))
+);
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Renderizador de Markdown ligero (negritas, cursivas, código, listas, headers)
@@ -146,9 +149,11 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
         {/* Gráficos incrustados (debajo de la burbuja) */}
         {mensaje.graficos && mensaje.graficos.length > 0 && (
           <div className="chat-graficos-lista">
-            {mensaje.graficos.map(grafico => (
-              <GraficoMensaje key={grafico.id} grafico={grafico} />
-            ))}
+            <Suspense fallback={<div className="chat-grafico-loader" />}>
+              {mensaje.graficos.map(grafico => (
+                <GraficoMensaje key={grafico.id} grafico={grafico} />
+              ))}
+            </Suspense>
           </div>
         )}
 

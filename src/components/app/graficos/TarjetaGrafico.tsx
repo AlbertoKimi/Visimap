@@ -109,7 +109,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
           <button
             onClick={handleDownload}
             title="Descargar como imagen"
-            className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
+            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all duration-150"
           >
             <Download className="size-4" />
           </button>
@@ -117,7 +117,7 @@ export const TarjetaGrafico: React.FC<TarjetaGraficoProps> = ({
             <button
               onClick={onRefresh}
               title="Actualizar gráfico"
-              className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
+              className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-150"
             >
               <RefreshCw className="size-4" />
             </button>

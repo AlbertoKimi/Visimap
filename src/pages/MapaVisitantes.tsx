@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Formulario } from "@/components/app/Formulario";
 import SpainProvincesMap from "@/components/app/SpainProvinciasMapa";
@@ -159,7 +159,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
         </button>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1">
         <Formulario
           onSubmit={handleRegistroLateral}
           mostrarObservaciones={true}

@@ -168,7 +168,7 @@ export const RegistroVisitante: React.FC = () => {
           {/* Botón refrescar */}
           <button
             onClick={fetchData}
-            className="p-2 text-slate-500 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+            className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all active:scale-95 disabled:opacity-50"
             disabled={loading}
             title="Actualizar"
           >

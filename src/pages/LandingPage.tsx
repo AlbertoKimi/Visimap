@@ -1,6 +1,5 @@
 import React from 'react';
-import { LazyMotion, m } from 'framer-motion';
-const loadFeatures = () => import('framer-motion').then(res => res.domAnimation);
+import { m } from 'framer-motion';
 import { LandingPageProps } from "@/interfaces/components";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -99,7 +98,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   }, []);
 
   return (
-    <LazyMotion features={loadFeatures} strict>
+    <>
       <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
         <nav className="fixed top-0 w-full bg-white dark:bg-slate-950 border-b dark:border-slate-800 z-50">
           <div className="container mx-auto p-4">
@@ -603,6 +602,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           </div>
         </footer>
       </div>
-    </LazyMotion>
+    </>
   );
 };
