@@ -260,12 +260,12 @@ export const RegistroVisitante: React.FC = () => {
       />
 
       <ModalEditarCantidad
-        key={selectedItem?.id || 'edit-modal'}
+        key={selectedItem ? `edit-${activeTab}-${selectedItem.id_registro ?? selectedItem.id_grupo}` : 'edit-modal'}
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
         onSave={handlePreSaveQuantity}
         cantidadActual={pendingSaveData ? pendingSaveData.cantidad : ((activeTab === 'mapa' ? selectedItem?.cantidad : selectedItem?.num_visitantes) || 0)}
-        observacionesActuales={pendingSaveData ? pendingSaveData.observaciones : (activeTab === 'mapa' ? selectedItem?.observaciones : selectedItem?.evento?.descripcion)}
+        observacionesActuales={pendingSaveData ? pendingSaveData.observaciones : (activeTab === 'mapa' ? selectedItem?.observaciones : (selectedItem?.evento?.descripcion ?? selectedItem?.descripcion))}
         titulo="Modificar registro"
       />
 

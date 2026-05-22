@@ -109,8 +109,8 @@ export function Formulario({
   return (
     <div className="flex flex-col gap-3 min-h-full">
       <div className="flex-none space-y-2.5 md:space-y-2">
-        <div>
-          <label className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</label>
+        <fieldset className="border-0 p-0 m-0">
+          <legend className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</legend>
           <div className="flex justify-center items-center gap-2 sm:gap-3 py-1">
             <Button
               type="button"
@@ -138,7 +138,7 @@ export function Formulario({
               <span className="text-sm font-bold">Grupo</span>
             </Button>
           </div>
-        </div>
+        </fieldset>
 
         <AnimatePresence>
           {formData.tipoVisita === 'grupo' && (

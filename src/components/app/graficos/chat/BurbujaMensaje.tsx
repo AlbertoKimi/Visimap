@@ -1,4 +1,5 @@
 ﻿import React, { useMemo, lazy, Suspense } from 'react';
+import DOMPurify from 'dompurify';
 import { AlertCircle } from 'lucide-react';
 import { ICONOS } from '@/constantes/iconos';
 import { useAuthStore } from '@/stores/authStore';
@@ -96,14 +97,14 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
 
   const htmlTexto = useMemo(() => {
     if (!mensaje.texto) return '';
-    
+
     // Limpiamos los bloques de sistema para que el usuario NO vea el código técnico
     const textoLimpio = mensaje.texto
       .replace(/```db-query\s*[\s\S]*?```/g, '')
       .replace(/```chart\s*[\s\S]*?```/g, '')
       .trim();
 
-    return renderMarkdown(textoLimpio);
+    return DOMPurify.sanitize(renderMarkdown(textoLimpio));
   }, [mensaje.texto]);
 
   return (

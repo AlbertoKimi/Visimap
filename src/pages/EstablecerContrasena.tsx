@@ -7,6 +7,8 @@ import { supabase } from "@/database/supabase/client";
 import fachadaMuviImg from "@/assets/Fachada_Muvi.webp";
 import { EstablecerContrasenaProps } from "@/interfaces/components";
 
+const COPYRIGHT_YEAR = new Date().getFullYear();
+
 /**
  * Vista mostrada a los nuevos usuarios tras aceptar la invitación por correo.
  * Les permite configurar su nombre de usuario final y establecer una contraseña
@@ -191,7 +193,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
 
                     <p className="text-white/60 text-xs font-medium">
-                        © {new Date().getFullYear()} Museo MUVI · Sistema VisiMap
+                        © {COPYRIGHT_YEAR} Museo MUVI · Sistema VisiMap
                     </p>
                 </div>
             </div>
