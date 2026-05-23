@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Snackbar, Alert, Button } from '@mui/material';
 import { EventModal } from "@/components/app/modales/EventModal";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { Calendario } from "@/components/app/Calendario";
 import { obtenerColor } from "@/constantes/appConstants";
 import { formatearFechaInput } from "@/utils/utils";
@@ -27,6 +28,7 @@ export const VistaCalendario: React.FC = () => {
   const [tiposEvento, setTiposEvento] = useState<TipoEvento[]>([]);
   const [cargando, setCargando] = useState(true);
   const [modal, setModal] = useState<{ mode: 'view' | 'new', event: Partial<Evento> & { confirmarAlAbrir?: boolean } } | null>(null);
+  const [eventoAEliminar, setEventoAEliminar] = useState<{ id_evento: number, nombre_evento?: string } | null>(null);
   const [ahora, setAhora] = useState(new Date());
   const [notificacion, setNotificacion] = useState<{
     open: boolean,
@@ -223,14 +225,22 @@ export const VistaCalendario: React.FC = () => {
     mostrarNotificacion('¡Evento finalizado correctamente!', 'success');
   };
 
-  const handleEliminar = async (evento: { id_evento: number }) => {
+  // Abre el modal de confirmación. El borrado real se ejecuta en confirmarEliminacion.
+  const handleEliminar = (evento: { id_evento: number, nombre_evento?: string }) => {
+    setEventoAEliminar({ id_evento: evento.id_evento, nombre_evento: evento.nombre_evento });
+  };
+
+  const confirmarEliminacion = async () => {
+    if (!eventoAEliminar) return;
     try {
-      await eventRepo.delete(evento.id_evento);
+      await eventRepo.delete(eventoAEliminar.id_evento);
       fetchInitialData();
       setModal(null);
-      mostrarNotificacion('Evento eliminado.', 'info');
+      mostrarNotificacion('Evento eliminado correctamente.', 'success');
     } catch {
       mostrarNotificacion('No se pudo eliminar el evento. Es posible que ya haya sido eliminado o no tengas permisos suficientes.', 'error');
+    } finally {
+      setEventoAEliminar(null);
     }
   };
 
@@ -356,6 +366,19 @@ export const VistaCalendario: React.FC = () => {
           tiposEvento={tiposEvento}
         />
       )}
+
+      <ModalConfirmacion
+        isOpen={!!eventoAEliminar}
+        onClose={() => setEventoAEliminar(null)}
+        onConfirm={confirmarEliminacion}
+        titulo="¿Eliminar evento?"
+        mensaje={
+          eventoAEliminar?.nombre_evento
+            ? `¿Estás seguro de que quieres eliminar el evento "${eventoAEliminar.nombre_evento}"? Esta acción es permanente y no se podrá recuperar.`
+            : '¿Estás seguro de que quieres eliminar este evento? Esta acción es permanente y no se podrá recuperar.'
+        }
+        tipo="danger"
+      />
 
       <Snackbar
         open={notificacion.open}
