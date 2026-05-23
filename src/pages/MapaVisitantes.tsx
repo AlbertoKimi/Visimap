@@ -245,6 +245,7 @@ export function MapaVisitantes({ onRegistrarVisitante }: MapaVisitantesProps) {
           onCancel={() => setShowForm(false)}
           resetTrigger={resetModalTrigger}
           bloquearProvincia={true}
+          bloquearPais={true}
         />
       </Modal>
 

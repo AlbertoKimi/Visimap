@@ -26,6 +26,7 @@ export function Formulario({
   onCancel,
   mostrarObservaciones = false,
   bloquearProvincia = false,
+  bloquearPais = false,
   resetTrigger = 0
 }: FormularioProps) {
   const [formData, setFormData] = useState<FormData>({
@@ -172,7 +173,7 @@ export function Formulario({
           options={paises.map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
           manejarCambio={manejarCambio}
           required
-          disabled={loadingPaises}
+          disabled={loadingPaises || bloquearPais}
         />
 
         <div className="relative">

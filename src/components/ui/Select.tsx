@@ -29,7 +29,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(({
         ref={ref}
         value={value}
         disabled={disabled}
-        className={`input-style-comun select-responsive select-color-text ${disabled ? "input-disabled" : `${colorClass}`
+        className={`input-style-comun disabled:cursor-not-allowed ${disabled
+          ? "input-disabled"
+          : `select-responsive select-color-text ${colorClass}`
           }`}
         {...props}
         onChange={manejarCambio}
