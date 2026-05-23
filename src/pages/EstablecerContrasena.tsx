@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { CheckCircle, ShieldCheck } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -211,7 +212,11 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                     className="absolute top-6 right-6 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90 z-20 shadow-sm border border-slate-200 dark:border-slate-700"
                     title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                 >
-                    {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                    <img
+                        src={isDark ? ICONOS.sol : ICONOS.luna}
+                        className="size-5 object-contain"
+                        alt=""
+                    />
                 </button>
 
                 <div className="relative z-10 w-full max-w-md space-y-8">

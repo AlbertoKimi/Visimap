@@ -8,7 +8,7 @@ import { AuthRepository } from '../repositories/AuthRepository';
 export class SupabaseAuthRepository implements AuthRepository {
   private static instance: SupabaseAuthRepository;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): SupabaseAuthRepository {
     if (!SupabaseAuthRepository.instance) {
@@ -47,12 +47,41 @@ export class SupabaseAuthRepository implements AuthRepository {
     const { error } = await supabase.functions.invoke('invite-user', {
       body: {
         email,
-        options: { 
+        options: {
           data: metadata,
           redirectTo: window.location.origin
         }
       }
     });
-    if (error) throw error;
+    if (error) {
+      // Extraemos el mensaje de Supabase para poder mostrarlo al usuario.
+      const ctx = (error as any).context;
+      if (ctx && typeof ctx.json === 'function') {
+        try {
+          const body = await ctx.json();
+          const detalle = body?.error || body?.message || body?.msg;
+          if (detalle) {
+            const lower = String(detalle).toLowerCase();
+            if (
+              lower.includes('already') ||
+              lower.includes('exists') ||
+              lower.includes('registered') ||
+              lower.includes('duplicate') ||
+              lower.includes('ya está') ||
+              lower.includes('ya existe')
+            ) {
+              throw new Error('USER_ALREADY_EXISTS');
+            }
+            throw new Error(detalle);
+          }
+        } catch (parseErr: any) {
+          if (parseErr?.message === 'USER_ALREADY_EXISTS') throw parseErr;
+          // Si no podemos leer el cuerpo, el motivo de fallo más común en esta función
+          // es que el correo ya esté registrado, así que asumimos ese caso.
+          throw new Error('USER_ALREADY_EXISTS');
+        }
+      }
+      throw error;
+    }
   }
 }

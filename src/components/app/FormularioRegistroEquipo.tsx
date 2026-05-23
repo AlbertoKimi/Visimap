@@ -75,7 +75,31 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
 
     } catch (err: any) {
       console.error("Error al invitar:", err);
-      mostrarNotificacion(err.message || 'Error al invitar al usuario.', 'error');
+
+      const rawMsg = String(err?.message || '').toLowerCase();
+      let mensajeAmigable = 'No se ha podido invitar al usuario. Inténtalo de nuevo en unos momentos.';
+
+      if (
+        err?.message === 'USER_ALREADY_EXISTS' ||
+        rawMsg.includes('already') ||
+        rawMsg.includes('exists') ||
+        rawMsg.includes('registered') ||
+        rawMsg.includes('duplicate') ||
+        rawMsg.includes('ya está') ||
+        rawMsg.includes('ya existe')
+      ) {
+        mensajeAmigable = `El correo "${formData.email}" ya está registrado en el sistema. Si el usuario no recuerda su contraseña, contacta con un administrador para reenviarle la invitación.`;
+      } else if (rawMsg.includes('email') && (rawMsg.includes('invalid') || rawMsg.includes('no válido'))) {
+        mensajeAmigable = 'El correo electrónico introducido no es válido.';
+      } else if (rawMsg.includes('rate') || rawMsg.includes('too many')) {
+        mensajeAmigable = 'Se han enviado demasiadas invitaciones en poco tiempo. Espera unos minutos e inténtalo de nuevo.';
+      } else if (rawMsg.includes('network') || rawMsg.includes('fetch')) {
+        mensajeAmigable = 'No se ha podido conectar con el servidor. Comprueba tu conexión a internet.';
+      }
+
+      mostrarNotificacion(mensajeAmigable, 'error');
+      // Cerramos el formulario para que el toast sea visible y no quede tapado por el modal.
+      if (onCancel) onCancel();
     } finally {
       setIsLoading(false);
     }
