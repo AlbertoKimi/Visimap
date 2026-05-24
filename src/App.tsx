@@ -93,31 +93,52 @@ export default function App() {
       setUserProfile(profile);
     };
 
-    const propagarSesionRapido = (sess: any) => {
+    const propagarSesionRapido = async (sess: any) => {
       setSession(sess);
-      supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', sess.user.id)
-        .maybeSingle()
-        .then(({ data: profile }) => {
-          if (!profile || profile.active === false) {
-            supabase.auth.signOut();
-            clearSession();
-          } else {
-            setUserProfile(profile);
-          }
-        });
+      // Defensa por si user.id viniera vacío (caso extremo)
+      const uid = sess?.user?.id;
+      if (!uid) return;
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', uid)
+          .maybeSingle();
+        if (!profile || profile.active === false) {
+          await supabase.auth.signOut();
+          clearSession();
+        } else {
+          setUserProfile(profile);
+        }
+      } catch {
+        // Si la consulta falla por red, no bloqueamos la app — el usuario sigue dentro.
+      }
     };
 
+    // Red de seguridad: si por cualquier razón nada limpia `isLoading` en 5 segundos,
+    // forzamos a false para que la app se renderice sí o sí. Evita pantalla de carga eterna.
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+
     // Comprobación inicial de sesión: usamos la ruta RÁPIDA para no bloquear la UI
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      if (initialSession) {
-        propagarSesionRapido(initialSession);
-      } else {
+    (async () => {
+      try {
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (initialSession) {
+          await propagarSesionRapido(initialSession);
+        } else {
+          clearSession();
+        }
+      } catch {
+        // Si getSession falla, asumimos sin sesión para no quedarnos atascados
         clearSession();
+      } finally {
+        // Garantizamos que isLoading queda en false aunque setSession/clearSession fallen
+        setLoading(false);
+        clearTimeout(loadingTimeout);
       }
-    });
+    })();
 
     // Detecta cambios en la sesión
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
@@ -161,6 +182,7 @@ export default function App() {
     return () => {
       subscription.unsubscribe();
       document.removeEventListener('focusout', handleFocusOut);
+      clearTimeout(loadingTimeout);
     };
   }, []);
 
