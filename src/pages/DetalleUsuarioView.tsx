@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/Select";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { supabase } from "@/database/supabase/client";
 import { Perfil } from "@/interfaces/Perfil";
@@ -49,6 +50,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   const [editData, setEditData] = useState<Partial<Perfil>>({ ...initialUser });
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [confirmarGuardado, setConfirmarGuardado] = useState(false);
   const formErrors = useRef<Record<string, boolean>>({});
 
   // Estados para contraseñas
@@ -151,7 +153,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     formErrors.current[name] = hasError;
   };
 
-  const handleSave = async () => {
+  // Valida los campos y, si todo OK, abre el modal de confirmación.
+
+  const handleSave = () => {
     // Validar contraseñas
     if (newPassword) {
       if (newPassword.length < 6) {
@@ -166,6 +170,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       return mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
     }
 
+    setConfirmarGuardado(true);
+  };
+
+  const confirmarGuardadoCambios = async () => {
     try {
       setIsSaving(true);
       let finalAvatarUrl = user.avatar_url;
@@ -199,6 +207,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     } finally {
       setIsSaving(false);
       setIsUploading(false);
+      setConfirmarGuardado(false);
     }
   };
 
@@ -531,6 +540,23 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
         </div>
       </div>
+
+      <ModalConfirmacion
+        isOpen={confirmarGuardado}
+        onClose={() => setConfirmarGuardado(false)}
+        onConfirm={confirmarGuardadoCambios}
+        titulo="¿Guardar cambios?"
+        mensaje={
+          newPassword
+            ? hideBack
+              ? `Vas a guardar los cambios en tu perfil${newPassword ? ' (incluyendo la actualización de tu contraseña)' : ''}. ¿Confirmas la operación?`
+              : `Vas a guardar los cambios realizados en el perfil de ${fullName || user.nombre_usuario} (incluyendo el cambio de contraseña). ¿Confirmas la operación?`
+            : hideBack
+              ? '¿Estás seguro de que quieres guardar los cambios realizados en tu perfil?'
+              : `¿Estás seguro de que quieres guardar los cambios realizados en el perfil de ${fullName || user.nombre_usuario}?`
+        }
+        tipo="success"
+      />
     </div>
   );
 };
