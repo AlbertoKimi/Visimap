@@ -68,6 +68,25 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // useEffect para cargar la fecha de registro del usuario
+
+  useEffect(() => {
+    if (user.created_at) return;
+    let cancelado = false;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const authUser = data?.user;
+        if (!cancelado && authUser && authUser.id === user.id && authUser.created_at) {
+          setUser(prev => ({ ...prev, created_at: authUser.created_at }));
+        }
+      } catch (err) {
+        console.error('No se pudo recuperar la fecha de registro:', err);
+      }
+    })();
+    return () => { cancelado = true; };
+  }, [user.id, user.created_at]);
+
   // Cargar estadísticas reales
   const fetchStats = useCallback(async () => {
     const stats = await userRepo.getStats(user.id);
