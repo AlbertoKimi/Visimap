@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
+import { MoreVertical, Eye, Edit, Trash2, CheckCircle2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
 import { UserRowProps } from "@/interfaces/components";
 
@@ -139,7 +139,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
               </>
             ) : (
               <>
-                <Edit size={16} className="text-green-500" /> Activar
+                <CheckCircle2 size={16} className="text-green-500" /> Activar
               </>
             )}
           </MenuItem>

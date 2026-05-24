@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserX, Eye, Edit, Trash2, MoreVertical } from 'lucide-react';
+import { UserX, Eye, Edit, Trash2, MoreVertical, CheckCircle2 } from 'lucide-react';
 import { Perfil } from '@/interfaces/Perfil';
 import { TablaGenerica } from '@/components/ui/TablaGenerica';
 import { ColumnDef, ColumnFilter } from '@/interfaces/ui';
@@ -95,7 +95,7 @@ const ActionsCell: React.FC<{
             </>
           ) : (
             <>
-              <Edit size={16} className="text-green-500" /> Activar
+              <CheckCircle2 size={16} className="text-green-500" /> Activar
             </>
           )}
         </MenuItem>
