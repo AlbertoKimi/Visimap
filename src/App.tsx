@@ -81,10 +81,9 @@ export default function App() {
         .from('profiles')
         .select('*')
         .eq('id', sess.user.id)
-        .single();
+        .maybeSingle();
 
       if (!profile || profile.active === false) {
-        // Usuario desactivado o perfil bloqueado por RLS: cerramos sesión.
         await supabase.auth.signOut();
         clearSession();
         return;
@@ -94,21 +93,42 @@ export default function App() {
       setUserProfile(profile);
     };
 
-    // Comprobación inicial de sesión
-    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
+    const propagarSesionRapido = (sess: any) => {
+      setSession(sess);
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', sess.user.id)
+        .maybeSingle()
+        .then(({ data: profile }) => {
+          if (!profile || profile.active === false) {
+            supabase.auth.signOut();
+            clearSession();
+          } else {
+            setUserProfile(profile);
+          }
+        });
+    };
+
+    // Comprobación inicial de sesión: usamos la ruta RÁPIDA para no bloquear la UI
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       if (initialSession) {
-        await verificarYPropagarSesion(initialSession);
+        propagarSesionRapido(initialSession);
       } else {
         clearSession();
       }
     });
 
-    // Listener de cambio de estado de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      if (newSession) {
+    // Detecta cambios en la sesión
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (!newSession) {
+        clearSession();
+        return;
+      }
+      if (event === 'SIGNED_IN') {
         await verificarYPropagarSesion(newSession);
       } else {
-        clearSession();
+        propagarSesionRapido(newSession);
       }
     });
 
@@ -174,7 +194,7 @@ export default function App() {
           .from('profiles')
           .select('active')
           .eq('id', userId)
-          .single();
+          .maybeSingle();
 
         // Tratamos como "desactivado" tanto los perfiles con active=false como
         // los que no se pueden leer (null por RLS bloqueando la lectura cuando active=false).
