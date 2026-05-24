@@ -6,8 +6,8 @@
 export interface AuthRepository {
   /** Obtiene la sesión activa actual del proveedor de Auth */
   getSession(): Promise<any>;
-  /** Inicia sesión con correo electrónico y contraseña */
-  signIn(email: string, password: string): Promise<void>;
+  /** Inicia sesión con correo electrónico y contraseña. Devuelve la información del usuario/sesión recién creada. */
+  signIn(email: string, password: string): Promise<{ user: any; session: any } | void>;
   /** Cierra la sesión activa y limpia los tokens */
   signOut(): Promise<void>;
   /** Actualiza la contraseña del usuario actualmente autenticado */

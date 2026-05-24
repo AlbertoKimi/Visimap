@@ -23,8 +23,9 @@ export class SupabaseAuthRepository implements AuthRepository {
   }
 
   async signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    return { user: data?.user, session: data?.session };
   }
 
   async signOut() {

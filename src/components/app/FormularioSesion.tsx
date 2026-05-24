@@ -97,6 +97,14 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
       setSegundosRestantes(0);
 
     } catch (err: any) {
+
+      // Cuenta desactivada por el administrador.
+
+      if (err?.code === 'USER_DEACTIVATED' || err?.message === 'USER_DEACTIVATED') {
+        setSubmissionError('Tu cuenta está desactivada. Contacta con el administrador del museo para reactivarla.');
+        return;
+      }
+
       // ¡LOGIN INCORRECTO!
       const nuevosIntentos = intentos.current + 1;
 

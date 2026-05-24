@@ -72,11 +72,32 @@ export default function App() {
   useEffect(() => {
     setLoading(true);
 
+    // Comprueba si el perfil del usuario está activo. Si no lo está, cierra sesión
+    // y no propaga la sesión al estado de React (evita el parpadeo de entrar
+    // en el dashboard y volver al login).
+
+    const verificarYPropagarSesion = async (sess: any) => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', sess.user.id)
+        .single();
+
+      if (!profile || profile.active === false) {
+        // Usuario desactivado o perfil bloqueado por RLS: cerramos sesión.
+        await supabase.auth.signOut();
+        clearSession();
+        return;
+      }
+
+      setSession(sess);
+      setUserProfile(profile);
+    };
+
     // Comprobación inicial de sesión
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: initialSession } }) => {
       if (initialSession) {
-        setSession(initialSession);
-        fetchProfile(initialSession.user.id);
+        await verificarYPropagarSesion(initialSession);
       } else {
         clearSession();
       }
@@ -85,8 +106,7 @@ export default function App() {
     // Listener de cambio de estado de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (newSession) {
-        setSession(newSession);
-        fetchProfile(newSession.user.id);
+        await verificarYPropagarSesion(newSession);
       } else {
         clearSession();
       }
@@ -98,17 +118,15 @@ export default function App() {
     }
 
     // Corrección para el bug de desplazamiento del viewport en iOS Safari (cierre de teclado)
-    // Cuando body es position:fixed, window.scrollY siempre es 0 — hay que usar visualViewport
+
     const resetIOSViewport = () => {
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || 
-                    ((navigator as any).platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        ((navigator as any).platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1);
       if (!isIOS) return;
-      // Esperar a que el teclado se cierre completamente (~300ms en iOS)
+      // Esperar a que el teclado se cierre completamente
       setTimeout(() => {
-        // La API visualViewport es la única forma fiable de detectar y resetear el offset de iOS
         if (window.visualViewport) {
           const vv = window.visualViewport;
-          // Si el viewport visual está desplazado hacia arriba, lo forzamos a volver
           if (vv.offsetTop !== 0 || vv.pageTop !== 0) {
             window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
           }
@@ -145,7 +163,45 @@ export default function App() {
 
   const handleLogin = async (email: string, password: string) => {
     const authRepo = RepositoryFactory.getAuthRepository();
-    await authRepo.signIn(email, password);
+
+    try {
+
+      const result = await authRepo.signIn(email, password);
+      const userId = result && 'user' in result ? result.user?.id : null;
+
+      if (userId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('active')
+          .eq('id', userId)
+          .single();
+
+        // Tratamos como "desactivado" tanto los perfiles con active=false como
+        // los que no se pueden leer (null por RLS bloqueando la lectura cuando active=false).
+        if (!profile || profile.active === false) {
+          await supabase.auth.signOut();
+          const err: any = new Error('USER_DEACTIVATED');
+          err.code = 'USER_DEACTIVATED';
+          throw err;
+        }
+      }
+    } catch (signInErr: any) {
+
+      if (signInErr?.code === 'USER_DEACTIVATED') throw signInErr;
+
+      // Distingue si es desactivado o contraseña incorrecta
+      try {
+        const { data: status } = await supabase.rpc('check_account_status', { p_email: email });
+        if (status === 'deactivated') {
+          const err: any = new Error('USER_DEACTIVATED');
+          err.code = 'USER_DEACTIVATED';
+          throw err;
+        }
+      } catch (rpcErr: any) {
+        if (rpcErr?.code === 'USER_DEACTIVATED') throw rpcErr;
+      }
+      throw signInErr;
+    }
   };
 
   const refreshProfileCallback = () => {
