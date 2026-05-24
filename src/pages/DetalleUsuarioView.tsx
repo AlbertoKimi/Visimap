@@ -448,6 +448,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       manejarCambio={manejarCambio}
                       manejarError={manejarError}
                       required
+                      maxLength={20}
+                      regex={/^[a-zA-Z0-9._-]{3,20}$/}
+                      error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -503,8 +506,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                         manejarCambio={manejarCambioPass}
                         manejarError={manejarError}
                         placeholder="********"
-                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ : undefined}
-                        error="Mínimo 8 carac, 1 mayús, 1 num..."
+                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/ : undefined}
+                        error="Entre 8 y 40 caracteres, 1 mayúscula, 1 número y 1 símbolo."
+                        maxLength={40}
                       />
                       <Input
                         label="Confirmar Contraseña"
@@ -513,6 +517,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                         value={confirmPassword}
                         manejarCambio={manejarCambioPass}
                         placeholder="********"
+                        maxLength={40}
                       />
                     </div>
                   </div>

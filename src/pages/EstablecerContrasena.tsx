@@ -239,6 +239,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Ej: jgarcia"
                             required
+                            maxLength={20}
+                            regex={/^[a-zA-Z0-9._-]{3,20}$/}
+                            error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
                         />
 
                         <Input
@@ -250,8 +253,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Mínimo 8 carac, 1 mayús, 1 num..."
                             required
-                            regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.\-_])[A-Za-z\d@$!%*?&.\-_]{8,}$/}
-                            error="Mínimo 8 caracteres, una mayúscula, un número y un carácter especial"
+                            regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/}
+                            error="Entre 8 y 40 caracteres, una mayúscula, un número y un carácter especial"
+                            maxLength={40}
                         />
 
                         <Input
@@ -263,6 +267,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Repite la contraseña"
                             required
+                            maxLength={40}
                         />
 
                         <Button
