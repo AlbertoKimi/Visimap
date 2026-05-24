@@ -51,6 +51,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [confirmarGuardado, setConfirmarGuardado] = useState(false);
+  const [confirmarCambioEstado, setConfirmarCambioEstado] = useState(false);
   const formErrors = useRef<Record<string, boolean>>({});
 
   // Estados para contraseñas
@@ -227,17 +228,22 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const toggleStatus = async () => {
+  // Solo abre el modal de confirmación. El cambio real se ejecuta en `confirmarCambioEstadoUsuario`.
+  const toggleStatus = () => {
+    setConfirmarCambioEstado(true);
+  };
+
+  const confirmarCambioEstadoUsuario = async () => {
     const newStatus = user.active === false;
-    if (window.confirm(`¿Seguro que quieres ${newStatus ? 'activar' : 'desactivar'} a este usuario?`)) {
-      try {
-        await userRepo.toggleStatus(user.id, newStatus);
-        setUser(prev => ({ ...prev, active: newStatus }));
-        mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'}`, 'success');
-        onUpdate();
-      } catch (error: any) {
-        mostrarNotificacion('Error al cambiar estado', 'error');
-      }
+    try {
+      await userRepo.toggleStatus(user.id, newStatus);
+      setUser(prev => ({ ...prev, active: newStatus }));
+      mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'} correctamente`, 'success');
+      onUpdate();
+    } catch (error: any) {
+      mostrarNotificacion('Error al cambiar estado', 'error');
+    } finally {
+      setConfirmarCambioEstado(false);
     }
   };
 
@@ -561,6 +567,19 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               : `¿Estás seguro de que quieres guardar los cambios realizados en el perfil de ${fullName || user.nombre_usuario}?`
         }
         tipo="success"
+      />
+
+      <ModalConfirmacion
+        isOpen={confirmarCambioEstado}
+        onClose={() => setConfirmarCambioEstado(false)}
+        onConfirm={confirmarCambioEstadoUsuario}
+        titulo={user.active === false ? '¿Activar usuario?' : '¿Desactivar usuario?'}
+        mensaje={
+          user.active === false
+            ? `¿Estás seguro de que quieres reactivar la cuenta de ${fullName || user.nombre_usuario}? Podrá volver a iniciar sesión en Visimap.`
+            : `¿Estás seguro de que quieres desactivar la cuenta de ${fullName || user.nombre_usuario}? No podrá iniciar sesión hasta que la reactives, pero todos sus registros y eventos se conservarán.`
+        }
+        tipo={user.active === false ? 'success' : 'danger'}
       />
     </div>
   );
