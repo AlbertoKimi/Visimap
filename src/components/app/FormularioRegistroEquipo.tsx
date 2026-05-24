@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/Select";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { FormularioRegistroProps } from "@/interfaces/components";
 
@@ -21,6 +22,7 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
   mostrarNotificacion
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmarInvitacion, setConfirmarInvitacion] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -39,7 +41,8 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
     formErrors.current[name] = hasError;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Solo valida y abre el modal de confirmación. El envío real está en `enviarInvitacion`.
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (Object.values(formErrors.current).some(v => v)) {
@@ -47,10 +50,19 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
       return;
     }
 
+    // Verificamos que ningún campo obligatorio esté vacío antes de abrir el modal
+    if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.email) {
+      mostrarNotificacion('Por favor, completa todos los campos antes de continuar.', 'error');
+      return;
+    }
+
+    setConfirmarInvitacion(true);
+  };
+
+  const enviarInvitacion = async () => {
     setIsLoading(true);
 
     try {
-
       const apellidosStr = formData.apellidos.trim();
       const primerEspacio = apellidosStr.indexOf(' ');
       let apellido1 = apellidosStr;
@@ -102,6 +114,7 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
       if (onCancel) onCancel();
     } finally {
       setIsLoading(false);
+      setConfirmarInvitacion(false);
     }
   };
 
@@ -193,6 +206,18 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
           </Button>
         </div>
       </form>
+
+      <ModalConfirmacion
+        isOpen={confirmarInvitacion}
+        onClose={() => setConfirmarInvitacion(false)}
+        onConfirm={enviarInvitacion}
+        titulo="¿Enviar invitación?"
+        mensaje={
+          `Se enviará un correo de invitación a "${formData.email}" con permisos de ${formData.rol === 'admin' ? 'Administrador' : 'Trabajador'}. ` +
+          `Esta persona podrá iniciar sesión en Visimap inmediatamente después de aceptar.`
+        }
+        tipo="success"
+      />
     </div>
   );
 };
