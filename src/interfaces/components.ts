@@ -10,6 +10,17 @@ import { Rol } from "@/interfaces/Rol";
 import { RegistroMapa } from "@/interfaces/Visitor";
 import { RegistroEvento, TipoEvento } from "@/interfaces/Evento";
 
+/** Props para la vista de "Mi Perfil" del usuario autenticado */
+export interface VistaPerfilProps {
+  userProfile: Perfil | null;
+  onRefreshProfile?: () => void;
+}
+
+/** Props para la vista del Mapa de Visitantes */
+export interface MapaVisitantesProps {
+  onRegistrarVisitante?: () => void;
+}
+
 /** Props para el componente LandingPage */
 export interface LandingPageProps {
   onGetStarted: () => void;

@@ -12,7 +12,8 @@ import {
   ActividadTrabajador,
   EvolucionDiaria,
   VisitaProvincia,
-  PerfilRaw
+  PerfilRaw,
+  CustomBarLabelProps
 } from '@/interfaces/Graficos';
 import Select from '@/components/ui/Select';
 import { COLORES_PIE } from '@/constantes/appConstants';
@@ -52,21 +53,6 @@ const LeyendaConTotal = ({ payload, total }: { payload?: { value: string | numbe
     </div>
   </div>
 );
-
-interface CustomBarLabelProps {
-  x?: string | number;
-  y?: string | number;
-  width?: string | number;
-  height?: string | number;
-  value?: any;
-  payload?: any;
-  index?: number;
-  data?: any[];
-  isDark?: boolean;
-  fontSize?: string | number;
-  showZeroIfTotalZero?: boolean;
-  targetKey?: string;
-}
 
 const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
   x = 0,
@@ -134,14 +120,14 @@ const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
     return null;
   }
 
-  // Heurística: estimar el ancho del texto en píxeles (aproximación válida para fuentes sans-serif).
+  // Estimar el ancho del texto en píxeles
   const textStr = String(displayValue);
   const baseFontSize = Number(fontSize);
   const estimateTextWidth = (size: number) => textStr.length * size * 0.62;
-  const padding = 1; // padding mínimo para maximizar caso "dentro"
+  const padding = 1;
 
   // Buscamos el tamaño de fuente que quepa dentro (entre 6px y baseFontSize) para mantener
-  // las etiquetas SIEMPRE dentro de su barra y evitar superposiciones entre stacks adyacentes.
+  // las etiquetas SIEMPRE dentro de su barra y evitar superposiciones
   let usableFontSize = baseFontSize;
   while (estimateTextWidth(usableFontSize) + padding * 2 > numWidth && usableFontSize > 6) {
     usableFontSize -= 1;
@@ -149,7 +135,7 @@ const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
   const fitsInside = estimateTextWidth(usableFontSize) + padding * 2 <= numWidth;
 
   if (fitsInside) {
-    // Etiqueta DENTRO de la barra: blanco, negrita, sin contorno.
+    // Etiqueta DENTRO de la barra
     return (
       <text
         x={numX + numWidth / 2}
@@ -168,7 +154,7 @@ const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
     );
   }
 
-  // Fallback solo si la barra es realmente diminuta (<6px aprox).
+  // Solo si la barra es realmente diminuta (<6px aprox).
   return (
     <text
       x={numX + numWidth + 5}

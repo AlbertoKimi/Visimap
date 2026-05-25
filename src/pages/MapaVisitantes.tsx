@@ -8,12 +8,9 @@ import { Snackbar, Alert } from '@mui/material';
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { useAuthStore } from "@/stores/authStore";
 import { RegistroVisitante } from "@/interfaces/Visitor";
+import { MapaVisitantesProps } from "@/interfaces/components";
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
-
-interface MapaVisitantesProps {
-  onRegistrarVisitante?: () => void;
-}
 
 /**
  * Vista principal de la aplicación: Mapa de Visitantes.

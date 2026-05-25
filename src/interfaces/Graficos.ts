@@ -65,3 +65,36 @@ export interface PerfilRaw {
   nombre: string;
   nombre_usuario: string;
 }
+
+/**
+ * Props del componente personalizado que renderiza las etiquetas numéricas
+ * sobre cada segmento de barra en los gráficos de Recharts.
+ * Recibe automáticamente las coordenadas y dimensiones que inyecta Recharts,
+ * además de los flags de personalización del tema y comportamiento.
+ */
+export interface CustomBarLabelProps {
+  /** Coordenada X de la barra (inyectada por Recharts) */
+  x?: string | number;
+  /** Coordenada Y de la barra (inyectada por Recharts) */
+  y?: string | number;
+  /** Anchura de la barra en píxeles */
+  width?: string | number;
+  /** Altura de la barra en píxeles */
+  height?: string | number;
+  /** Valor numérico bruto del dato a renderizar */
+  value?: any;
+  /** Objeto payload completo con todos los campos de la fila */
+  payload?: any;
+  /** Índice de la fila dentro del dataset */
+  index?: number;
+  /** Dataset completo (algunos hooks de Recharts lo inyectan en lugar de payload) */
+  data?: any[];
+  /** Indica si el tema actual es oscuro, para ajustar el color del texto */
+  isDark?: boolean;
+  /** Tamaño base de la fuente (se reduce automáticamente si no cabe) */
+  fontSize?: string | number;
+  /** Si true, muestra un 0 cuando el total de la fila es 0 (útil para el ranking de personal) */
+  showZeroIfTotalZero?: boolean;
+  /** Nombre del campo del payload del que extraer el valor real */
+  targetKey?: string;
+}

@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DetalleUsuario } from './DetalleUsuarioView';
-import { Perfil } from "@/interfaces/Perfil";
 import { Rol } from "@/interfaces/Rol";
+import { VistaPerfilProps } from "@/interfaces/components";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { Snackbar, Alert } from '@mui/material';
 import { Loader2 } from 'lucide-react';
 
 const roleRepo = RepositoryFactory.getRoleRepository();
-
-interface VistaPerfilProps {
-  userProfile: Perfil | null;
-  onRefreshProfile?: () => void;
-}
 
 /**
  * Vista de Mi Perfil.
