@@ -20,7 +20,7 @@ import type {
 // Sugerencias rápidas
 // ──────────────────────────────────────────────────────────────────────────────
 
-/** Batería de sugerencias (Pills) iniciales para guiar al usuario */
+/** Batería de sugerencias iniciales para guiar al usuario */
 export const SUGERENCIAS: SugerenciaChat[] = [
   {
     etiqueta: 'Visitantes del mes',
@@ -38,8 +38,8 @@ export const SUGERENCIAS: SugerenciaChat[] = [
     icono: ICONOS.rendimiento,
   },
   {
-    etiqueta: 'Resumen mensual',
-    prompt: 'Crea un informe completo del mes actual con los principales datos del museo.',
+    etiqueta: 'Resumen anual',
+    prompt: 'Crea un resumen anual completo del año actual: total de visitantes, visitantes por mes, top provincias, top países y eventos celebrados.',
     icono: ICONOS.resumen,
   },
   {
@@ -49,7 +49,7 @@ export const SUGERENCIAS: SugerenciaChat[] = [
   },
   {
     etiqueta: 'España vs Mundo',
-    prompt: 'Compara los visitantes nacionales (España) vs internacionales de este mes.',
+    prompt: 'Compara los visitantes nacionales (España) vs internacionales del año actual.',
     icono: ICONOS.mundo,
   },
 ];
@@ -220,7 +220,7 @@ export function useChatIA() {
     scrollAlFinal();
 
 
-    // INTERCEPTOR DE CONSULTAS DE VISITANTES Y ESTADÍSTICAS EN TIEMPO REAL
+    // CONSULTAS DE VISITANTES Y ESTADÍSTICAS EN TIEMPO REAL
 
     const lowerText = texto.toLowerCase().trim();
     const ahora = new Date();
@@ -242,7 +242,22 @@ export function useChatIA() {
     const tienePersonal = lowerText.includes('personal') || lowerText.includes('rendimiento') || lowerText.includes('trabajador') || lowerText.includes('empleado');
     const tieneProvincias = lowerText.includes('provincia') || lowerText.includes('provincias');
     const tieneMundo = lowerText.includes('españa') || lowerText.includes('mundo') || lowerText.includes('extranjero') || lowerText.includes('nacional') || lowerText.includes('internacional');
-    const tieneEventos = lowerText.includes('evento') && !tienePersonal && !tieneProvincias && !tieneMundo;
+    // Distinción precisa: "nacional" es substring de "internacional", hay que limpiar antes de comparar.
+    const lowerTextSinInter = lowerText.replace(/internacional(es)?/g, ' ');
+    const mencionaNacionalLimpio = /\bnacional(es)?\b/.test(lowerTextSinInter) || lowerText.includes('españa');
+    const mencionaInternacionalLimpio = /internacional(es)?/.test(lowerText) || /\bextranjer/.test(lowerText) || lowerText.includes('mundo');
+    const esConsultaComparativaNacionalMundo = mencionaNacionalLimpio && mencionaInternacionalLimpio;
+    const esConsultaSoloNacional = mencionaNacionalLimpio && !mencionaInternacionalLimpio;
+    const esConsultaSoloInternacional = mencionaInternacionalLimpio && !mencionaNacionalLimpio;
+    // Detecta solicitud explícita de Resumen/Informe Anual (consulta global del año, con varios bloques de datos).
+    const tieneInformeAnual = lowerText.includes('resumen anual') || lowerText.includes('informe anual') || (lowerText.includes('anual') && (lowerText.includes('resumen') || lowerText.includes('informe') || lowerText.includes('completo')));
+    const tieneEventos = lowerText.includes('evento') && !tienePersonal && !tieneProvincias && !tieneMundo && !tieneInformeAnual;
+    // Detecta consultas filtradas por tipo de registro en `registro_visitante.tipo_visita` (individual o grupo).
+    // Cubre "registros individuales en mayo", "visitantes de grupo en abril 2025", "individuales hoy", etc.
+    const tipoIndividualMencionado = lowerText.includes('individual'); // cubre "individual" e "individuales"
+    const tipoGrupoMencionado = lowerText.includes('grupo'); // cubre "grupo" y "grupos"
+    const contextoRegistro = lowerText.includes('registro') || lowerText.includes('visita') || lowerText.includes('visitante');
+    const tieneFiltroTipoRegistro = contextoRegistro && (tipoIndividualMencionado || tipoGrupoMencionado) && !tieneEventos && !tienePersonal && !tieneInformeAnual;
 
     // Consultas por día específico
     const tieneHoy = lowerText.includes('hoy');
@@ -290,41 +305,166 @@ export function useChatIA() {
       console.error('Error cargando catálogos de provincias/países:', e);
     }
 
-    const provEncontrada = todasProvincias.find(p => 
+    const provEncontrada = todasProvincias.find(p =>
       lowerText.includes(p.nombre_provincia.toLowerCase())
     );
-    const paisEncontrado = !provEncontrada 
-      ? todosPaises.find(p => lowerText.includes(p.nombre_pais.toLowerCase())) 
+    const paisEncontrado = !provEncontrada
+      ? todosPaises.find(p => lowerText.includes(p.nombre_pais.toLowerCase()))
       : undefined;
 
-    const esComparativaEspaniaMundo = (lowerText.includes('españa') || lowerText.includes('nacionales')) && 
+    const esComparativaEspaniaMundo = (lowerText.includes('españa') || lowerText.includes('nacionales')) &&
       (lowerText.includes('mundo') || lowerText.includes('internacionales') || lowerText.includes('vs') || lowerText.includes('compar'));
 
     const tieneLugarEspecifico = (!!provEncontrada || !!paisEncontrado) && !esComparativaEspaniaMundo;
 
-    // INTERCEPTOR: EVENTOS ACTIVOS
+    // EVENTOS (activos, programados, por día/mes/año, pasados con asistencia)
     if (tieneEventos) {
       try {
-        const { data: eventos, error } = await supabase
+        // 1. Determinar rango de fechas si la consulta especifica un periodo
+        let inicioFiltro: string | null = null;
+        let finFiltro: string | null = null;
+        let labelPeriodo = '';
+        let modoConsulta: 'activos' | 'rango' = 'activos';
+        let granularidad: 'dia' | 'mes' | 'anio' | null = null;
+
+        if (tieneDiaEspecifico) {
+          let targetDate = new Date();
+          let labelDia = 'hoy';
+
+          if (tieneHoy) {
+            targetDate = new Date();
+            labelDia = 'hoy';
+          } else if (tieneAyer) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            targetDate = d;
+            labelDia = 'ayer';
+          } else if (matchFechaCompleta) {
+            const numeroDia = parseInt(matchFechaCompleta[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          } else if (matchDia) {
+            const numeroDia = parseInt(matchDia[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          }
+
+          const y = targetDate.getFullYear();
+          const mm = pad(targetDate.getMonth() + 1);
+          const dd = pad(targetDate.getDate());
+          inicioFiltro = `${y}-${mm}-${dd}T00:00:00`;
+          finFiltro = `${y}-${mm}-${dd}T23:59:59.999`;
+          labelPeriodo = `${labelDia} (${dd}/${mm}/${y})`;
+          modoConsulta = 'rango';
+          granularidad = 'dia';
+        } else if (indiceMesSolicitado !== -1) {
+          const ultimoDia = new Date(targetYear, indiceMesSolicitado + 1, 0).getDate();
+          inicioFiltro = `${targetYear}-${pad(indiceMesSolicitado + 1)}-01T00:00:00`;
+          finFiltro = `${targetYear}-${pad(indiceMesSolicitado + 1)}-${pad(ultimoDia)}T23:59:59.999`;
+          labelPeriodo = `${targetMesNombre} de ${targetYear}`;
+          modoConsulta = 'rango';
+          granularidad = 'mes';
+        } else if (tieneAnio) {
+          // Cubre tanto "2026" explícito como "este año" / "del año actual"
+          inicioFiltro = `${targetYear}-01-01T00:00:00`;
+          finFiltro = `${targetYear}-12-31T23:59:59.999`;
+          labelPeriodo = `${targetYear}`;
+          modoConsulta = 'rango';
+          granularidad = 'anio';
+        }
+
+        // 2. Consultar eventos según modo
+        let queryEventos = supabase
           .from('evento')
-          .select('nombre_evento, fecha_inicio, finalizado')
-          .neq('finalizado', true)
+          .select('id_evento, nombre_evento, fecha_inicio, finalizado')
           .order('fecha_inicio', { ascending: true });
 
+        if (modoConsulta === 'rango' && inicioFiltro && finFiltro) {
+          queryEventos = queryEventos.gte('fecha_inicio', inicioFiltro).lte('fecha_inicio', finFiltro);
+        } else {
+          queryEventos = queryEventos.neq('finalizado', true);
+        }
+
+        const { data: eventos, error } = await queryEventos;
         if (error) throw error;
 
-        let respuestaTexto = '';
-        if (!eventos || eventos.length === 0) {
-          respuestaTexto = `## Eventos activos o próximos\n\nNo hay **eventos activos o próximos** registrados en el museo en este momento.`;
-        } else {
-          const listado = eventos.map((ev: any) => {
-            const d = new Date(ev.fecha_inicio);
-            const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-            return `- **${ev.nombre_evento}** — ${fechaFormateada}`;
-          }).join('\n');
-          const total = eventos.length;
-          respuestaTexto = `## Eventos activos o próximos\n\nActualmente hay **${total}** evento${total === 1 ? '' : 's'} ${total === 1 ? 'programado' : 'programados'}:\n\n${listado}`;
+        // 3. Si hay un rango, obtener visitantes por evento (grupo_visitante.id_evento)
+        const visitantesPorEvento: Record<number, number> = {};
+        if (modoConsulta === 'rango' && eventos && eventos.length > 0) {
+          const ids = eventos.map((e: any) => e.id_evento);
+          const { data: grupos, error: errorGrupos } = await supabase
+            .from('grupo_visitante')
+            .select('id_evento, num_visitantes')
+            .in('id_evento', ids);
+
+          if (!errorGrupos && grupos) {
+            grupos.forEach((g: any) => {
+              if (g.id_evento) {
+                visitantesPorEvento[g.id_evento] = (visitantesPorEvento[g.id_evento] || 0) + (g.num_visitantes || 0);
+              }
+            });
+          }
         }
+
+        // 4. Determinar si el periodo es pasado/presente/futuro (para adaptar el lenguaje)
+        const ahoraTime = ahora.getTime();
+        const finPeriodoTime = finFiltro ? new Date(finFiltro).getTime() : null;
+        const inicioPeriodoTime = inicioFiltro ? new Date(inicioFiltro).getTime() : null;
+        const esPasado = finPeriodoTime !== null && finPeriodoTime < ahoraTime;
+        const esFuturo = inicioPeriodoTime !== null && inicioPeriodoTime > ahoraTime;
+        const verbHaber = esPasado ? 'hubo' : 'hay';
+        const verbHaberMayus = esPasado ? 'Hubo' : 'Hay';
+        const preposicionPeriodo = granularidad === 'dia' ? '' : (granularidad === 'anio' ? 'en el año ' : 'en ');
+
+        // 5. Construir respuesta
+        let respuestaTexto = '';
+        if (modoConsulta === 'activos') {
+          if (!eventos || eventos.length === 0) {
+            respuestaTexto = `## Eventos activos o próximos\n\nNo hay **eventos activos o próximos** registrados en el museo en este momento.`;
+          } else {
+            const listado = eventos.map((ev: any) => {
+              const d = new Date(ev.fecha_inicio);
+              const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+              return `- **${ev.nombre_evento}** — ${fechaFormateada}`;
+            }).join('\n');
+            const total = eventos.length;
+            respuestaTexto = `## Eventos activos o próximos\n\nActualmente hay **${total}** evento${total === 1 ? '' : 's'} ${total === 1 ? 'programado' : 'programados'}:\n\n${listado}`;
+          }
+        } else {
+          const tituloRango = `Eventos ${preposicionPeriodo}${labelPeriodo}`;
+          if (!eventos || eventos.length === 0) {
+            respuestaTexto = `## ${tituloRango}\n\nNo ${verbHaber} **eventos registrados** ${preposicionPeriodo}**${labelPeriodo}**.`;
+          } else {
+            const total = eventos.length;
+            const listado = eventos.map((ev: any) => {
+              const d = new Date(ev.fecha_inicio);
+              const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+              const estado = ev.finalizado
+                ? '✅ Finalizado'
+                : (new Date(ev.fecha_inicio).getTime() < ahoraTime ? '🕒 Pendiente de cierre' : '📅 Programado');
+              const visitantes = visitantesPorEvento[ev.id_evento] || 0;
+              let linea = `- **${ev.nombre_evento}** — ${fechaFormateada} (${estado})`;
+              if (visitantes > 0) {
+                linea += ` — 👥 **${visitantes.toLocaleString('es-ES')}** visitantes`;
+              } else if (ev.finalizado) {
+                linea += ` — 👥 Sin visitantes registrados`;
+              }
+              return linea;
+            }).join('\n');
+
+            const totalVisitantes = Object.values(visitantesPorEvento).reduce((acc, v) => acc + v, 0);
+            const eventoPalabra = total === 1 ? 'evento' : 'eventos';
+            const registradoPalabra = total === 1 ? 'registrado' : 'registrados';
+
+            respuestaTexto = `## ${tituloRango}\n\n${verbHaberMayus} **${total}** ${eventoPalabra} ${registradoPalabra} ${preposicionPeriodo}**${labelPeriodo}**${esFuturo ? ' (todavía no celebrados)' : ''}:\n\n${listado}`;
+
+            if (totalVisitantes > 0) {
+              respuestaTexto += `\n\n👥 **Total de visitantes en ${total === 1 ? 'este evento' : 'estos eventos'}:** ${totalVisitantes.toLocaleString('es-ES')}`;
+            }
+          }
+        }
+
+        respuestaTexto += `\n\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
 
         await new Promise(resolve => setTimeout(resolve, 600));
         setMensajes(prev =>
@@ -338,11 +478,196 @@ export function useChatIA() {
         scrollAlFinal();
         return;
       } catch (dbErr) {
-        console.error('Error en interceptor de eventos activos:', dbErr);
+        console.error('Error en interceptor de eventos:', dbErr);
       }
     }
 
-    // INTERCEPTOR: CONSULTA DE PROVINCIA/PAÍS ESPECÍFICO
+    // REGISTROS POR TIPO (INDIVIDUAL / GRUPO)
+    // Cubre "número total de registros individuales se han hecho en mayo",
+    // "visitantes de grupo en abril 2025", "individuales hoy/ayer", "registros tipo grupo de 2024", etc.
+    // Filtra `registro_visitante.tipo_visita` por día, mes o año. Soporta combinar con provincia/país.
+    if (tieneFiltroTipoRegistro) {
+      try {
+        // Si menciona ambos, individual tiene preferencia (palabra más específica).
+        const tipoVisita: 'individual' | 'grupo' = tipoIndividualMencionado ? 'individual' : 'grupo';
+
+        // 1. Calcular rango de fechas según granularidad mencionada
+        let inicio = '';
+        let fin = '';
+        let labelPeriodo = '';
+        let granularidad: 'dia' | 'mes' | 'anio' = 'mes';
+
+        if (tieneDiaEspecifico) {
+          let targetDate = new Date();
+          let labelDia = 'hoy';
+          if (tieneHoy) {
+            targetDate = new Date();
+            labelDia = 'hoy';
+          } else if (tieneAyer) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            targetDate = d;
+            labelDia = 'ayer';
+          } else if (matchFechaCompleta) {
+            const numeroDia = parseInt(matchFechaCompleta[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          } else if (matchDia) {
+            const numeroDia = parseInt(matchDia[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          }
+          const y = targetDate.getFullYear();
+          const mm = pad(targetDate.getMonth() + 1);
+          const dd = pad(targetDate.getDate());
+          inicio = `${y}-${mm}-${dd}T00:00:00`;
+          fin = `${y}-${mm}-${dd}T23:59:59.999`;
+          labelPeriodo = `${labelDia} (${dd}/${mm}/${y})`;
+          granularidad = 'dia';
+        } else if (tieneAnio && !tieneMes && indiceMesSolicitado === -1) {
+          // Cubre tanto "2024" explícito como "este año" / "del año actual"
+          inicio = `${targetYear}-01-01T00:00:00`;
+          fin = (targetYear === currentYear)
+            ? `${targetYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`
+            : `${targetYear}-12-31T23:59:59.999`;
+          labelPeriodo = `el año ${targetYear}`;
+          granularidad = 'anio';
+        } else {
+          inicio = `${inicioMes}T00:00:00`;
+          fin = finMes;
+          labelPeriodo = `${targetMesNombre} de ${targetYear}`;
+          granularidad = 'mes';
+        }
+
+        // 2. Construir query con filtros opcionales por lugar
+        let query = supabase
+          .from('registro_visitante')
+          .select('cantidad, creado_en')
+          .eq('tipo_visita', tipoVisita)
+          .gte('creado_en', inicio)
+          .lte('creado_en', fin);
+
+        let lugarLabel = '';
+        if (provEncontrada) {
+          query = query.eq('id_provincia', provEncontrada.id_provincia);
+          lugarLabel = ` procedentes de ${provEncontrada.nombre_provincia}`;
+        } else if (paisEncontrado) {
+          query = query.eq('id_pais', paisEncontrado.id_pais);
+          lugarLabel = ` procedentes de ${paisEncontrado.nombre_pais}`;
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const numRegistros = data?.length || 0;
+        const totalVisitantes = data?.reduce((acc, r: any) => acc + (r.cantidad || 0), 0) || 0;
+        const promedio = numRegistros > 0 ? (totalVisitantes / numRegistros) : 0;
+
+        // 3. Determinar verbo (pasado vs presente/futuro)
+        const finPeriodoTime = new Date(fin).getTime();
+        const esPasado = finPeriodoTime < ahora.getTime();
+        const verbHaber = esPasado ? 'se registraron' : 'se han registrado';
+        const verbHaberNeg = esPasado ? 'se registraron' : 'se han registrado';
+        const esIndividual = tipoVisita === 'individual';
+
+        // 4. Construir respuesta unificada (una sola métrica destacada: nº de visitas)
+        const tituloTipo = esIndividual ? 'Visitas individuales' : 'Visitas en grupo';
+        let respuestaTexto = `## ${tituloTipo} — ${labelPeriodo}${lugarLabel}\n\n`;
+
+        if (numRegistros === 0) {
+          respuestaTexto += `No ${verbHaberNeg} **${esIndividual ? 'visitas individuales' : 'visitas en grupo'}** durante **${labelPeriodo}**${lugarLabel}.`;
+        } else if (esIndividual) {
+          // Para individuales: el nº de visitas suele coincidir con personas, salvo parejas/familias.
+          if (numRegistros === totalVisitantes) {
+            respuestaTexto += `Durante **${labelPeriodo}**${lugarLabel} ${verbHaber} **${numRegistros.toLocaleString('es-ES')}** visitas individuales (una persona cada una).`;
+          } else {
+            const extra = totalVisitantes - numRegistros;
+            respuestaTexto += `Durante **${labelPeriodo}**${lugarLabel} ${verbHaber} **${numRegistros.toLocaleString('es-ES')}** visitas individuales, que suman **${totalVisitantes.toLocaleString('es-ES')}** personas en total.\n\n`;
+            respuestaTexto += `*Casi todas son de 1 persona, pero ${extra === 1 ? 'una de las visitas se registró con 2 personas' : `${extra} visitas se registraron con más de una persona`} (parejas o familias pequeñas).*`;
+          }
+        } else {
+          // Para grupo: lo relevante es nº de grupos y personas totales en ellos.
+          respuestaTexto += `Durante **${labelPeriodo}**${lugarLabel} ${verbHaber} **${numRegistros.toLocaleString('es-ES')}** visitas en grupo, con un total de **${totalVisitantes.toLocaleString('es-ES')}** personas (promedio de **${promedio.toFixed(1)}** por grupo).`;
+        }
+
+        respuestaTexto += `\n\n*(Datos obtenidos en tiempo real de la base de datos de Visimap)*`;
+
+        // 5. Gráfico opcional (solo si hay datos y la granularidad >= mes)
+        let graficos: GraficoGenerado[] | undefined;
+        if (numRegistros > 0 && granularidad !== 'dia') {
+          const colorTipo = tipoVisita === 'individual' ? '#3b82f6' : '#9333ea';
+
+          const labelTipoGrafico = esIndividual ? 'Visitas individuales' : 'Personas en visitas en grupo';
+          const claveDato = esIndividual ? 'visitas' : 'personas';
+
+          if (granularidad === 'anio') {
+            const mesesCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const datosMes = mesesCortos.map(m => ({ mes: m, [claveDato]: 0 } as Record<string, string | number>));
+            data?.forEach((r: any) => {
+              const f = new Date(r.creado_en);
+              if (f.getFullYear() === targetYear) {
+                // Individual: cuenta de visitas (1 por registro). Grupo: personas totales.
+                datosMes[f.getMonth()][claveDato] = (datosMes[f.getMonth()][claveDato] as number) + (esIndividual ? 1 : (r.cantidad || 0));
+              }
+            });
+            graficos = [{
+              id: `grafico-${Date.now()}`,
+              tipo: 'bar',
+              titulo: `${labelTipoGrafico} por mes (${targetYear})`,
+              subtitulo: esIndividual
+                ? `${numRegistros.toLocaleString('es-ES')} visitas en total`
+                : `${numRegistros.toLocaleString('es-ES')} grupos — ${totalVisitantes.toLocaleString('es-ES')} personas`,
+              datos: datosMes,
+              claves: [claveDato],
+              claveX: 'mes',
+              colores: [colorTipo]
+            }];
+          } else {
+            const ultimoDiaMes = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+            const totalDias = (targetMonthIndex === currentMonthIndex && targetYear === currentYear) ? ahora.getDate() : ultimoDiaMes;
+            const datosDia: Record<string, string | number>[] = [];
+            for (let d = 1; d <= totalDias; d++) {
+              datosDia.push({ dia: `${d}`, [claveDato]: 0 });
+            }
+            data?.forEach((r: any) => {
+              const f = new Date(r.creado_en);
+              const dd = f.getDate();
+              if (dd >= 1 && dd <= totalDias && f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex) {
+                datosDia[dd - 1][claveDato] = (datosDia[dd - 1][claveDato] as number) + (esIndividual ? 1 : (r.cantidad || 0));
+              }
+            });
+            graficos = [{
+              id: `grafico-${Date.now()}`,
+              tipo: 'bar',
+              titulo: `${labelTipoGrafico} por día (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+              subtitulo: esIndividual
+                ? `${numRegistros.toLocaleString('es-ES')} visitas en total`
+                : `${numRegistros.toLocaleString('es-ES')} grupos — ${totalVisitantes.toLocaleString('es-ES')} personas`,
+              datos: datosDia,
+              claves: [claveDato],
+              claveX: 'dia',
+              colores: [colorTipo]
+            }];
+          }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de registros por tipo:', dbErr);
+      }
+    }
+
+    // CONSULTA DE PROVINCIA/PAÍS ESPECÍFICO
     if (tieneLugarEspecifico && tieneVisitantes) {
       try {
         let inicio = '';
@@ -391,7 +716,7 @@ export function useChatIA() {
 
         if (provEncontrada) {
           nombreLugar = provEncontrada.nombre_provincia;
-          
+
           const [resNorm, resGrp] = await Promise.all([
             supabase.from('registro_visitante')
               .select('cantidad')
@@ -473,7 +798,7 @@ export function useChatIA() {
       }
     }
 
-    // 1. INTERCEPTOR: RENDIMIENTO DEL PERSONAL
+    // 1. RENDIMIENTO DEL PERSONAL
     if (tienePersonal) {
       try {
         const [resPerfiles, resReg, resEvt, resNot] = await Promise.all([
@@ -487,7 +812,7 @@ export function useChatIA() {
 
         const perfiles = resPerfiles.data || [];
         const mapa: Record<string, { nombre: string; registros: number; eventos: number; notas: number; total: number }> = {};
-        
+
         perfiles.forEach((p: any) => {
           mapa[p.id] = {
             nombre: p.nombre || p.nombre_usuario || 'Desconocido',
@@ -566,8 +891,204 @@ export function useChatIA() {
       }
     }
 
-    // 2. INTERCEPTOR: DESGLOSE NACIONAL POR PROVINCIAS
-    if (tieneProvincias) {
+    // 2. RESUMEN ANUAL COMPLETO
+    // Devuelve total anual, distribución mensual, top provincias, top países y eventos del año.
+    if (tieneInformeAnual) {
+      try {
+        const inicioAnio = `${targetYear}-01-01T00:00:00`;
+        const finAnio = (targetYear === currentYear)
+          ? `${targetYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`
+          : `${targetYear}-12-31T23:59:59.999`;
+
+        const [resVista, resNorm, resGrp, resEvt] = await Promise.all([
+          supabase.from('vista_visitantes_totales')
+            .select('total_personas, fecha'),
+          supabase.from('registro_visitante')
+            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
+            .gte('creado_en', inicioAnio).lte('creado_en', finAnio),
+          supabase.from('grupo_visitante')
+            .select(`
+              num_visitantes,
+              tipo_origen,
+              origen,
+              evento!inner (
+                fecha_inicio,
+                nombre_evento
+              )
+            `)
+            .gte('evento.fecha_inicio', inicioAnio).lte('evento.fecha_inicio', finAnio),
+          supabase.from('evento')
+            .select('id_evento, nombre_evento, fecha_inicio')
+            .gte('fecha_inicio', inicioAnio).lte('fecha_inicio', finAnio)
+        ]);
+
+        if (resVista.error) throw resVista.error;
+
+        // Total anual y desglose mensual usando la vista (incluye todo: ventanilla + eventos)
+        const registrosAnio = (resVista.data || []).filter(item => {
+          const f = new Date(item.fecha);
+          return f.getFullYear() === targetYear;
+        });
+
+        const totalAnual = registrosAnio.reduce((acc, item) => acc + (item.total_personas || 0), 0);
+
+        const mesesCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        const datosPorMes: { mes: string; total: number }[] = mesesCortos.map(m => ({ mes: m, total: 0 }));
+
+        registrosAnio.forEach(item => {
+          const f = new Date(item.fecha);
+          const mIdx = f.getMonth();
+          datosPorMes[mIdx].total += (item.total_personas || 0);
+        });
+
+        // Top provincias (España) y top países (internacional)
+        const provMap: Record<string, number> = {};
+        const paisMap: Record<string, number> = {};
+
+        if (resNorm.data) {
+          resNorm.data.forEach((r: any) => {
+            const paisNombre = r.pais?.nombre_pais || 'España';
+            const cantidad = r.cantidad || 0;
+            if (paisNombre === 'España') {
+              const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
+              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+            } else {
+              paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+            }
+          });
+        }
+
+        if (resGrp.data) {
+          resGrp.data.forEach((g: any) => {
+            const cantidad = g.num_visitantes || 0;
+            if (g.tipo_origen === 'provincia') {
+              const provNombre = g.origen || 'Desconocida';
+              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+            } else if (g.tipo_origen === 'pais') {
+              const paisNombre = g.origen || 'Otros';
+              if (paisNombre === 'España') {
+                provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
+              } else {
+                paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+              }
+            }
+          });
+        }
+
+        const topProvincias = Object.entries(provMap)
+          .map(([nombre, total]) => ({ nombre, total }))
+          .sort((a, b) => b.total - a.total)
+          .slice(0, 10);
+
+        const topPaises = Object.entries(paisMap)
+          .map(([nombre, total]) => ({ nombre, total }))
+          .sort((a, b) => b.total - a.total)
+          .slice(0, 10);
+
+        const totalEspana = Object.values(provMap).reduce((acc, v) => acc + v, 0);
+        const totalMundo = Object.values(paisMap).reduce((acc, v) => acc + v, 0);
+        const totalComparativa = totalEspana + totalMundo;
+        const totalEventos = resEvt.data?.length || 0;
+
+        // Mes con más visitantes
+        let mejorMes = { mes: '—', total: 0 };
+        datosPorMes.forEach(m => {
+          if (m.total > mejorMes.total) mejorMes = m;
+        });
+
+        let respuestaTexto = `# 📊 Resumen Anual ${targetYear}\n\n`;
+        respuestaTexto += `Durante el año **${targetYear}**${targetYear === currentYear ? ' (en lo que va de año)' : ''}, el museo ha recibido un total de **${totalAnual.toLocaleString('es-ES')}** visitantes.\n\n`;
+
+        respuestaTexto += `### 📈 Indicadores clave\n`;
+        respuestaTexto += `- 👥 **Visitantes totales:** ${totalAnual.toLocaleString('es-ES')}\n`;
+        respuestaTexto += `- 🏆 **Mejor mes:** ${mejorMes.mes} con **${mejorMes.total.toLocaleString('es-ES')}** visitantes\n`;
+        respuestaTexto += `- 🇪🇸 **Nacionales (España):** ${totalEspana.toLocaleString('es-ES')} (${totalComparativa > 0 ? ((totalEspana / totalComparativa) * 100).toFixed(1) : 0}%)\n`;
+        respuestaTexto += `- 🌍 **Internacionales:** ${totalMundo.toLocaleString('es-ES')} (${totalComparativa > 0 ? ((totalMundo / totalComparativa) * 100).toFixed(1) : 0}%)\n`;
+        respuestaTexto += `- 🎭 **Eventos celebrados:** ${totalEventos}\n\n`;
+
+        respuestaTexto += `### 📅 Distribución mensual\n`;
+        datosPorMes.forEach((m) => {
+          const marker = m.mes === mejorMes.mes && m.total > 0 ? ' 🏆' : '';
+          respuestaTexto += `- **${m.mes}:** ${m.total.toLocaleString('es-ES')} visitantes${marker}\n`;
+        });
+
+        respuestaTexto += `\n### 🇪🇸 Top provincias\n`;
+        if (topProvincias.length === 0) {
+          respuestaTexto += `No se han registrado visitas nacionales durante este año.\n`;
+        } else {
+          topProvincias.forEach((p, idx) => {
+            respuestaTexto += `${idx + 1}. **${p.nombre}:** ${p.total.toLocaleString('es-ES')} visitantes\n`;
+          });
+        }
+
+        respuestaTexto += `\n### 🌍 Top países\n`;
+        if (topPaises.length === 0) {
+          respuestaTexto += `No se han registrado visitas internacionales durante este año.\n`;
+        } else {
+          topPaises.forEach((p, idx) => {
+            respuestaTexto += `${idx + 1}. **${p.nombre}:** ${p.total.toLocaleString('es-ES')} visitantes\n`;
+          });
+        }
+
+        respuestaTexto += `\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        const graficos: GraficoGenerado[] = [
+          {
+            id: `grafico-${Date.now()}-mensual`,
+            tipo: 'bar',
+            titulo: `Evolución mensual de visitantes (${targetYear})`,
+            subtitulo: `Total anual: ${totalAnual.toLocaleString('es-ES')} visitantes`,
+            datos: datosPorMes,
+            claves: ['total'],
+            claveX: 'mes',
+            colores: ['#3b82f6']
+          }
+        ];
+
+        if (topProvincias.length > 0) {
+          graficos.push({
+            id: `grafico-${Date.now()}-provincias`,
+            tipo: 'bar',
+            titulo: `Top provincias (${targetYear})`,
+            subtitulo: `Total nacionales: ${totalEspana.toLocaleString('es-ES')} visitantes`,
+            datos: topProvincias,
+            claves: ['total'],
+            claveX: 'nombre',
+            colores: ['#10b981']
+          });
+        }
+
+        if (topPaises.length > 0) {
+          graficos.push({
+            id: `grafico-${Date.now()}-paises`,
+            tipo: 'bar',
+            titulo: `Top países (${targetYear})`,
+            subtitulo: `Total internacionales: ${totalMundo.toLocaleString('es-ES')} visitantes`,
+            datos: topPaises,
+            claves: ['total'],
+            claveX: 'nombre',
+            colores: ['#ec4899']
+          });
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de resumen anual:', dbErr);
+      }
+    }
+
+    // 3. DESGLOSE NACIONAL POR PROVINCIAS
+    if (tieneProvincias && !tieneInformeAnual) {
       try {
         const [resNorm, resGrp] = await Promise.all([
           supabase.from('registro_visitante')
@@ -652,13 +1173,236 @@ export function useChatIA() {
       }
     }
 
-    // 3. INTERCEPTOR: COMPARATIVA ESPAÑA VS MUNDO (PROCEDENCIA)
-    if (tieneMundo && !tienePersonal && !tieneProvincias && !tieneDiaEspecifico && !tieneAnio && !tieneTotalHistorico) {
+    // 4. INTERCEPTOR: SOLO NACIONALES o SOLO INTERNACIONALES (modo único, no comparativa)
+    // Cubre "visitantes internacionales este año", "nacionales en mayo", "extranjeros del 15/04/2025", etc.
+    // Distingue de la comparativa España vs Mundo (donde se mencionan ambos lados).
+    if ((esConsultaSoloNacional || esConsultaSoloInternacional) && tieneVisitantes && !tienePersonal && !tieneProvincias && !tieneInformeAnual && !tieneFiltroTipoRegistro && !tieneLugarEspecifico) {
       try {
+        const esInternacional = esConsultaSoloInternacional;
+        const labelTipo = esInternacional ? 'internacionales' : 'nacionales';
+        const labelTipoCap = esInternacional ? 'Internacionales' : 'Nacionales';
+        const icono = esInternacional ? '🌍' : '🇪🇸';
+
+        // 1. Calcular rango (día > año > mes; defecto = mes actual)
+        let inicio = '';
+        let fin = '';
+        let labelPeriodo = '';
+        let granularidad: 'dia' | 'mes' | 'anio' = 'mes';
+
+        if (tieneDiaEspecifico) {
+          let targetDate = new Date();
+          let labelDia = 'hoy';
+          if (tieneHoy) {
+            targetDate = new Date();
+            labelDia = 'hoy';
+          } else if (tieneAyer) {
+            const d = new Date();
+            d.setDate(d.getDate() - 1);
+            targetDate = d;
+            labelDia = 'ayer';
+          } else if (matchFechaCompleta) {
+            const numeroDia = parseInt(matchFechaCompleta[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          } else if (matchDia) {
+            const numeroDia = parseInt(matchDia[1], 10);
+            targetDate = new Date(targetYear, targetMonthIndex, numeroDia);
+            labelDia = `el día ${numeroDia}`;
+          }
+          const y = targetDate.getFullYear();
+          const mm = pad(targetDate.getMonth() + 1);
+          const dd = pad(targetDate.getDate());
+          inicio = `${y}-${mm}-${dd}T00:00:00`;
+          fin = `${y}-${mm}-${dd}T23:59:59.999`;
+          labelPeriodo = `${labelDia} (${dd}/${mm}/${y})`;
+          granularidad = 'dia';
+        } else if (tieneAnio && !tieneMes && indiceMesSolicitado === -1) {
+          inicio = `${targetYear}-01-01T00:00:00`;
+          fin = (targetYear === currentYear)
+            ? `${targetYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`
+            : `${targetYear}-12-31T23:59:59.999`;
+          labelPeriodo = `el año ${targetYear}`;
+          granularidad = 'anio';
+        } else {
+          inicio = `${inicioMes}T00:00:00`;
+          fin = finMes;
+          labelPeriodo = `${targetMesNombre} de ${targetYear}`;
+          granularidad = 'mes';
+        }
+
+        // 2. Resolver el id de España una sola vez
+        const espanaPais = todosPaises.find(p => p.nombre_pais === 'España');
+        const idEspana = espanaPais?.id_pais;
+
+        // 3. Consultar registro_visitante (ventanilla) y grupo_visitante (eventos)
+        let queryReg = supabase
+          .from('registro_visitante')
+          .select('cantidad, creado_en, id_pais')
+          .gte('creado_en', inicio)
+          .lte('creado_en', fin);
+
+        if (idEspana !== undefined) {
+          queryReg = esInternacional
+            ? queryReg.neq('id_pais', idEspana)
+            : queryReg.eq('id_pais', idEspana);
+        }
+
+        const queryGrupo = supabase
+          .from('grupo_visitante')
+          .select(`
+            num_visitantes,
+            tipo_origen,
+            origen,
+            evento!inner (
+              fecha_inicio
+            )
+          `)
+          .gte('evento.fecha_inicio', inicio)
+          .lte('evento.fecha_inicio', fin);
+
+        const [resReg, resGrp] = await Promise.all([queryReg, queryGrupo]);
+        if (resReg.error) throw resReg.error;
+        if (resGrp.error) throw resGrp.error;
+
+        // 4. Sumas
+        const datosReg = (resReg.data || []) as Array<{ cantidad: number; creado_en: string }>;
+        const totalVentanilla = datosReg.reduce((acc, r) => acc + (r.cantidad || 0), 0);
+
+        let totalEventos = 0;
+        (resGrp.data || []).forEach((g: any) => {
+          const cant = g.num_visitantes || 0;
+          if (esInternacional) {
+            if (g.tipo_origen === 'pais' && g.origen !== 'España') totalEventos += cant;
+          } else {
+            if (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España')) totalEventos += cant;
+          }
+        });
+
+        const totalVisitantes = totalVentanilla + totalEventos;
+
+        // 5. Lenguaje pasado/presente
+        const esPasado = new Date(fin).getTime() < ahora.getTime();
+        const verbHaber = esPasado ? 'se registraron' : 'se han registrado';
+
+        let respuestaTexto = `## ${icono} Visitantes ${labelTipoCap} — ${labelPeriodo}\n\n`;
+        if (totalVisitantes === 0) {
+          respuestaTexto += `No ${verbHaber} **visitantes ${labelTipo}** durante **${labelPeriodo}**.`;
+        } else {
+          respuestaTexto += `Durante **${labelPeriodo}** ${verbHaber} **${totalVisitantes.toLocaleString('es-ES')}** visitantes ${labelTipo}:\n\n`;
+          respuestaTexto += `- 🎫 **Ventanilla**: ${totalVentanilla.toLocaleString('es-ES')} visitantes\n`;
+          respuestaTexto += `- 🎭 **Eventos / Grupos**: ${totalEventos.toLocaleString('es-ES')} visitantes\n`;
+        }
+        respuestaTexto += `\n\n*(Este dato es completamente exacto y se obtiene en tiempo real de la base de datos de Visimap)*`;
+
+        // 6. Gráfico opcional según granularidad
+        let graficos: GraficoGenerado[] | undefined;
+        if (totalVisitantes > 0 && granularidad !== 'dia') {
+          const colorTipo = esInternacional ? '#ec4899' : '#3b82f6';
+
+          if (granularidad === 'anio') {
+            const mesesCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const datosMes = mesesCortos.map(m => ({ mes: m, total: 0 }));
+            datosReg.forEach(r => {
+              const f = new Date(r.creado_en);
+              if (f.getFullYear() === targetYear) datosMes[f.getMonth()].total += (r.cantidad || 0);
+            });
+            (resGrp.data || []).forEach((g: any) => {
+              const cant = g.num_visitantes || 0;
+              const aplica = esInternacional
+                ? (g.tipo_origen === 'pais' && g.origen !== 'España')
+                : (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España'));
+              if (!aplica) return;
+              const fEvt = g.evento?.fecha_inicio ? new Date(g.evento.fecha_inicio) : null;
+              if (fEvt && fEvt.getFullYear() === targetYear) datosMes[fEvt.getMonth()].total += cant;
+            });
+            graficos = [{
+              id: `grafico-${Date.now()}`,
+              tipo: 'bar',
+              titulo: `Visitantes ${labelTipo} por mes (${targetYear})`,
+              subtitulo: `Total: ${totalVisitantes.toLocaleString('es-ES')} visitantes`,
+              datos: datosMes,
+              claves: ['total'],
+              claveX: 'mes',
+              colores: [colorTipo]
+            }];
+          } else {
+            const ultimoDiaMes = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
+            const totalDias = (targetMonthIndex === currentMonthIndex && targetYear === currentYear) ? ahora.getDate() : ultimoDiaMes;
+            const datosDia: { dia: string; total: number }[] = [];
+            for (let d = 1; d <= totalDias; d++) datosDia.push({ dia: `${d}`, total: 0 });
+            datosReg.forEach(r => {
+              const f = new Date(r.creado_en);
+              const dd = f.getDate();
+              if (dd >= 1 && dd <= totalDias && f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex) {
+                datosDia[dd - 1].total += (r.cantidad || 0);
+              }
+            });
+            (resGrp.data || []).forEach((g: any) => {
+              const cant = g.num_visitantes || 0;
+              const aplica = esInternacional
+                ? (g.tipo_origen === 'pais' && g.origen !== 'España')
+                : (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España'));
+              if (!aplica) return;
+              const fEvt = g.evento?.fecha_inicio ? new Date(g.evento.fecha_inicio) : null;
+              if (!fEvt) return;
+              const dd = fEvt.getDate();
+              if (dd >= 1 && dd <= totalDias && fEvt.getFullYear() === targetYear && fEvt.getMonth() === targetMonthIndex) {
+                datosDia[dd - 1].total += cant;
+              }
+            });
+            graficos = [{
+              id: `grafico-${Date.now()}`,
+              tipo: 'bar',
+              titulo: `Visitantes ${labelTipo} por día (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+              subtitulo: `Total: ${totalVisitantes.toLocaleString('es-ES')} visitantes`,
+              datos: datosDia,
+              claves: ['total'],
+              claveX: 'dia',
+              colores: [colorTipo]
+            }];
+          }
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setMensajes(prev =>
+          prev.map(m =>
+            m.id === idPlaceholder
+              ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+              : m
+          )
+        );
+        setIsLoading(false);
+        scrollAlFinal();
+        return;
+      } catch (dbErr) {
+        console.error('Error en interceptor de nacionales/internacionales:', dbErr);
+      }
+    }
+
+    // 5. COMPARATIVA ESPAÑA VS MUNDO (PROCEDENCIA — MENSUAL O ANUAL)
+    if (esConsultaComparativaNacionalMundo && !tienePersonal && !tieneProvincias && !tieneDiaEspecifico && !tieneInformeAnual && !tieneFiltroTipoRegistro) {
+      try {
+        // Si la consulta es anual (sin mes específico), usar todo el año; en otro caso, usar el mes.
+        const esConsultaAnual = tieneAnio && !tieneMes;
+        const rangoInicio = esConsultaAnual
+          ? `${targetYear}-01-01T00:00:00`
+          : `${inicioMes}T00:00:00`;
+        const rangoFin = esConsultaAnual
+          ? (targetYear === currentYear
+            ? `${targetYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`
+            : `${targetYear}-12-31T23:59:59.999`)
+          : finMes;
+        const labelPeriodo = esConsultaAnual
+          ? `año ${targetYear}`
+          : `${targetMesNombre} de ${targetYear}`;
+        const labelPeriodoCorto = esConsultaAnual
+          ? `${targetYear}`
+          : `${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear}`;
+
         const [resNorm, resGrp] = await Promise.all([
           supabase.from('registro_visitante')
             .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
-            .gte('creado_en', inicioMes).lte('creado_en', finMes),
+            .gte('creado_en', rangoInicio).lte('creado_en', rangoFin),
           supabase.from('grupo_visitante')
             .select(`
               num_visitantes,
@@ -668,7 +1412,7 @@ export function useChatIA() {
                 fecha_inicio
               )
             `)
-            .gte('evento.fecha_inicio', inicioMes).lte('evento.fecha_inicio', finMes)
+            .gte('evento.fecha_inicio', rangoInicio).lte('evento.fecha_inicio', rangoFin)
         ]);
 
         if (resNorm.error) throw resNorm.error;
@@ -724,13 +1468,13 @@ export function useChatIA() {
           .map(([nombre, total]) => ({ nombre, total }))
           .sort((a, b) => b.total - a.total);
 
-        let respuestaTexto = `Comparativa de procedencia de visitantes para el mes de **${targetMesNombre} de ${targetYear}**:\n\n`;
+        let respuestaTexto = `Comparativa de procedencia de visitantes para el **${labelPeriodo}**:\n\n`;
         respuestaTexto += `- 🇪🇸 **España (Nacionales)**: **${totalEspana.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalEspana / totalUnico) * 100).toFixed(1) : 0}%)\n`;
         respuestaTexto += `- 🌎 **Resto del Mundo (Internacionales)**: **${totalMundo.toLocaleString('es-ES')}** visitantes (${totalUnico > 0 ? ((totalMundo / totalUnico) * 100).toFixed(1) : 0}%)\n\n`;
 
         respuestaTexto += `### 🇪🇸 Desglose por Provincias (España):\n`;
         if (listaProvincias.length === 0) {
-          respuestaTexto += `No se han registrado visitas nacionales durante este mes.\n`;
+          respuestaTexto += `No se han registrado visitas nacionales durante este periodo.\n`;
         } else {
           listaProvincias.forEach((p) => {
             respuestaTexto += `• **${p.nombre}**: ${p.total.toLocaleString('es-ES')} visitantes\n`;
@@ -739,7 +1483,7 @@ export function useChatIA() {
 
         respuestaTexto += `\n### 🌎 Desglose por Países (Internacional):\n`;
         if (listaPaises.length === 0) {
-          respuestaTexto += `No se han registrado visitas internacionales durante este mes.\n`;
+          respuestaTexto += `No se han registrado visitas internacionales durante este periodo.\n`;
         } else {
           listaPaises.forEach((p) => {
             respuestaTexto += `• **${p.nombre}**: ${p.total.toLocaleString('es-ES')} visitantes\n`;
@@ -752,11 +1496,11 @@ export function useChatIA() {
           {
             id: `grafico-${Date.now()}`,
             tipo: 'bar',
-            titulo: `Procedencia de Visitantes (${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear})`,
+            titulo: `Procedencia de Visitantes (${labelPeriodoCorto})`,
             subtitulo: `Total: ${totalUnico.toLocaleString('es-ES')} visitantes`,
             datos: [
               {
-                name: targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1),
+                name: labelPeriodoCorto,
                 España: totalEspana,
                 'Resto del Mundo': totalMundo
               }
@@ -783,7 +1527,7 @@ export function useChatIA() {
       }
     }
 
-    // 4. INTERCEPTOR: VISITANTES POR DÍA ESPECÍFICO (HOY, AYER, DÍA X)
+    // 6. VISITANTES POR DÍA ESPECÍFICO (HOY, AYER, DÍA X)
     if (tieneDiaEspecifico && tieneVisitantes) {
       try {
         let targetDate = new Date();
@@ -874,7 +1618,7 @@ export function useChatIA() {
       }
     }
 
-    // 5. INTERCEPTOR: VISITANTES DEL MES (EVOLUCIÓN MENSUAL + DESGLOSE SEMANAL)
+    // 7. VISITANTES DEL MES (EVOLUCIÓN MENSUAL + DESGLOSE SEMANAL)
     if (tieneMes && tieneVisitantes) {
       try {
         let totalDias = 0;
@@ -974,7 +1718,7 @@ export function useChatIA() {
       }
     }
 
-    // 6. INTERCEPTOR ORIGINAL: VISITANTES ANUALES O TOTAL HISTÓRICO
+    // 8. VISITANTES ANUALES O TOTAL HISTÓRICO
     if (tieneVisitantes && (tieneAnio || tieneTotalHistorico)) {
       try {
         const { data: vistaData, error: vistaError } = await supabase
