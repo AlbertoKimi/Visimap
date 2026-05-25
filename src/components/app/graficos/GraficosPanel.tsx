@@ -134,23 +134,50 @@ const CustomBarLabel: React.FC<CustomBarLabelProps> = ({
     return null;
   }
 
-  const MIN_WIDTH_FOR_INSIDE_LABEL = 24;
-  const isInside = numWidth >= MIN_WIDTH_FOR_INSIDE_LABEL;
+  // Heurística: estimar el ancho del texto en píxeles (aproximación válida para fuentes sans-serif).
+  const textStr = String(displayValue);
+  const baseFontSize = Number(fontSize);
+  const estimateTextWidth = (size: number) => textStr.length * size * 0.62;
+  const padding = 1; // padding mínimo para maximizar caso "dentro"
 
-  const textX = isInside ? numX + numWidth / 2 : numX + numWidth + 5;
-  const textY = numY + numHeight / 2;
-  const textAnchor = isInside ? 'middle' : 'start';
-  const fill = isInside ? '#ffffff' : (isDark ? '#cbd5e1' : '#334155');
+  // Buscamos el tamaño de fuente que quepa dentro (entre 6px y baseFontSize) para mantener
+  // las etiquetas SIEMPRE dentro de su barra y evitar superposiciones entre stacks adyacentes.
+  let usableFontSize = baseFontSize;
+  while (estimateTextWidth(usableFontSize) + padding * 2 > numWidth && usableFontSize > 6) {
+    usableFontSize -= 1;
+  }
+  const fitsInside = estimateTextWidth(usableFontSize) + padding * 2 <= numWidth;
 
+  if (fitsInside) {
+    // Etiqueta DENTRO de la barra: blanco, negrita, sin contorno.
+    return (
+      <text
+        x={numX + numWidth / 2}
+        y={numY + numHeight / 2}
+        textAnchor="middle"
+        dominantBaseline="central"
+        style={{
+          fill: '#ffffff',
+          fontSize: usableFontSize,
+          fontWeight: 'bold',
+          pointerEvents: 'none'
+        }}
+      >
+        {displayValue}
+      </text>
+    );
+  }
+
+  // Fallback solo si la barra es realmente diminuta (<6px aprox).
   return (
     <text
-      x={textX}
-      y={textY}
-      textAnchor={textAnchor}
+      x={numX + numWidth + 5}
+      y={numY + numHeight / 2}
+      textAnchor="start"
       dominantBaseline="central"
       style={{
-        fill,
-        fontSize,
+        fill: isDark ? '#cbd5e1' : '#334155',
+        fontSize: Math.max(8, baseFontSize - 1),
         fontWeight: 'bold',
         pointerEvents: 'none'
       }}
@@ -205,20 +232,53 @@ export const GraficosPanel: React.FC = () => {
     setLoadingEspania(true);
     try {
       const { inicio, fin } = rango;
-      const { data, error } = await supabase
-        .from('registro_visitante')
-        .select('cantidad, pais:id_pais(nombre_pais)')
-        .gte('creado_en', inicio)
-        .lte('creado_en', fin);
 
-      if (error) throw error;
-      const registros = (data || []) as unknown as { cantidad: number; pais: { nombre_pais: string } | null }[];
+      // Consultamos en paralelo las dos fuentes de visitantes:
+      //  - registro_visitante (ventanilla individual)
+      //  - grupo_visitante (subgrupos asociados a eventos), filtrando por fecha_inicio del evento
+      const [resVentanilla, resGrupos] = await Promise.all([
+        supabase
+          .from('registro_visitante')
+          .select('cantidad, pais:id_pais(nombre_pais)')
+          .gte('creado_en', inicio)
+          .lte('creado_en', fin),
+        supabase
+          .from('grupo_visitante')
+          .select(`
+            num_visitantes,
+            tipo_origen,
+            origen,
+            evento!inner (
+              fecha_inicio
+            )
+          `)
+          .gte('evento.fecha_inicio', inicio)
+          .lte('evento.fecha_inicio', fin)
+      ]);
+
+      if (resVentanilla.error) throw resVentanilla.error;
+      if (resGrupos.error) throw resGrupos.error;
 
       let españa = 0;
       let mundo = 0;
-      for (const r of registros) {
+
+      // 1. Ventanilla: sumamos según el país asignado al registro
+      const ventanilla = (resVentanilla.data || []) as unknown as { cantidad: number; pais: { nombre_pais: string } | null }[];
+      for (const r of ventanilla) {
         if (r.pais?.nombre_pais === 'España') españa += r.cantidad;
         else mundo += r.cantidad;
+      }
+
+      // 2. Eventos: si tipo_origen es 'provincia' → España. Si es 'pais' y origen ≠ 'España' → mundo.
+      const grupos = (resGrupos.data || []) as unknown as { num_visitantes: number; tipo_origen: string; origen: string }[];
+      for (const g of grupos) {
+        const personas = g.num_visitantes || 0;
+        if (g.tipo_origen === 'provincia') {
+          españa += personas;
+        } else if (g.tipo_origen === 'pais') {
+          if (g.origen?.toLowerCase() === 'españa') españa += personas;
+          else mundo += personas;
+        }
       }
 
       setDatosEspania([{ name: nombreMes, España: españa, 'Resto del Mundo': mundo }]);
@@ -695,7 +755,7 @@ export const GraficosPanel: React.FC = () => {
           return (
             <TarjetaGrafico
               titulo={`Procedencia Internacional en ${nombreMes}`}
-              subtitulo={`Ventanilla individual (${nombreMes})`}
+              subtitulo={`Ventanilla + Eventos (${nombreMes})`}
               isLoading={loadingEspania}
               onRefresh={fetchEspania}
               altura="h-64"
