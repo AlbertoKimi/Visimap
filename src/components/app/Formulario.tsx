@@ -39,6 +39,7 @@ export function Formulario({
 
   const [paises, setPaises] = useState<Pais[]>([]);
   const [loadingPaises, setLoadingPaises] = useState(true);
+  const [errorLocal, setErrorLocal] = useState<string | null>(null);
 
   const formErrors = useRef<Record<string, boolean>>({});
 
@@ -87,6 +88,8 @@ export function Formulario({
       ...prev,
       [name]: name === 'numPersonas' ? parseInt(value) || 0 : value
     }));
+    // Limpiamos el error general en cuanto el usuario edita cualquier campo
+    if (errorLocal) setErrorLocal(null);
   };
 
   const manejarError = (name: string, hasError: boolean) => {
@@ -96,10 +99,24 @@ export function Formulario({
   const handleSubmit = (e: React.FormEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
 
-    if (Object.values(formErrors.current).some(v => v)) {
+    // Validaciones que dependen de la combinación de campos (lo que no detecta
+    // el Input individualmente). Se muestran inline para que el usuario las vea
+    // sin que el modal se cierre y pueda corregir sin perder los datos.
+    if (formData.tipoVisita === 'grupo' && formData.numPersonas < 2) {
+      setErrorLocal('Un grupo debe tener al menos 2 personas. Si es solo 1, marca "Individual".');
+      return;
+    }
+    if (formData.tipoVisita === 'grupo' && formData.numPersonas > 500) {
+      setErrorLocal('El número de personas en un grupo no puede superar 500.');
       return;
     }
 
+    if (Object.values(formErrors.current).some(v => v)) {
+      setErrorLocal('Por favor, corrige los errores marcados en el formulario.');
+      return;
+    }
+
+    setErrorLocal(null);
     if (onSubmit) {
       onSubmit(formData);
     }
@@ -215,6 +232,24 @@ export function Formulario({
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {errorLocal && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className="mx-4 md:mx-2 mt-2 p-2.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40"
+            role="alert"
+            aria-live="polite"
+          >
+            <p className="text-xs font-semibold text-red-700 dark:text-red-300">
+              {errorLocal}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="flex gap-3 pt-1 pb-3 md:pb-1 px-4 md:px-2 mt-auto">
         {onCancel && (
