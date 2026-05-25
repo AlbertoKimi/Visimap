@@ -143,18 +143,22 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
               </div>
             ) : (
               <div className="grid gap-2">
-                {grupos.length > 0 ? grupos.map((g, idx) => (
-                  <div key={g.id_grupo || `subgrupo-${g.origen}-${idx}`} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "size-2 rounded-full",
-                        g.tipo_origen === 'provincia' ? "bg-blue-500" : "bg-purple-500"
-                      )} />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">{g.origen}</span>
+                {grupos.length > 0 ? grupos.map((g, idx) => {
+                  const esProv = g.id_provincia != null;
+                  const nombre = g.provincia?.nombre_provincia ?? g.pais?.nombre_pais ?? 'Desconocido';
+                  return (
+                    <div key={g.id_grupo || `subgrupo-${nombre}-${idx}`} className="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "size-2 rounded-full",
+                          esProv ? "bg-blue-500" : "bg-purple-500"
+                        )} />
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">{nombre}</span>
+                      </div>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{g.num_visitantes} pers.</span>
                     </div>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">{g.num_visitantes} pers.</span>
-                  </div>
-                )) : (
+                  );
+                }) : (
                   <p className="text-sm text-slate-400 italic text-center p-4">No hay subgrupos registrados.</p>
                 )}
               </div>

@@ -16,13 +16,18 @@ export interface RegistroVisitanteRow {
 }
 
 /**
- * Fila bruta de un grupo de visitantes con su evento opcional.
+ * Fila bruta de un grupo de visitantes con sus joins opcionales.
+ *
+ * Tras la normalización (migración 2026-05-25), la procedencia se modela con
+ * FKs (`id_provincia`, `id_pais`) en lugar de strings.
  */
 export interface GrupoVisitanteRow {
   num_visitantes: number;
-  tipo_origen?: 'provincia' | 'pais';
-  origen?: string;
+  id_pais?: number;
+  id_provincia?: number | null;
   id_evento?: number;
+  provincia?: { nombre_provincia: string } | null;
+  pais?: { nombre_pais: string } | null;
   evento?: {
     fecha_inicio: string;
     nombre_evento?: string;
@@ -112,17 +117,23 @@ export interface StatsRepository {
   /**
    * Obtiene los grupos de visitantes asociados a eventos en un rango de fechas
    * (`evento.fecha_inicio` entre `inicio` y `fin`).
-   * Si se omiten `inicio` y `fin` devuelve TODOS los grupos sin hacer el join (uso histórico).
-   * @param opts.tipoOrigen - Filtra por origen (provincia o pais).
-   * @param opts.origen - Filtra por valor literal del origen.
+   * Si se omiten `inicio` y `fin` devuelve TODOS los grupos sin filtro temporal.
+   *
+   * Incluye los joins con `provincia` y `pais` para obtener nombres legibles
+   * sin queries adicionales en el consumidor.
+   *
+   * @param opts.idProvincia - Filtra por provincia concreta (`id_provincia`).
+   * @param opts.idPais - Filtra por país concreto (`id_pais`).
+   * @param opts.soloConProvincia - Si true, solo grupos con `id_provincia` no nulo.
    * @param opts.idsEvento - Restringe a un conjunto de eventos.
    * @param opts.incluirCategoria - Incluye `tipo_evento.nombre` en el join.
    */
   getGruposEnRango(opts: {
     inicio?: string;
     fin?: string;
-    tipoOrigen?: 'provincia' | 'pais';
-    origen?: string;
+    idProvincia?: number;
+    idPais?: number;
+    soloConProvincia?: boolean;
     idsEvento?: number[];
     incluirCategoria?: boolean;
   }): Promise<GrupoVisitanteRow[]>;

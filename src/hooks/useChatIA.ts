@@ -24,6 +24,24 @@ const statsRepo = RepositoryFactory.getStatsRepository();
 const stripAccents = (s: string): string =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
+/**
+ * Extrae la procedencia legible de un grupo (joins de provincia/pais).
+ * Después de normalizar la BD, `grupo_visitante` ya no tiene `tipo_origen` ni
+ * `origen` como columnas; este helper centraliza la regla:
+ *   - Si `id_provincia` está set → procedencia es de una provincia española
+ *   - Si no → procedencia es de país (puede ser España u otro país)
+ */
+type GrupoConJoins = {
+  id_provincia?: number | null;
+  id_pais?: number;
+  provincia?: { nombre_provincia: string } | null;
+  pais?: { nombre_pais: string } | null;
+};
+
+const esProvincia = (g: GrupoConJoins): boolean => g.id_provincia != null;
+const nombreProvincia = (g: GrupoConJoins): string => g.provincia?.nombre_provincia ?? 'Desconocida';
+const nombrePais = (g: GrupoConJoins): string => g.pais?.nombre_pais ?? 'Desconocido';
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Sugerencias rápidas
 // ──────────────────────────────────────────────────────────────────────────────
@@ -355,18 +373,18 @@ export function useChatIA() {
 
           gruposEvento.forEach((g) => {
             const cant = g.num_visitantes || 0;
-            if (g.tipo_origen === 'provincia') {
+            if (esProvincia(g)) {
               totalNacional += cant;
-              const prov = g.origen || 'Desconocida';
+              const prov = nombreProvincia(g);
               provMap[prov] = (provMap[prov] || 0) + cant;
-            } else if (g.tipo_origen === 'pais') {
-              const origen = g.origen || 'Otros';
-              if (origen === 'España') {
+            } else {
+              const pais = nombrePais(g);
+              if (pais === 'España') {
                 totalNacional += cant;
                 provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cant;
               } else {
                 totalInternacional += cant;
-                paisMap[origen] = (paisMap[origen] || 0) + cant;
+                paisMap[pais] = (paisMap[pais] || 0) + cant;
               }
             }
           });
@@ -846,8 +864,7 @@ export function useChatIA() {
             statsRepo.getGruposEnRango({
               inicio,
               fin,
-              tipoOrigen: 'provincia',
-              origen: provEncontrada.nombre_provincia,
+              idProvincia: provEncontrada.id_provincia,
             }),
           ]);
 
@@ -866,8 +883,7 @@ export function useChatIA() {
             statsRepo.getGruposEnRango({
               inicio,
               fin,
-              tipoOrigen: 'pais',
-              origen: paisEncontrado.nombre_pais,
+              idPais: paisEncontrado.id_pais,
             }),
           ]);
 
@@ -1041,11 +1057,11 @@ export function useChatIA() {
 
         grupos.forEach((g) => {
           const cantidad = g.num_visitantes || 0;
-          if (g.tipo_origen === 'provincia') {
-            const provNombre = g.origen || 'Desconocida';
+          if (esProvincia(g)) {
+            const provNombre = nombreProvincia(g);
             provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
-          } else if (g.tipo_origen === 'pais') {
-            const paisNombre = g.origen || 'Otros';
+          } else {
+            const paisNombre = nombrePais(g);
             if (paisNombre === 'España') {
               provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
             } else {
@@ -1188,8 +1204,8 @@ export function useChatIA() {
         });
 
         grupos.forEach((g) => {
-          if (g.tipo_origen === 'provincia') {
-            const prov = g.origen || 'Desconocida';
+          if (esProvincia(g)) {
+            const prov = nombreProvincia(g);
             if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
             mapaProvincias[prov].eventos += (g.num_visitantes || 0);
           }
@@ -1322,9 +1338,9 @@ export function useChatIA() {
         datosGrp.forEach((g) => {
           const cant = g.num_visitantes || 0;
           if (esInternacional) {
-            if (g.tipo_origen === 'pais' && g.origen !== 'España') totalEventos += cant;
+            if (!esProvincia(g) && nombrePais(g) !== 'España') totalEventos += cant;
           } else {
-            if (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España')) totalEventos += cant;
+            if (esProvincia(g) || nombrePais(g) === 'España') totalEventos += cant;
           }
         });
 
@@ -1360,8 +1376,8 @@ export function useChatIA() {
             datosGrp.forEach((g) => {
               const cant = g.num_visitantes || 0;
               const aplica = esInternacional
-                ? (g.tipo_origen === 'pais' && g.origen !== 'España')
-                : (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España'));
+                ? (!esProvincia(g) && nombrePais(g) !== 'España')
+                : (esProvincia(g) || nombrePais(g) === 'España');
               if (!aplica) return;
               const fEvt = g.evento?.fecha_inicio ? new Date(g.evento.fecha_inicio) : null;
               if (fEvt && fEvt.getFullYear() === targetYear) datosMes[fEvt.getMonth()].total += cant;
@@ -1392,8 +1408,8 @@ export function useChatIA() {
             datosGrp.forEach((g) => {
               const cant = g.num_visitantes || 0;
               const aplica = esInternacional
-                ? (g.tipo_origen === 'pais' && g.origen !== 'España')
-                : (g.tipo_origen === 'provincia' || (g.tipo_origen === 'pais' && g.origen === 'España'));
+                ? (!esProvincia(g) && nombrePais(g) !== 'España')
+                : (esProvincia(g) || nombrePais(g) === 'España');
               if (!aplica) return;
               const fEvt = g.evento?.fecha_inicio ? new Date(g.evento.fecha_inicio) : null;
               if (!fEvt) return;
@@ -1480,12 +1496,12 @@ export function useChatIA() {
 
         grupos.forEach((g) => {
           const cantidad = g.num_visitantes || 0;
-          if (g.tipo_origen === 'provincia') {
+          if (esProvincia(g)) {
             totalEspana += cantidad;
-            const provNombre = g.origen || 'Desconocida';
+            const provNombre = nombreProvincia(g);
             provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
-          } else if (g.tipo_origen === 'pais') {
-            const paisNombre = g.origen || 'Otros';
+          } else {
+            const paisNombre = nombrePais(g);
             if (paisNombre === 'España') {
               totalEspana += cantidad;
               provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;

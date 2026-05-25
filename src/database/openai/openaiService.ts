@@ -50,7 +50,7 @@ EJEMPLO CHART:
 ESQUEMA EXACTO DE BASE DE DATOS:
 - vista_visitantes_totales: [total_personas, fecha, origen]. Contiene todos los visitantes del museo (individuales y grupales combinados). Úsala SIEMPRE para calcular visitantes totales, sumas generales y evoluciones (días, semanas, meses, años).
 - registro_visitante: [id_registro (PK), id_pais (FK), id_provincia (FK), id_usuario (FK -> profiles.id), cantidad, tipo_visita, creado_en, observaciones].
-- grupo_visitante: [id_grupo (PK), id_evento (FK -> evento.id_evento), origen, num_visitantes, created_at, tipo_origen].
+- grupo_visitante: [id_grupo (PK), id_evento (FK -> evento.id_evento), id_pais (FK -> pais.id_pais, NOT NULL), id_provincia (FK -> provincia.id_provincia, nullable), num_visitantes, created_at]. Si id_provincia tiene valor → procedencia nacional española; si está NULL → procedencia se determina solo por id_pais.
 - profiles: [id (PK), nombre, primer_apellido, segundo_apellido, nombre_usuario, role_id, email, active, telefono]. Contiene la información del personal.
 - evento: [id_evento (PK), id_usuario (FK -> profiles.id), nombre_evento, descripcion, fecha_inicio, fecha_fin, id_tipo (FK), finalizado, created_at].
 - pais: [id_pais (PK), nombre_pais, codigo_iso].

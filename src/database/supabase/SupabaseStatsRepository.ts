@@ -100,14 +100,19 @@ export class SupabaseStatsRepository implements StatsRepository {
   async getGruposEnRango(opts: {
     inicio?: string;
     fin?: string;
-    tipoOrigen?: 'provincia' | 'pais';
-    origen?: string;
+    idProvincia?: number;
+    idPais?: number;
+    soloConProvincia?: boolean;
     idsEvento?: number[];
     incluirCategoria?: boolean;
   }): Promise<GrupoVisitanteRow[]> {
     const necesitaJoinEvento = !!(opts.inicio || opts.fin || opts.incluirCategoria);
 
-    let columnas = 'num_visitantes, tipo_origen, origen, id_evento';
+    // Siempre incluimos los joins de procedencia para que los consumers reciban
+    // nombre_provincia / nombre_pais sin tener que cruzar manualmente.
+    let columnas = 'num_visitantes, id_provincia, id_pais, id_evento, ' +
+      'provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)';
+
     if (necesitaJoinEvento) {
       const eventoSelect = opts.incluirCategoria
         ? 'evento!inner ( fecha_inicio, nombre_evento, tipo_evento ( nombre ) )'
@@ -121,8 +126,9 @@ export class SupabaseStatsRepository implements StatsRepository {
 
     if (opts.inicio) query = query.gte('evento.fecha_inicio', opts.inicio);
     if (opts.fin) query = query.lte('evento.fecha_inicio', opts.fin);
-    if (opts.tipoOrigen) query = query.eq('tipo_origen', opts.tipoOrigen);
-    if (opts.origen !== undefined) query = query.eq('origen', opts.origen);
+    if (opts.idProvincia !== undefined) query = query.eq('id_provincia', opts.idProvincia);
+    if (opts.idPais !== undefined) query = query.eq('id_pais', opts.idPais);
+    if (opts.soloConProvincia) query = query.not('id_provincia', 'is', null);
     if (opts.idsEvento && opts.idsEvento.length > 0) query = query.in('id_evento', opts.idsEvento);
 
     const { data, error } = await query;

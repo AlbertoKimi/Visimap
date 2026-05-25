@@ -10,11 +10,12 @@ import Select from "@/components/ui/Select";
 import { Button } from "@/components/ui/button";
 import { GrupoExtendio } from "@/interfaces/Evento";
 import { EventModalProps } from "@/interfaces/components";
-import { Pais } from "@/interfaces/Visitor";
+import { Pais, Provincia } from "@/interfaces/Visitor";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { ICONOS } from '@/constantes/iconos';
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
+const statsRepo = RepositoryFactory.getStatsRepository();
 
 /**
  * Modal Complejo de Gestión de Eventos.
@@ -53,38 +54,58 @@ export const EventModal: React.FC<EventModalProps> = ({
   const [enProcesoFinalizacion, setEnProcesoFinalizacion] = useState(false);
   const [confirmarCierre, setConfirmarCierre] = useState(event?.confirmarAlAbrir || false);
   const [paises, setPaises] = useState<Pais[]>([]);
-  const [loadingPaises, setLoadingPaises] = useState(true);
+  const [provincias, setProvincias] = useState<Provincia[]>([]);
+  const [loadingCatalogos, setLoadingCatalogos] = useState(true);
 
   const grupoVacio = (): GrupoExtendio => ({
     _key: Date.now() + Math.random(),
     id_evento: event?.id_evento || 0,
-    tipo_origen: 'provincia',
-    origen: '',
+    modoOrigen: 'provincia',
+    nombreOrigen: '',
     num_visitantes: 0
   });
 
   useEffect(() => {
-    const cargarPaises = async () => {
+    // Cargamos catálogos en paralelo: necesitamos id_pais + id_provincia para guardar
+    const cargarCatalogos = async () => {
       try {
-        const data = await visitorRepo.getAllPaises();
-        setPaises(data);
+        const [paisesData, provinciasData] = await Promise.all([
+          visitorRepo.getAllPaises(),
+          statsRepo.getProvincias(),
+        ]);
+        setPaises(paisesData);
+        setProvincias(provinciasData);
       } catch (error) {
-        console.error("Error al cargar países:", error);
+        console.error("Error al cargar catálogos:", error);
       } finally {
-        setLoadingPaises(false);
+        setLoadingCatalogos(false);
       }
     };
-    cargarPaises();
+    cargarCatalogos();
 
     if (!isNew && event?.id_evento) {
       setCargandoGrupos(true);
+      // Cargamos los grupos existentes con los joins para resolver nombres
       supabase
         .from('grupo_visitante')
-        .select('id_grupo, origen, tipo_origen, num_visitantes')
+        .select(
+          'id_grupo, id_evento, id_pais, id_provincia, num_visitantes,' +
+          ' provincia:id_provincia(nombre_provincia),' +
+          ' pais:id_pais(nombre_pais)'
+        )
         .eq('id_evento', event.id_evento)
         .order('id_grupo')
         .then(({ data }) => {
-          if (data) setGrupos(data.map((g: any) => ({ ...g, _key: g.id_grupo })));
+          if (data) {
+            setGrupos(data.map((g: any) => ({
+              _key: g.id_grupo,
+              id_grupo: g.id_grupo,
+              id_evento: g.id_evento,
+              modoOrigen: g.id_provincia != null ? 'provincia' : 'pais',
+              nombreOrigen: g.provincia?.nombre_provincia ?? g.pais?.nombre_pais ?? '',
+              num_visitantes: g.num_visitantes,
+            })));
+          }
           setCargandoGrupos(false);
         });
     }
@@ -143,20 +164,49 @@ export const EventModal: React.FC<EventModalProps> = ({
     }
 
     for (const g of grupos) {
-      if (!g.origen.trim()) return setErrorLocal('Indica la procedencia de cada grupo de visitantes.');
+      if (!g.nombreOrigen.trim()) return setErrorLocal('Indica la procedencia de cada grupo de visitantes.');
       if (!Number(g.num_visitantes) || Number(g.num_visitantes) <= 0)
         return setErrorLocal('El número de visitantes debe ser mayor que 0.');
     }
     setErrorLocal('');
     setGuardando(true);
 
-    const gruposLimpios = grupos
-      .filter(g => g.origen.trim() && Number(g.num_visitantes) > 0)
-      .map(g => ({
-        tipo_origen: g.tipo_origen,
-        origen: g.origen.trim(),
-        num_visitantes: Number(g.num_visitantes)
-      }));
+    // Resolver nombres → ids usando los catálogos cargados
+    const idEspana = paises.find(p => p.nombre_pais === 'España')?.id_pais;
+    const gruposLimpios: { id_provincia: number | null; id_pais: number; num_visitantes: number }[] = [];
+
+    for (const g of grupos) {
+      const nombre = g.nombreOrigen.trim();
+      if (!nombre || Number(g.num_visitantes) <= 0) continue;
+
+      if (g.modoOrigen === 'provincia') {
+        const prov = provincias.find(p => p.nombre_provincia === nombre);
+        if (!prov) {
+          setGuardando(false);
+          return setErrorLocal(`Provincia desconocida: "${nombre}".`);
+        }
+        if (idEspana === undefined) {
+          setGuardando(false);
+          return setErrorLocal('No se pudo resolver el país España en el catálogo.');
+        }
+        gruposLimpios.push({
+          id_provincia: prov.id_provincia,
+          id_pais: idEspana,
+          num_visitantes: Number(g.num_visitantes),
+        });
+      } else {
+        const pais = paises.find(p => p.nombre_pais === nombre);
+        if (!pais) {
+          setGuardando(false);
+          return setErrorLocal(`País desconocido: "${nombre}".`);
+        }
+        gruposLimpios.push({
+          id_provincia: null,
+          id_pais: pais.id_pais,
+          num_visitantes: Number(g.num_visitantes),
+        });
+      }
+    }
 
     try {
       await onSave({
@@ -287,7 +337,7 @@ export const EventModal: React.FC<EventModalProps> = ({
                 <div className="mt-1 space-y-1">
                   {grupos.map(g => (
                     <div key={g._key} className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
-                      <span>{g.origen}</span>
+                      <span>{g.nombreOrigen}</span>
                       <span className="font-medium dark:text-slate-300">{g.num_visitantes} pers.</span>
                     </div>
                   ))}
@@ -433,16 +483,22 @@ export const EventModal: React.FC<EventModalProps> = ({
                           <div className="flex gap-1">
                             <button
                               type="button"
-                              onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'provincia')}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'provincia' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
+                              onClick={() => {
+                                actualizarGrupo(g._key, 'modoOrigen', 'provincia');
+                                actualizarGrupo(g._key, 'nombreOrigen', '');
+                              }}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.modoOrigen === 'provincia' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
                               <img src={ICONOS.spain} className="size-3.5 object-contain" alt="" />
                               España
                             </button>
                             <button
                               type="button"
-                              onClick={() => actualizarGrupo(g._key, 'tipo_origen', 'pais')}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.tipo_origen === 'pais' ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
+                              onClick={() => {
+                                actualizarGrupo(g._key, 'modoOrigen', 'pais');
+                                actualizarGrupo(g._key, 'nombreOrigen', '');
+                              }}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-colors flex items-center gap-1.5 ${g.modoOrigen === 'pais' ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 border-violet-300 dark:border-violet-800' : 'bg-slate-50 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700'}`}
                             >
                               <img src={ICONOS.mundo} className="size-3.5 object-contain" alt="" />
                               Internacional
@@ -450,24 +506,24 @@ export const EventModal: React.FC<EventModalProps> = ({
                           </div>
                           <div className="flex gap-2 items-start">
                             <div className="flex-1">
-                              {g.tipo_origen === 'provincia' ? (
+                              {g.modoOrigen === 'provincia' ? (
                                 <Select
                                   label="Provincia"
                                   name={`origen-${g._key}`}
-                                  value={g.origen}
+                                  value={g.nombreOrigen}
                                   options={PROVINCIAS.map(p => ({ value: p, label: p }))}
-                                  manejarCambio={(e) => actualizarGrupo(g._key, 'origen', e.target.value)}
+                                  manejarCambio={(e) => actualizarGrupo(g._key, 'nombreOrigen', e.target.value)}
                                   required
                                 />
                               ) : (
                                 <Select
                                   label="País"
                                   name={`origen-${g._key}`}
-                                  value={g.origen}
-                                  options={paises.map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
-                                  manejarCambio={(e) => actualizarGrupo(g._key, 'origen', e.target.value)}
+                                  value={g.nombreOrigen}
+                                  options={paises.filter(p => p.nombre_pais !== 'España').map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
+                                  manejarCambio={(e) => actualizarGrupo(g._key, 'nombreOrigen', e.target.value)}
                                   required
-                                  disabled={loadingPaises}
+                                  disabled={loadingCatalogos}
                                 />
                               )}
                             </div>
@@ -494,8 +550,8 @@ export const EventModal: React.FC<EventModalProps> = ({
                       ) : (
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
-                            <span className="capitalize">{g.origen}</span>
-                            <span className="text-slate-300 dark:text-slate-600 text-[10px]">({g.tipo_origen})</span>
+                            <span className="capitalize">{g.nombreOrigen}</span>
+                            <span className="text-slate-300 dark:text-slate-600 text-[10px]">({g.modoOrigen === 'provincia' ? 'España' : 'internacional'})</span>
                           </div>
                           <span className="font-bold text-slate-700 dark:text-slate-200">{g.num_visitantes} pers.</span>
                         </div>

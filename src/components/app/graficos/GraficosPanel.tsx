@@ -242,14 +242,15 @@ export const GraficosPanel: React.FC = () => {
         else mundo += (r.cantidad || 0);
       }
 
-      // 2. Eventos: si tipo_origen es 'provincia' → España. Si es 'pais' y origen ≠ 'España' → mundo.
+      // 2. Eventos: si tiene id_provincia → España. Si solo tiene id_pais → según el país.
       for (const g of grupos) {
         const personas = g.num_visitantes || 0;
-        if (g.tipo_origen === 'provincia') {
+        if (g.id_provincia != null) {
           españa += personas;
-        } else if (g.tipo_origen === 'pais') {
-          if (g.origen?.toLowerCase() === 'españa') españa += personas;
-          else mundo += personas;
+        } else if (g.pais?.nombre_pais?.toLowerCase() === 'españa') {
+          españa += personas;
+        } else {
+          mundo += personas;
         }
       }
 
@@ -341,8 +342,8 @@ export const GraficosPanel: React.FC = () => {
       }
 
       for (const g of grupos) {
-        if (g.tipo_origen === 'provincia') {
-          const prov = g.origen || 'Desconocida';
+        if (g.id_provincia != null) {
+          const prov = g.provincia?.nombre_provincia ?? 'Desconocida';
           if (!mapa[prov]) mapa[prov] = { normales: 0, eventos: 0 };
           mapa[prov].eventos += (g.num_visitantes || 0);
         }

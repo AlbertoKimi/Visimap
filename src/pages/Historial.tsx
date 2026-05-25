@@ -93,11 +93,13 @@ export const Historial: React.FC = () => {
       });
 
       grupos.forEach(g => {
-        if (!g.origen) return;
-        if (g.tipo_origen === 'provincia') {
-          provMap[g.origen] = (provMap[g.origen] || 0) + (g.num_visitantes || 0);
-        } else if (g.tipo_origen === 'pais') {
-          paisMap[g.origen] = (paisMap[g.origen] || 0) + (g.num_visitantes || 0);
+        const cant = g.num_visitantes || 0;
+        if (g.id_provincia != null) {
+          const prov = g.provincia?.nombre_provincia;
+          if (prov) provMap[prov] = (provMap[prov] || 0) + cant;
+        } else {
+          const pais = g.pais?.nombre_pais;
+          if (pais) paisMap[pais] = (paisMap[pais] || 0) + cant;
         }
       });
 
