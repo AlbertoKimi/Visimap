@@ -24,6 +24,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       key: 'ubicacion',
       header: 'Ubicación',
       sortable: true,
+      sortAccessor: (reg) => reg.provincia?.nombre_provincia || reg.pais?.nombre_pais || '',
       render: (reg) => (
         <span className="font-semibold text-slate-700 dark:text-slate-200">
           {reg.provincia?.nombre_provincia || reg.pais?.nombre_pais || '—'}
