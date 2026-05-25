@@ -63,6 +63,10 @@ export interface ColumnDef<T> {
   sortable?: boolean;
   /** Función de renderizado personalizado de la celda */
   render?: (row: T) => React.ReactNode;
+  /**
+   * Función opcional para obtener el valor que se usará al ordenar la columna.
+   */
+  sortAccessor?: (row: T) => string | number | null | undefined;
 }
 
 export interface FilterOption {

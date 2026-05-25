@@ -82,8 +82,14 @@ export function TablaGenerica<T>({
 
   const sorted = sortKey && sortDir
     ? filtered.toSorted((a, b) => {
-      const va = toStr(getNestedValue(a, sortKey));
-      const vb = toStr(getNestedValue(b, sortKey));
+      // Si la columna define un sortAccessor personalizado, lo usamos en vez de leer la key.
+      const colDef = columns.find(c => c.key === sortKey);
+      const va = colDef?.sortAccessor
+        ? toStr(colDef.sortAccessor(a))
+        : toStr(getNestedValue(a, sortKey));
+      const vb = colDef?.sortAccessor
+        ? toStr(colDef.sortAccessor(b))
+        : toStr(getNestedValue(b, sortKey));
       const cmp = va.localeCompare(vb, 'es', { sensitivity: 'base', numeric: true });
       return sortDir === 'asc' ? cmp : -cmp;
     })
