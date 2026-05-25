@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { ICONOS } from '@/constantes/iconos';
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
@@ -26,6 +26,7 @@ export function Formulario({
   onCancel,
   mostrarObservaciones = false,
   bloquearProvincia = false,
+  bloquearPais = false,
   resetTrigger = 0
 }: FormularioProps) {
   const [formData, setFormData] = useState<FormData>({
@@ -107,16 +108,16 @@ export function Formulario({
   const esEspana = formData.pais?.trim().toLowerCase() === 'españa';
 
   return (
-    <div className="flex flex-col justify-between gap-4 h-full">
+    <div className="flex flex-col gap-3 min-h-full">
       <div className="flex-none space-y-2.5 md:space-y-2">
-        <div>
-          <label className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</label>
-          <div className="flex justify-center items-center gap-[var(--spacing-xs)] sm:gap-[var(--spacing-sm)] px-1.5 py-1">
+        <fieldset className="border-0 p-0 m-0">
+          <legend className="block text-[11px] font-black text-slate-800 dark:text-slate-300 uppercase tracking-widest mb-1.5 ml-1">Tipo de Visita</legend>
+          <div className="flex justify-center items-center gap-2 sm:gap-3 py-1 px-3 lg:px-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => setFormData(prev => ({ ...prev, tipoVisita: 'individual', numPersonas: 1 }))}
-              className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'individual'
+              className={`flex-1 min-w-0 max-w-[130px] lg:max-w-[160px] flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'individual'
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-md scale-[1.03] hover:bg-blue-50 dark:hover:bg-blue-900/40 hover:text-blue-700 hover:scale-[1.03]'
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'
                 }`}
@@ -129,7 +130,7 @@ export function Formulario({
               type="button"
               variant="outline"
               onClick={() => setFormData(prev => ({ ...prev, tipoVisita: 'grupo', numPersonas: 2 }))}
-              className={`flex-1 max-w-[140px] sm:max-w-none sm:w-36 flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'grupo'
+              className={`flex-1 min-w-0 max-w-[130px] lg:max-w-[160px] flex-col h-auto py-2.5 gap-1 p-2 border transition-all rounded-[var(--radius-xl)] ${formData.tipoVisita === 'grupo'
                 ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 shadow-md scale-[1.03] hover:bg-purple-50 dark:hover:bg-blue-900/40 hover:text-purple-700 hover:scale-[1.03]'
                 : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-[1.03] hover:shadow-sm'
                 }`}
@@ -138,7 +139,7 @@ export function Formulario({
               <span className="text-sm font-bold">Grupo</span>
             </Button>
           </div>
-        </div>
+        </fieldset>
 
         <AnimatePresence>
           {formData.tipoVisita === 'grupo' && (
@@ -172,7 +173,7 @@ export function Formulario({
           options={paises.map(p => ({ value: p.nombre_pais, label: p.nombre_pais }))}
           manejarCambio={manejarCambio}
           required
-          disabled={loadingPaises}
+          disabled={loadingPaises || bloquearPais}
         />
 
         <div className="relative">
@@ -215,7 +216,7 @@ export function Formulario({
         )}
       </div>
 
-      <div className="flex gap-3 pt-1 pb-2 md:pb-0">
+      <div className="flex gap-3 pt-1 pb-3 md:pb-1 px-4 md:px-2 mt-auto">
         {onCancel && (
           <Button
             type="button"

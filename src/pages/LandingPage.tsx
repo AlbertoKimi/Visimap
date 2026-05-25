@@ -1,6 +1,5 @@
 import React from 'react';
-import { LazyMotion, m } from 'framer-motion';
-const loadFeatures = () => import('framer-motion').then(res => res.domAnimation);
+import { m } from 'framer-motion';
 import { LandingPageProps } from "@/interfaces/components";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -99,23 +98,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   }, []);
 
   return (
-    <LazyMotion features={loadFeatures} strict>
+    <>
       <div className="min-h-screen bg-white dark:bg-slate-950 overflow-x-hidden transition-colors duration-300">
         <nav className="fixed top-0 w-full bg-white dark:bg-slate-950 border-b dark:border-slate-800 z-50">
           <div className="container mx-auto p-4">
             <div className="flex items-center justify-between">
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="button"
                 aria-label="Ir al inicio"
                 onClick={scrollToTop}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    scrollToTop();
-                  }
-                }}
-                className="cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+                className="cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg bg-transparent border-0 p-0"
               >
                 <img
                   src={theme === 'dark' ? logoModoOscuroUrl : logoUrl}
@@ -132,7 +124,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                     }
                   }}
                 />
-              </div>
+              </button>
               <div className="flex items-center gap-4">
                 <ThemeToggle />
                 <Button onClick={onGetStarted} className="btn-gradient-landing">
@@ -533,18 +525,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           <div className="container mx-auto">
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <div
-                  role="button"
-                  tabIndex={0}
+                <button
+                  type="button"
                   aria-label="Ir al inicio"
                   onClick={scrollToTop}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      scrollToTop();
-                    }
-                  }}
-                  className="flex items-center gap-2 mb-4 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+                  className="flex items-center gap-2 mb-4 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1 bg-transparent border-0"
                 >
                   <img
                     src={logoModoOscuroUrl}
@@ -561,7 +546,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                       }
                     }}
                   />
-                </div>
+                </button>
                 <p className="text-gray-400">
                   Sistema de gestión digital para museos del siglo XXI.
                 </p>
@@ -603,6 +588,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           </div>
         </footer>
       </div>
-    </LazyMotion>
+    </>
   );
 };

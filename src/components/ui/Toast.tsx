@@ -47,6 +47,7 @@ export function Toast({ open, mensaje, tipo = 'info', duracion = 4000, onClose }
         {icono}
         <span className="text-sm font-semibold flex-1 leading-snug">{mensaje}</span>
         <button
+          type="button"
           onClick={onClose}
           className="p-1 rounded-lg hover:bg-white/20 transition-colors shrink-0"
           aria-label="Cerrar notificación"

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { CheckCircle, ShieldCheck } from 'lucide-react';
+import { ICONOS } from '@/constantes/iconos';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 import Input from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/database/supabase/client";
 import fachadaMuviImg from "@/assets/Fachada_Muvi.webp";
 import { EstablecerContrasenaProps } from "@/interfaces/components";
+
+const COPYRIGHT_YEAR = new Date().getFullYear();
 
 /**
  * Vista mostrada a los nuevos usuarios tras aceptar la invitación por correo.
@@ -191,7 +194,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
 
                     <p className="text-white/60 text-xs font-medium">
-                        © {new Date().getFullYear()} Museo MUVI · Sistema VisiMap
+                        © {COPYRIGHT_YEAR} Museo MUVI · Sistema VisiMap
                     </p>
                 </div>
             </div>
@@ -204,11 +207,16 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
                 {/* Botón Theme Toggle */}
                 <button
+                    type="button"
                     onClick={toggleTheme}
                     className="absolute top-6 right-6 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-90 z-20 shadow-sm border border-slate-200 dark:border-slate-700"
                     title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                 >
-                    {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                    <img
+                        src={isDark ? ICONOS.sol : ICONOS.luna}
+                        className="size-5 object-contain"
+                        alt=""
+                    />
                 </button>
 
                 <div className="relative z-10 w-full max-w-md space-y-8">
@@ -231,6 +239,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Ej: jgarcia"
                             required
+                            maxLength={20}
+                            regex={/^[a-zA-Z0-9._-]{3,20}$/}
+                            error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
                         />
 
                         <Input
@@ -242,8 +253,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Mínimo 8 carac, 1 mayús, 1 num..."
                             required
-                            regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.\-_])[A-Za-z\d@$!%*?&.\-_]{8,}$/}
-                            error="Mínimo 8 caracteres, una mayúscula, un número y un carácter especial"
+                            regex={/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/}
+                            error="Entre 8 y 40 caracteres, una mayúscula, un número y un carácter especial"
+                            maxLength={40}
                         />
 
                         <Input
@@ -255,6 +267,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                             manejarError={manejarError}
                             placeholder="Repite la contraseña"
                             required
+                            maxLength={40}
                         />
 
                         <Button

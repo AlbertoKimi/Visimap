@@ -92,6 +92,7 @@ export const Notas: React.FC = () => {
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setIsModalOpen(true)}
           className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] text-white rounded-xl transition-all shadow-md font-medium w-full sm:w-auto"
         >

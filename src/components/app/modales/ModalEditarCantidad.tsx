@@ -24,12 +24,14 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
   const footer = (
     <>
       <button
+        type="button"
         onClick={onClose}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all active:scale-[0.98]"
       >
         Cerrar
       </button>
       <button
+        type="button"
         onClick={() => onSave(cantidad, observaciones)}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 shadow-lg shadow-blue-200 dark:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2"
       >
@@ -61,6 +63,7 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
               type="number"
               value={cantidad}
               onChange={(e) => setCantidad(parseInt(e.target.value) || 0)}
+              aria-label="Nueva cantidad"
               className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all appearance-none"
               min="0"
             />
@@ -75,6 +78,7 @@ export const ModalEditarCantidad: React.FC<ModalEditarCantidadProps> = ({
             id="observaciones-cantidad"
             value={observaciones}
             onChange={(e) => setObservaciones(e.target.value)}
+            aria-label="Observaciones"
             className="w-full px-6 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white dark:focus:bg-slate-700 transition-all resize-none min-h-[100px]"
             placeholder="Añade o modifica las observaciones..."
           />

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/Select";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { supabase } from "@/database/supabase/client";
 import { Perfil } from "@/interfaces/Perfil";
@@ -49,6 +50,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   const [editData, setEditData] = useState<Partial<Perfil>>({ ...initialUser });
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [confirmarGuardado, setConfirmarGuardado] = useState(false);
+  const [confirmarCambioEstado, setConfirmarCambioEstado] = useState(false);
   const formErrors = useRef<Record<string, boolean>>({});
 
   // Estados para contraseñas
@@ -67,6 +70,25 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   });
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // useEffect para cargar la fecha de registro del usuario
+
+  useEffect(() => {
+    if (user.created_at) return;
+    let cancelado = false;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const authUser = data?.user;
+        if (!cancelado && authUser && authUser.id === user.id && authUser.created_at) {
+          setUser(prev => ({ ...prev, created_at: authUser.created_at }));
+        }
+      } catch (err) {
+        console.error('No se pudo recuperar la fecha de registro:', err);
+      }
+    })();
+    return () => { cancelado = true; };
+  }, [user.id, user.created_at]);
 
   // Cargar estadísticas reales
   const fetchStats = useCallback(async () => {
@@ -132,7 +154,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     formErrors.current[name] = hasError;
   };
 
-  const handleSave = async () => {
+  // Valida los campos y, si todo OK, abre el modal de confirmación.
+
+  const handleSave = () => {
     // Validar contraseñas
     if (newPassword) {
       if (newPassword.length < 6) {
@@ -147,6 +171,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       return mostrarNotificacion('Por favor, corrige los errores en el formulario.', 'error');
     }
 
+    setConfirmarGuardado(true);
+  };
+
+  const confirmarGuardadoCambios = async () => {
     try {
       setIsSaving(true);
       let finalAvatarUrl = user.avatar_url;
@@ -180,6 +208,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     } finally {
       setIsSaving(false);
       setIsUploading(false);
+      setConfirmarGuardado(false);
     }
   };
 
@@ -199,17 +228,22 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const toggleStatus = async () => {
+  // Solo abre el modal de confirmación. El cambio real se ejecuta en `confirmarCambioEstadoUsuario`.
+  const toggleStatus = () => {
+    setConfirmarCambioEstado(true);
+  };
+
+  const confirmarCambioEstadoUsuario = async () => {
     const newStatus = user.active === false;
-    if (window.confirm(`¿Seguro que quieres ${newStatus ? 'activar' : 'desactivar'} a este usuario?`)) {
-      try {
-        await userRepo.toggleStatus(user.id, newStatus);
-        setUser(prev => ({ ...prev, active: newStatus }));
-        mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'}`, 'success');
-        onUpdate();
-      } catch (error: any) {
-        mostrarNotificacion('Error al cambiar estado', 'error');
-      }
+    try {
+      await userRepo.toggleStatus(user.id, newStatus);
+      setUser(prev => ({ ...prev, active: newStatus }));
+      mostrarNotificacion(`Usuario ${newStatus ? 'activado' : 'desactivado'} correctamente`, 'success');
+      onUpdate();
+    } catch (error: any) {
+      mostrarNotificacion('Error al cambiar estado', 'error');
+    } finally {
+      setConfirmarCambioEstado(false);
     }
   };
 
@@ -227,6 +261,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       <div className={`flex mb-8 gap-2 ${hideBack ? 'justify-end items-center' : 'flex-col md:flex-row md:items-center md:justify-between'}`}>
         {!hideBack && (
           <button
+            type="button"
             onClick={onBack}
             className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium self-start"
           >
@@ -314,8 +349,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                   )}
                   {mode === 'edit' && (
                     <button
+                      type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isUploading}
+                      aria-label="Cambiar foto de perfil"
                       className="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       {isUploading ? <Loader2 size={24} className="animate-spin" /> : <Camera size={24} />}
@@ -328,6 +365,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     className="hidden"
                     accept="image/*"
                     onChange={handleImageChange}
+                    aria-label="Subir foto de perfil"
                   />
                 </div>
               </div>
@@ -416,6 +454,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                       manejarCambio={manejarCambio}
                       manejarError={manejarError}
                       required
+                      maxLength={20}
+                      regex={/^[a-zA-Z0-9._-]{3,20}$/}
+                      error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -471,8 +512,9 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                         manejarCambio={manejarCambioPass}
                         manejarError={manejarError}
                         placeholder="********"
-                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ : undefined}
-                        error="Mínimo 8 carac, 1 mayús, 1 num..."
+                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/ : undefined}
+                        error="Entre 8 y 40 caracteres, 1 mayúscula, 1 número y 1 símbolo."
+                        maxLength={40}
                       />
                       <Input
                         label="Confirmar Contraseña"
@@ -481,6 +523,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                         value={confirmPassword}
                         manejarCambio={manejarCambioPass}
                         placeholder="********"
+                        maxLength={40}
                       />
                     </div>
                   </div>
@@ -508,6 +551,36 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
 
         </div>
       </div>
+
+      <ModalConfirmacion
+        isOpen={confirmarGuardado}
+        onClose={() => setConfirmarGuardado(false)}
+        onConfirm={confirmarGuardadoCambios}
+        titulo="¿Guardar cambios?"
+        mensaje={
+          newPassword
+            ? hideBack
+              ? `Vas a guardar los cambios en tu perfil${newPassword ? ' (incluyendo la actualización de tu contraseña)' : ''}. ¿Confirmas la operación?`
+              : `Vas a guardar los cambios realizados en el perfil de ${fullName || user.nombre_usuario} (incluyendo el cambio de contraseña). ¿Confirmas la operación?`
+            : hideBack
+              ? '¿Estás seguro de que quieres guardar los cambios realizados en tu perfil?'
+              : `¿Estás seguro de que quieres guardar los cambios realizados en el perfil de ${fullName || user.nombre_usuario}?`
+        }
+        tipo="success"
+      />
+
+      <ModalConfirmacion
+        isOpen={confirmarCambioEstado}
+        onClose={() => setConfirmarCambioEstado(false)}
+        onConfirm={confirmarCambioEstadoUsuario}
+        titulo={user.active === false ? '¿Activar usuario?' : '¿Desactivar usuario?'}
+        mensaje={
+          user.active === false
+            ? `¿Estás seguro de que quieres reactivar la cuenta de ${fullName || user.nombre_usuario}? Podrá volver a iniciar sesión en Visimap.`
+            : `¿Estás seguro de que quieres desactivar la cuenta de ${fullName || user.nombre_usuario}? No podrá iniciar sesión hasta que la reactives, pero todos sus registros y eventos se conservarán.`
+        }
+        tipo={user.active === false ? 'success' : 'danger'}
+      />
     </div>
   );
 };

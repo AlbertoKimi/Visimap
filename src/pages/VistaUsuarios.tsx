@@ -252,6 +252,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
             <div className="p-12 text-center text-red-500 bg-red-50">
               <p>Ocurrió un error al cargar los usuarios: {error}</p>
               <button
+                type="button"
                 onClick={() => fetchProfiles()}
                 className="mt-4 text-sm underline hover:text-red-700"
               >

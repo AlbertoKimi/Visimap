@@ -174,6 +174,7 @@ export interface FormularioProps {
   onCancel?: () => void;
   mostrarObservaciones?: boolean;
   bloquearProvincia?: boolean;
+  bloquearPais?: boolean;
   resetTrigger?: number;
 }
 

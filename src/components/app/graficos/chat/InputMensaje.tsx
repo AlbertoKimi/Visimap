@@ -97,6 +97,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
               <span className="chat-adjunto-nombre">{adj.nombre}</span>
               <span className="chat-adjunto-tamaño">{formatBytes(adj.tamaño)}</span>
               <button
+                type="button"
                 onClick={() => onEliminarArchivo(adj.nombre)}
                 className="chat-adjunto-eliminar"
                 title="Eliminar archivo"
@@ -114,6 +115,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
 
         {/* Botón adjuntar */}
         <button
+          type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isLoading}
           className="chat-btn-adjuntar"
@@ -149,6 +151,7 @@ export const InputMensaje: React.FC<InputMensajeProps> = ({
 
         {/* Botón enviar */}
         <button
+          type="button"
           onClick={handleEnviar}
           disabled={isLoading}
           className="chat-btn-enviar"

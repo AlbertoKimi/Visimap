@@ -58,12 +58,14 @@ export const ModalDetalleRegistro: React.FC<ModalDetalleRegistroProps> = ({
           <span className="flex-1">{title}</span>
           {onEdit && (
             <button
+              type="button"
               onClick={() => {
                 onClose();
                 onEdit();
               }}
-              className="p-1.5 mr-6 rounded-lg text-slate-500 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
+              className="p-1.5 mr-6 rounded-lg text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
               title="Modificar registro"
+              aria-label="Modificar registro"
             >
               <Edit2 className="size-4" />
             </button>

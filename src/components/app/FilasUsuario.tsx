@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
+import { MoreVertical, Eye, Edit, Trash2, CheckCircle2 } from 'lucide-react';
 import { Menu, MenuItem } from '@mui/material';
 import { UserRowProps } from "@/interfaces/components";
 
@@ -90,8 +90,10 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
 
       <td className="p-6 text-right">
         <button
+          type="button"
           onClick={handleClick}
-          className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
+          aria-label="Más acciones"
+          className="p-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
           data-state={open ? 'open' : 'closed'}
         >
           <MoreVertical className="size-5" />
@@ -137,7 +139,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
               </>
             ) : (
               <>
-                <Edit size={16} className="text-green-500" /> Activar
+                <CheckCircle2 size={16} className="text-green-500" /> Activar
               </>
             )}
           </MenuItem>

@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import Select from "@/components/ui/Select";
+import { ModalConfirmacion } from "@/components/app/modales/ModalConfirmacion";
 import { RepositoryFactory } from "@/database/RepositoryFactory";
 import { FormularioRegistroProps } from "@/interfaces/components";
 
@@ -21,6 +22,7 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
   mostrarNotificacion
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmarInvitacion, setConfirmarInvitacion] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -39,7 +41,8 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
     formErrors.current[name] = hasError;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Solo valida y abre el modal de confirmación. El envío real está en `enviarInvitacion`.
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (Object.values(formErrors.current).some(v => v)) {
@@ -47,10 +50,19 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
       return;
     }
 
+    // Verificamos que ningún campo obligatorio esté vacío antes de abrir el modal
+    if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.email) {
+      mostrarNotificacion('Por favor, completa todos los campos antes de continuar.', 'error');
+      return;
+    }
+
+    setConfirmarInvitacion(true);
+  };
+
+  const enviarInvitacion = async () => {
     setIsLoading(true);
 
     try {
-
       const apellidosStr = formData.apellidos.trim();
       const primerEspacio = apellidosStr.indexOf(' ');
       let apellido1 = apellidosStr;
@@ -75,9 +87,34 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
 
     } catch (err: any) {
       console.error("Error al invitar:", err);
-      mostrarNotificacion(err.message || 'Error al invitar al usuario.', 'error');
+
+      const rawMsg = String(err?.message || '').toLowerCase();
+      let mensajeAmigable = 'No se ha podido invitar al usuario. Inténtalo de nuevo en unos momentos.';
+
+      if (
+        err?.message === 'USER_ALREADY_EXISTS' ||
+        rawMsg.includes('already') ||
+        rawMsg.includes('exists') ||
+        rawMsg.includes('registered') ||
+        rawMsg.includes('duplicate') ||
+        rawMsg.includes('ya está') ||
+        rawMsg.includes('ya existe')
+      ) {
+        mensajeAmigable = `El correo "${formData.email}" ya está registrado en el sistema. Si el usuario no recuerda su contraseña, contacta con un administrador para reenviarle la invitación.`;
+      } else if (rawMsg.includes('email') && (rawMsg.includes('invalid') || rawMsg.includes('no válido'))) {
+        mensajeAmigable = 'El correo electrónico introducido no es válido.';
+      } else if (rawMsg.includes('rate') || rawMsg.includes('too many')) {
+        mensajeAmigable = 'Se han enviado demasiadas invitaciones en poco tiempo. Espera unos minutos e inténtalo de nuevo.';
+      } else if (rawMsg.includes('network') || rawMsg.includes('fetch')) {
+        mensajeAmigable = 'No se ha podido conectar con el servidor. Comprueba tu conexión a internet.';
+      }
+
+      mostrarNotificacion(mensajeAmigable, 'error');
+      // Cerramos el formulario para que el toast sea visible y no quede tapado por el modal.
+      if (onCancel) onCancel();
     } finally {
       setIsLoading(false);
+      setConfirmarInvitacion(false);
     }
   };
 
@@ -169,6 +206,18 @@ export const FormularioRegistroUsuario: React.FC<FormularioRegistroProps> = ({
           </Button>
         </div>
       </form>
+
+      <ModalConfirmacion
+        isOpen={confirmarInvitacion}
+        onClose={() => setConfirmarInvitacion(false)}
+        onConfirm={enviarInvitacion}
+        titulo="¿Enviar invitación?"
+        mensaje={
+          `Se enviará un correo de invitación a "${formData.email}" con permisos de ${formData.rol === 'admin' ? 'Administrador' : 'Trabajador'}. ` +
+          `Esta persona podrá iniciar sesión en Visimap inmediatamente después de aceptar.`
+        }
+        tipo="success"
+      />
     </div>
   );
 };

@@ -141,6 +141,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
           {/* Botón Editar: Solo visible si somos el creador de la nota y su estado es 'normal' */}
           {isCreator && nota.estado === 'normal' && (
             <button
+              type="button"
               onClick={() => onEditClick?.(nota)}
               disabled={isProcessing}
               className="p-1.5 rounded-md transition-colors tooltip bg-blue-200 dark:bg-blue-900/60 text-blue-800 dark:text-blue-100 hover:bg-blue-300 dark:hover:bg-blue-800 font-medium scale-105 active:scale-95"
@@ -153,6 +154,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
           {/* Botón Pendiente: Solo visible si está normal y tiene permiso */}
           {nota.estado === 'normal' && hasTogglePermission && (
             <button
+              type="button"
               onClick={() => {
                 setConfirmModal({
                   open: true,
@@ -173,6 +175,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
           {/* Botón Finalizar: Visible si está normal o pendiente y tiene permiso */}
           {(nota.estado === 'normal' || nota.estado === 'pendiente') && hasTogglePermission && (
             <button
+              type="button"
               onClick={() => {
                 setConfirmModal({
                   open: true,
@@ -197,6 +200,7 @@ export const NotaCard: React.FC<NotaCardProps> = ({ nota, onNotaUpdated, onEditC
                 <div className="w-px h-5 bg-black/10 dark:bg-white/10 mx-1"></div>
               )}
               <button
+                type="button"
                 onClick={() => {
                   setConfirmModal({
                     open: true,

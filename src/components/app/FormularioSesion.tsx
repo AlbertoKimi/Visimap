@@ -142,7 +142,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
       {/* Fondo fijo que cubre toda la pantalla, incluyendo la zona de barras de iOS */}
       <div className="login-bg-image" style={{ backgroundImage: `url('${fondoLoginImg}')` }} />
       <div className="bg-white dark:bg-slate-900/95 dark:backdrop-blur-md p-8 rounded-3xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300 border dark:border-slate-800">
-        <div className="justify-center text-center mb-8 gap-4 items-center flex flex-col">
+        <div className={`justify-center text-center gap-4 items-center flex flex-col ${submissionError ? 'mb-8 md:mb-4' : 'mb-8'}`}>
           {logoUrl && (
             <img
               src={theme === 'dark' ? (logoModoOscuroUrl || logoUrl) : logoUrl}
@@ -164,7 +164,7 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
           <p className="text-slate-500 dark:text-slate-400 mt-2">Introduce tus credenciales para continuar</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className={submissionError ? 'space-y-5 md:space-y-3' : 'space-y-5'}>
           <Input
             name="email"
             label="Correo Electrónico"
@@ -209,8 +209,9 @@ export const FormularioSesion: React.FC<FormularioSesionProps> = ({
           </button>
         </form>
         <button
+          type="button"
           onClick={onBack}
-          className="w-full text-slate-600 dark:text-slate-400 text-sm font-medium mt-6 hover:text-blue-700 dark:hover:text-blue-400 hover:underline transition-all duration-200"
+          className={`w-full text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-blue-700 dark:hover:text-blue-400 hover:underline transition-all duration-200 ${submissionError ? 'mt-6 md:mt-3' : 'mt-6'}`}
         >
           ← Volver al inicio
         </button>

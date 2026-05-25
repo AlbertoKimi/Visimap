@@ -236,7 +236,9 @@ export function useChatIA() {
     const tieneVisitantes = lowerText.includes('visitante') || lowerText.includes('visita') || lowerText.includes('persona') || lowerText.includes('gente');
     const tieneAnio = (matchAnio !== null) || lowerText.includes('este año') || lowerText.includes('de este año') || lowerText.includes('del año') || lowerText.includes('en lo que va de año') || lowerText.includes('este 2026') || lowerText.includes('en 2026') || (lowerText.includes('año') && (lowerText.includes('actual') || lowerText.includes('este') || lowerText.includes('el') || lowerText.includes('en')));
     const tieneTotalHistorico = lowerText.includes('total') || lowerText.includes('histórico') || lowerText.includes('historico') || lowerText.includes('acumulado') || lowerText.includes('todos los tiempos');
-    const tieneMes = lowerText.includes('mes') || lowerText.includes('mensual');
+    // Detecta tanto la palabra "mes"/"mensual" como nombres de mes (enero, febrero, ..., diciembre).
+    // Sin esto, consultas como "visitantes en mayo de este año" caerían en el interceptor anual.
+    const tieneMes = lowerText.includes('mes') || lowerText.includes('mensual') || mesesNombres.some(m => lowerText.includes(m));
     const tienePersonal = lowerText.includes('personal') || lowerText.includes('rendimiento') || lowerText.includes('trabajador') || lowerText.includes('empleado');
     const tieneProvincias = lowerText.includes('provincia') || lowerText.includes('provincias');
     const tieneMundo = lowerText.includes('españa') || lowerText.includes('mundo') || lowerText.includes('extranjero') || lowerText.includes('nacional') || lowerText.includes('internacional');
@@ -313,13 +315,15 @@ export function useChatIA() {
 
         let respuestaTexto = '';
         if (!eventos || eventos.length === 0) {
-          respuestaTexto = 'No hay eventos activos o próximos.';
+          respuestaTexto = `## Eventos activos o próximos\n\nNo hay **eventos activos o próximos** registrados en el museo en este momento.`;
         } else {
-          respuestaTexto = eventos.map((ev: any) => {
+          const listado = eventos.map((ev: any) => {
             const d = new Date(ev.fecha_inicio);
             const fechaFormateada = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-            return `• ${ev.nombre_evento}: ${fechaFormateada}`;
+            return `- **${ev.nombre_evento}** — ${fechaFormateada}`;
           }).join('\n');
+          const total = eventos.length;
+          respuestaTexto = `## Eventos activos o próximos\n\nActualmente hay **${total}** evento${total === 1 ? '' : 's'} ${total === 1 ? 'programado' : 'programados'}:\n\n${listado}`;
         }
 
         await new Promise(resolve => setTimeout(resolve, 600));

@@ -210,7 +210,7 @@ export const NotaModal: React.FC<NotaModalProps> = ({ onClose, onNotaCreated, no
           onConfirm={confirmModal.onConfirm}
           titulo={confirmModal.title}
           mensaje={confirmModal.message}
-          tipo={nota ? 'success' : 'info'}
+          tipo="success"
         />
       )}
     </Modal>

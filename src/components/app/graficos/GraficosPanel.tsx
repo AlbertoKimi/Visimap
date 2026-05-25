@@ -519,6 +519,7 @@ export const GraficosPanel: React.FC = () => {
         </div>
         <div className="flex-1" />
         <button
+          type="button"
           onClick={fetchTodo}
           className="btn-secondary h-11 px-4 mb-0.5 flex items-center gap-2"
           title="Refrescar datos manualmente"
@@ -707,10 +708,10 @@ export const GraficosPanel: React.FC = () => {
                   <Tooltip content={<TooltipPersonalizado />} cursor={{ fill: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(241, 245, 249, 0.5)' }} />
                   <Legend content={<LeyendaConTotal total={total} />} />
                   <Bar dataKey="España" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} barSize={40}>
-                    <LabelList dataKey="España" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 11, fontWeight: 'bold' }} />
+                    <LabelList dataKey="España" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: 'bold' }} />
                   </Bar>
                   <Bar dataKey="Resto del Mundo" fill="var(--color-secondary-500)" radius={[6, 6, 0, 0]} barSize={40}>
-                    <LabelList dataKey="Resto del Mundo" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 11, fontWeight: 'bold' }} />
+                    <LabelList dataKey="Resto del Mundo" position="top" style={{ fill: isDark ? '#cbd5e1' : '#334155', fontSize: 12, fontWeight: 'bold' }} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

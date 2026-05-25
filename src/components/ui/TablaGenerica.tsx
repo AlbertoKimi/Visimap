@@ -200,6 +200,7 @@ export function TablaGenerica<T>({
             value={search}
             onChange={handleSearch}
             placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder || "Buscar"}
             className="input-style-comun input-border-primario pl-9 w-full sm:max-w-xs"
           />
         </div>
@@ -210,6 +211,7 @@ export function TablaGenerica<T>({
               key={filter.key}
               value={filterValues[filter.key] || '__all__'}
               onChange={e => handleFilter(filter.key, e.target.value)}
+              aria-label={`Filtrar por ${filter.label}`}
               className="input-style-comun select-responsive select-color-text w-full sm:w-auto sm:min-w-[130px] py-2"
             >
               <option value="__all__">{filter.label}: Todos</option>
@@ -224,6 +226,7 @@ export function TablaGenerica<T>({
           {/* Botón Marcar inactivos: solo si hay activos seleccionados */}
           {onDeleteSelected && selectedActiveIds.length > 0 && (
             <button
+              type="button"
               onClick={() => setModalAccion('delete')}
               className="btn-danger flex items-center gap-1.5 whitespace-nowrap animate-in fade-in duration-200"
             >
@@ -238,6 +241,7 @@ export function TablaGenerica<T>({
           {/* Botón Marcar activos: solo si hay inactivos seleccionados */}
           {onActivateSelected && selectedInactiveIds.length > 0 && (
             <button
+              type="button"
               onClick={() => setModalAccion('activate')}
               className="flex items-center gap-1.5 whitespace-nowrap animate-in fade-in duration-200 px-3 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-sm"
             >

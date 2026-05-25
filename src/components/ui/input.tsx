@@ -112,7 +112,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           autoCapitalize={isPassword || type === "email" ? "none" : (props.autoCapitalize as any)}
           autoCorrect={isPassword || type === "email" ? "off" : (props.autoCorrect as any)}
           spellCheck={isPassword || type === "email" ? false : props.spellCheck}
-          className={`input-style-comun input-responsive ${disabled ? "input-disabled" : `${colorClass}`
+          className={`input-style-comun input-responsive disabled:cursor-not-allowed read-only:cursor-not-allowed ${disabled ? "input-disabled" : `${colorClass}`
             } ${isPassword ? "pr-11" : ""} ${props.className || ""}`}
           aria-invalid={smError}
           aria-describedby={smError ? `${name}-error` : undefined}
@@ -122,7 +122,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         {isPassword && (
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
             onClick={() => setShowPassword(!showPassword)}
             tabIndex={-1}
             aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}

@@ -4,8 +4,11 @@ import {
   RouterProvider,
   Navigate
 } from 'react-router-dom';
+import { LazyMotion } from 'framer-motion';
 import { LandingPage } from "@/pages/LandingPage";
 import { lazy, Suspense } from 'react';
+
+const loadFramerFeatures = () => import('framer-motion').then(res => res.domAnimation);
 
 // Code-splitting extremo: diferimos incluso los formularios y el layout del panel de administración
 const FormularioSesion = lazy(() => import("@/components/app/FormularioSesion").then(module => ({ default: module.FormularioSesion })));
@@ -238,8 +241,10 @@ export default function App() {
   }
 
   return (
-    <Suspense fallback={<LoadingScreen />}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <LazyMotion features={loadFramerFeatures} strict>
+      <Suspense fallback={<LoadingScreen />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </LazyMotion>
   );
 }

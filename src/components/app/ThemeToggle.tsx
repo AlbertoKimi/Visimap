@@ -35,6 +35,7 @@ export const ThemeToggle: React.FC = () => {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
       className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
       title={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}

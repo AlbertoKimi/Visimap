@@ -1,4 +1,14 @@
-import { GraficosPanel } from '@/components/app/graficos/GraficosPanel';
+import React, { lazy, Suspense } from 'react';
+
+const GraficosPanel = lazy(() =>
+  import('@/components/app/graficos/GraficosPanel').then(m => ({ default: m.GraficosPanel }))
+);
+
+const GraficosLoader = () => (
+  <div className="flex items-center justify-center py-20">
+    <div className="size-10 border-4 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 /**
  * Vista de la página de Estadísticas (Dashboard Analítico).
@@ -28,7 +38,9 @@ export const Graficos: React.FC = () => {
           <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
         </div>
 
-        <GraficosPanel />
+        <Suspense fallback={<GraficosLoader />}>
+          <GraficosPanel />
+        </Suspense>
       </section>
 
     </div>

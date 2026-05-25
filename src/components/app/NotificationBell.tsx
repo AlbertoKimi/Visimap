@@ -223,6 +223,7 @@ export const NotificationBell: React.FC = () => {
   return (
     <div className="relative">
       <button
+        type="button"
         onClick={toggleOpen}
         className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
         aria-label="Notificaciones"
@@ -265,6 +266,7 @@ export const NotificationBell: React.FC = () => {
                     return (
                       <button
                         key={alerta.id}
+                        type="button"
                         onClick={() => handleAlertClick(alerta.link)}
                         title={alerta.mensaje}
                         className={`flex items-start gap-4 p-4 text-left w-full transition-all duration-200 group focus:outline-none ${!alerta.leido

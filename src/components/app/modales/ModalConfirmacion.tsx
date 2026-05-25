@@ -30,12 +30,14 @@ export const ModalConfirmacion: React.FC<ModalConfirmacionProps> = ({
   const footer = (
     <>
       <button
+        type="button"
         onClick={onClose}
         className="flex-1 px-6 py-3 rounded-2xl font-semibold text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all active:scale-[0.98]"
       >
         Cancelar
       </button>
       <button
+        type="button"
         onClick={() => {
           onConfirm();
           onClose();

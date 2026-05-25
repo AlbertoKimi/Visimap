@@ -75,11 +75,8 @@ export const Calendario: React.FC<CalendarioProps> = ({
 }) => {
   const [vista, setVista] = useState<'mes' | 'semana' | 'dia' | 'año' | 'agenda'>('mes');
   const [fechaActual, setFechaActual] = useState(new Date());
-  const [todayStr, setTodayStr] = useState('');
-
-  React.useEffect(() => {
-    setTodayStr(new Date().toDateString());
-  }, []);
+  // Lazy init: se calcula una vez al montar el componente, sin parpadeo entre render inicial y efecto
+  const [todayStr] = useState(() => new Date().toDateString());
 
   const calendarRef = React.useRef<any>(null);
 
@@ -154,21 +151,26 @@ export const Calendario: React.FC<CalendarioProps> = ({
             <div className="flex items-center gap-2 w-full lg:w-auto justify-center">
               <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner border border-slate-200/50 dark:border-slate-700">
                 <button
+                  type="button"
                   onClick={() => navegar(-1)}
                   className="p-1.5 sm:p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
                   title="Anterior"
+                  aria-label="Anterior"
                 >
                   <ChevronLeft size={18} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => navegar(1)}
                   className="p-1.5 sm:p-2 hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm"
                   title="Siguiente"
+                  aria-label="Siguiente"
                 >
                   <ChevronRight size={18} />
                 </button>
               </div>
               <button
+                type="button"
                 onClick={handleIrAHoy}
                 className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm sm:text-base font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:text-blue-700 dark:hover:text-blue-300 transition-all shadow-sm border border-blue-100 dark:border-blue-900/50 hover:scale-[1.02] active:scale-[0.98]"
               >
@@ -180,6 +182,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
               {(['año', 'mes', 'semana', 'dia', 'agenda'] as const).map((v) => (
                 <button
                   key={v}
+                  type="button"
                   onClick={() => setVista(v)}
                   className={`flex-1 lg:flex-none px-2.5 sm:px-4 py-1.5 rounded-lg text-[11px] sm:text-sm font-bold capitalize transition-all whitespace-nowrap ${vista === v ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-md' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
                 >
@@ -274,18 +277,11 @@ export const Calendario: React.FC<CalendarioProps> = ({
                           <div className="flex flex-col gap-1.5 h-full">
                             {evs.map((ev) => {
                               return (
-                                <div
+                                <button
                                   key={ev.id}
-                                  role="button"
-                                  tabIndex={0}
+                                  type="button"
                                   onClick={() => onEventClick?.({ event: { id: ev.id, title: ev.title, extendedProps: ev.extendedProps, backgroundColor: ev.backgroundColor, textColor: ev.textColor } })}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key === ' ') {
-                                      e.preventDefault();
-                                      onEventClick?.({ event: { id: ev.id, title: ev.title, extendedProps: ev.extendedProps, backgroundColor: ev.backgroundColor, textColor: ev.textColor } });
-                                    }
-                                  }}
-                                  className="p-1.5 sm:p-2 rounded-lg shadow-sm border-l-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer relative overflow-hidden"
+                                  className="text-left w-full p-1.5 sm:p-2 rounded-lg shadow-sm border-l-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer relative overflow-hidden"
                                   style={{ backgroundColor: ev.backgroundColor, color: ev.textColor, borderLeftColor: ev.color || 'transparent' }}
                                 >
                                   <div className="flex items-center gap-1">
@@ -297,7 +293,7 @@ export const Calendario: React.FC<CalendarioProps> = ({
                                   <div className="text-[10px] sm:text-[11px] font-bold uppercase leading-tight mt-0.5 line-clamp-2">
                                     {ev.title}
                                   </div>
-                                </div>
+                                </button>
                               );
                             })}
                           </div>
