@@ -7,6 +7,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { openaiService } from '@/database/openai/openaiService';
 import { supabase } from '@/database/supabase/client';
+import { RepositoryFactory } from '@/database/RepositoryFactory';
 import { ICONOS } from '@/constantes/iconos';
 import type {
   MensajeChat,
@@ -15,6 +16,13 @@ import type {
   ConsultaDB,
   SugerenciaChat,
 } from '@/interfaces/ChatIA';
+import type { EventoRow } from '@/database/repositories/StatsRepository';
+
+const statsRepo = RepositoryFactory.getStatsRepository();
+
+/** Normaliza una cadena para comparación robusta (case-insensitive y sin tildes). */
+const stripAccents = (s: string): string =>
+  s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Sugerencias rápidas
@@ -291,18 +299,21 @@ export function useChatIA() {
       finMes = `${targetYear}-${pad(targetMonthIndex + 1)}-${pad(ultimoDia)}T23:59:59.999`;
     }
 
-    // Consultar provincias y países en la BD
+    // Consultar provincias, países y eventos en la BD
     let todasProvincias: { id_provincia: number; nombre_provincia: string }[] = [];
     let todosPaises: { id_pais: number; nombre_pais: string }[] = [];
+    let todosEventos: EventoRow[] = [];
     try {
-      const [resProv, resPais] = await Promise.all([
-        supabase.from('provincia').select('id_provincia, nombre_provincia'),
-        supabase.from('pais').select('id_pais, nombre_pais')
+      const [provincias, paises, eventos] = await Promise.all([
+        statsRepo.getProvincias(),
+        statsRepo.getPaises(),
+        statsRepo.getEventos(),
       ]);
-      todasProvincias = resProv.data || [];
-      todosPaises = resPais.data || [];
+      todasProvincias = provincias;
+      todosPaises = paises;
+      todosEventos = eventos;
     } catch (e) {
-      console.error('Error cargando catálogos de provincias/países:', e);
+      console.error('Error cargando catálogos de provincias/países/eventos:', e);
     }
 
     const provEncontrada = todasProvincias.find(p =>
@@ -312,20 +323,135 @@ export function useChatIA() {
       ? todosPaises.find(p => lowerText.includes(p.nombre_pais.toLowerCase()))
       : undefined;
 
+    // Buscar evento por nombre (case + accent insensitive, mínimo 4 caracteres para evitar
+    // matches espurios con nombres muy cortos como "Test").
+    const lowerTextNorm = stripAccents(lowerText);
+    const eventoEncontrado = todosEventos.find(e =>
+      e.nombre_evento &&
+      e.nombre_evento.length >= 4 &&
+      lowerTextNorm.includes(stripAccents(e.nombre_evento))
+    );
+
     const esComparativaEspaniaMundo = (lowerText.includes('españa') || lowerText.includes('nacionales')) &&
       (lowerText.includes('mundo') || lowerText.includes('internacionales') || lowerText.includes('vs') || lowerText.includes('compar'));
 
     const tieneLugarEspecifico = (!!provEncontrada || !!paisEncontrado) && !esComparativaEspaniaMundo;
 
-    // EVENTOS (activos, programados, por día/mes/año, pasados con asistencia)
+    // EVENTOS (activos, programados, por día/mes/año, pasados con asistencia, evento específico)
     if (tieneEventos) {
       try {
+        // ── SUB-INTERCEPTOR: evento concreto mencionado por nombre ─────────────
+        // Si el usuario menciona el nombre de un evento específico (ej: "evento Conferencia"),
+        // mostramos sus visitantes con desglose por procedencia (nacional / internacional).
+        if (eventoEncontrado) {
+          const gruposEvento = await statsRepo.getGruposEnRango({
+            idsEvento: [eventoEncontrado.id_evento],
+          });
+
+          let totalNacional = 0;
+          let totalInternacional = 0;
+          const provMap: Record<string, number> = {};
+          const paisMap: Record<string, number> = {};
+
+          gruposEvento.forEach((g) => {
+            const cant = g.num_visitantes || 0;
+            if (g.tipo_origen === 'provincia') {
+              totalNacional += cant;
+              const prov = g.origen || 'Desconocida';
+              provMap[prov] = (provMap[prov] || 0) + cant;
+            } else if (g.tipo_origen === 'pais') {
+              const origen = g.origen || 'Otros';
+              if (origen === 'España') {
+                totalNacional += cant;
+                provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cant;
+              } else {
+                totalInternacional += cant;
+                paisMap[origen] = (paisMap[origen] || 0) + cant;
+              }
+            }
+          });
+
+          const totalVisitantes = totalNacional + totalInternacional;
+          const fechaEv = new Date(eventoEncontrado.fecha_inicio);
+          const fechaFormateada = `${pad(fechaEv.getDate())}/${pad(fechaEv.getMonth() + 1)}/${fechaEv.getFullYear()}`;
+          const estado = eventoEncontrado.finalizado ? '✅ Finalizado' : (fechaEv.getTime() < ahora.getTime() ? '🕒 Pendiente de cierre' : '📅 Programado');
+
+          let respuestaTexto = `## 🎭 ${eventoEncontrado.nombre_evento}\n\n`;
+          respuestaTexto += `📅 **Fecha:** ${fechaFormateada} (${estado})\n\n`;
+
+          if (totalVisitantes === 0) {
+            respuestaTexto += `Este evento todavía no tiene visitantes registrados.`;
+          } else {
+            respuestaTexto += `👥 **Visitantes totales:** ${totalVisitantes.toLocaleString('es-ES')}\n\n`;
+            respuestaTexto += `### Procedencia\n`;
+            respuestaTexto += `- 🇪🇸 **Nacionales:** ${totalNacional.toLocaleString('es-ES')} (${totalVisitantes > 0 ? ((totalNacional / totalVisitantes) * 100).toFixed(1) : 0}%)\n`;
+            respuestaTexto += `- 🌍 **Internacionales:** ${totalInternacional.toLocaleString('es-ES')} (${totalVisitantes > 0 ? ((totalInternacional / totalVisitantes) * 100).toFixed(1) : 0}%)\n`;
+
+            const listaProvincias = Object.entries(provMap)
+              .map(([nombre, total]) => ({ nombre, total }))
+              .sort((a, b) => b.total - a.total);
+            const listaPaises = Object.entries(paisMap)
+              .map(([nombre, total]) => ({ nombre, total }))
+              .sort((a, b) => b.total - a.total);
+
+            if (listaProvincias.length > 0) {
+              respuestaTexto += `\n### 🇪🇸 Desglose por provincias\n`;
+              listaProvincias.forEach((p) => {
+                respuestaTexto += `- **${p.nombre}:** ${p.total.toLocaleString('es-ES')} visitantes\n`;
+              });
+            }
+            if (listaPaises.length > 0) {
+              respuestaTexto += `\n### 🌍 Desglose por países\n`;
+              listaPaises.forEach((p) => {
+                respuestaTexto += `- **${p.nombre}:** ${p.total.toLocaleString('es-ES')} visitantes\n`;
+              });
+            }
+          }
+
+          respuestaTexto += `\n\n*(Datos obtenidos en tiempo real de la base de datos de Visimap)*`;
+
+          let graficos: GraficoGenerado[] | undefined;
+          if (totalVisitantes > 0) {
+            graficos = [{
+              id: `grafico-${Date.now()}-procedencia`,
+              tipo: 'bar',
+              titulo: `Procedencia de visitantes — ${eventoEncontrado.nombre_evento}`,
+              subtitulo: `Total: ${totalVisitantes.toLocaleString('es-ES')} visitantes`,
+              datos: [{ name: eventoEncontrado.nombre_evento, Nacionales: totalNacional, Internacionales: totalInternacional }],
+              claves: ['Nacionales', 'Internacionales'],
+              claveX: 'name',
+              colores: ['#3b82f6', '#ec4899'],
+            }];
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 600));
+          setMensajes(prev =>
+            prev.map(m =>
+              m.id === idPlaceholder
+                ? { ...m, texto: respuestaTexto, graficos, cargando: false }
+                : m
+            )
+          );
+          setIsLoading(false);
+          scrollAlFinal();
+          return;
+        }
+
         // 1. Determinar rango de fechas si la consulta especifica un periodo
         let inicioFiltro: string | null = null;
         let finFiltro: string | null = null;
         let labelPeriodo = '';
         let modoConsulta: 'activos' | 'rango' = 'activos';
         let granularidad: 'dia' | 'mes' | 'anio' | null = null;
+
+        // Detectar rango "entre <mes1> y <mes2>" o "del <mes1> al <mes2>"
+        const mesesEncontrados = mesesNombres
+          .map((m, idx) => ({ mes: m, idx, pos: lowerText.indexOf(m) }))
+          .filter(x => x.pos >= 0)
+          .sort((a, b) => a.pos - b.pos);
+        const tienePalabraRango = /\bentre\b|\bdesde\b|\bdel\b/.test(lowerText) &&
+          (/\sy\s|\sa\s|\bhasta\b|\sal\s/.test(lowerText));
+        const esRangoEntreMeses = tienePalabraRango && mesesEncontrados.length >= 2;
 
         if (tieneDiaEspecifico) {
           let targetDate = new Date();
@@ -357,6 +483,16 @@ export function useChatIA() {
           labelPeriodo = `${labelDia} (${dd}/${mm}/${y})`;
           modoConsulta = 'rango';
           granularidad = 'dia';
+        } else if (esRangoEntreMeses) {
+          // Rango "entre mes1 y mes2" / "del mes1 al mes2" — toma el primer y último mes mencionados
+          const primer = mesesEncontrados[0];
+          const ultimo = mesesEncontrados[mesesEncontrados.length - 1];
+          const ultimoDia = new Date(targetYear, ultimo.idx + 1, 0).getDate();
+          inicioFiltro = `${targetYear}-${pad(primer.idx + 1)}-01T00:00:00`;
+          finFiltro = `${targetYear}-${pad(ultimo.idx + 1)}-${pad(ultimoDia)}T23:59:59.999`;
+          labelPeriodo = `entre ${primer.mes} y ${ultimo.mes} de ${targetYear}`;
+          modoConsulta = 'rango';
+          granularidad = 'mes';
         } else if (indiceMesSolicitado !== -1) {
           const ultimoDia = new Date(targetYear, indiceMesSolicitado + 1, 0).getDate();
           inicioFiltro = `${targetYear}-${pad(indiceMesSolicitado + 1)}-01T00:00:00`;
@@ -374,36 +510,17 @@ export function useChatIA() {
         }
 
         // 2. Consultar eventos según modo
-        let queryEventos = supabase
-          .from('evento')
-          .select('id_evento, nombre_evento, fecha_inicio, finalizado')
-          .order('fecha_inicio', { ascending: true });
-
-        if (modoConsulta === 'rango' && inicioFiltro && finFiltro) {
-          queryEventos = queryEventos.gte('fecha_inicio', inicioFiltro).lte('fecha_inicio', finFiltro);
-        } else {
-          queryEventos = queryEventos.neq('finalizado', true);
-        }
-
-        const { data: eventos, error } = await queryEventos;
-        if (error) throw error;
+        const eventos = await statsRepo.getEventos(
+          modoConsulta === 'rango' && inicioFiltro && finFiltro
+            ? { inicio: inicioFiltro, fin: finFiltro }
+            : { soloActivos: true }
+        );
 
         // 3. Si hay un rango, obtener visitantes por evento (grupo_visitante.id_evento)
-        const visitantesPorEvento: Record<number, number> = {};
-        if (modoConsulta === 'rango' && eventos && eventos.length > 0) {
-          const ids = eventos.map((e: any) => e.id_evento);
-          const { data: grupos, error: errorGrupos } = await supabase
-            .from('grupo_visitante')
-            .select('id_evento, num_visitantes')
-            .in('id_evento', ids);
-
-          if (!errorGrupos && grupos) {
-            grupos.forEach((g: any) => {
-              if (g.id_evento) {
-                visitantesPorEvento[g.id_evento] = (visitantesPorEvento[g.id_evento] || 0) + (g.num_visitantes || 0);
-              }
-            });
-          }
+        let visitantesPorEvento: Record<number, number> = {};
+        if (modoConsulta === 'rango' && eventos.length > 0) {
+          const ids = eventos.map(e => e.id_evento);
+          visitantesPorEvento = await statsRepo.getVisitantesPorEventos(ids);
         }
 
         // 4. Determinar si el periodo es pasado/presente/futuro (para adaptar el lenguaje)
@@ -414,7 +531,10 @@ export function useChatIA() {
         const esFuturo = inicioPeriodoTime !== null && inicioPeriodoTime > ahoraTime;
         const verbHaber = esPasado ? 'hubo' : 'hay';
         const verbHaberMayus = esPasado ? 'Hubo' : 'Hay';
-        const preposicionPeriodo = granularidad === 'dia' ? '' : (granularidad === 'anio' ? 'en el año ' : 'en ');
+        // Si labelPeriodo ya empieza por "entre" (rango entre meses), no añadimos preposición.
+        const preposicionPeriodo = labelPeriodo.startsWith('entre')
+          ? ''
+          : (granularidad === 'dia' ? '' : (granularidad === 'anio' ? 'en el año ' : 'en '));
 
         // 5. Construir respuesta
         let respuestaTexto = '';
@@ -539,25 +659,24 @@ export function useChatIA() {
           granularidad = 'mes';
         }
 
-        // 2. Construir query con filtros opcionales por lugar
-        let query = supabase
-          .from('registro_visitante')
-          .select('cantidad, creado_en')
-          .eq('tipo_visita', tipoVisita)
-          .gte('creado_en', inicio)
-          .lte('creado_en', fin);
-
+        // 2. Construir filtros opcionales por lugar y delegar al repo
         let lugarLabel = '';
+        const idProvincia = provEncontrada?.id_provincia;
+        const idPais = !provEncontrada ? paisEncontrado?.id_pais : undefined;
         if (provEncontrada) {
-          query = query.eq('id_provincia', provEncontrada.id_provincia);
           lugarLabel = ` procedentes de ${provEncontrada.nombre_provincia}`;
         } else if (paisEncontrado) {
-          query = query.eq('id_pais', paisEncontrado.id_pais);
           lugarLabel = ` procedentes de ${paisEncontrado.nombre_pais}`;
         }
 
-        const { data, error } = await query;
-        if (error) throw error;
+        const data = await statsRepo.getRegistrosVisitante({
+          inicio,
+          fin,
+          tipo: tipoVisita,
+          idProvincia,
+          idPais,
+          seleccion: 'cantidadFecha',
+        });
 
         const numRegistros = data?.length || 0;
         const totalVisitantes = data?.reduce((acc, r: any) => acc + (r.cantidad || 0), 0) || 0;
@@ -717,61 +836,43 @@ export function useChatIA() {
         if (provEncontrada) {
           nombreLugar = provEncontrada.nombre_provincia;
 
-          const [resNorm, resGrp] = await Promise.all([
-            supabase.from('registro_visitante')
-              .select('cantidad')
-              .eq('id_provincia', provEncontrada.id_provincia)
-              .gte('creado_en', inicio)
-              .lte('creado_en', fin),
-            supabase.from('grupo_visitante')
-              .select(`
-                num_visitantes,
-                tipo_origen,
-                origen,
-                evento!inner (
-                  fecha_inicio
-                )
-              `)
-              .eq('tipo_origen', 'provincia')
-              .eq('origen', provEncontrada.nombre_provincia)
-              .gte('evento.fecha_inicio', inicio)
-              .lte('evento.fecha_inicio', fin)
+          const [registros, grupos] = await Promise.all([
+            statsRepo.getRegistrosVisitante({
+              inicio,
+              fin,
+              idProvincia: provEncontrada.id_provincia,
+              seleccion: 'cantidad',
+            }),
+            statsRepo.getGruposEnRango({
+              inicio,
+              fin,
+              tipoOrigen: 'provincia',
+              origen: provEncontrada.nombre_provincia,
+            }),
           ]);
 
-          if (resNorm.error) throw resNorm.error;
-          if (resGrp.error) throw resGrp.error;
-
-          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
-          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+          totalIndividuales = registros.reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = grupos.reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
         } else if (paisEncontrado) {
           nombreLugar = paisEncontrado.nombre_pais;
 
-          const [resNorm, resGrp] = await Promise.all([
-            supabase.from('registro_visitante')
-              .select('cantidad')
-              .eq('id_pais', paisEncontrado.id_pais)
-              .gte('creado_en', inicio)
-              .lte('creado_en', fin),
-            supabase.from('grupo_visitante')
-              .select(`
-                num_visitantes,
-                tipo_origen,
-                origen,
-                evento!inner (
-                  fecha_inicio
-                )
-              `)
-              .eq('tipo_origen', 'pais')
-              .eq('origen', paisEncontrado.nombre_pais)
-              .gte('evento.fecha_inicio', inicio)
-              .lte('evento.fecha_inicio', fin)
+          const [registros, grupos] = await Promise.all([
+            statsRepo.getRegistrosVisitante({
+              inicio,
+              fin,
+              idPais: paisEncontrado.id_pais,
+              seleccion: 'cantidad',
+            }),
+            statsRepo.getGruposEnRango({
+              inicio,
+              fin,
+              tipoOrigen: 'pais',
+              origen: paisEncontrado.nombre_pais,
+            }),
           ]);
 
-          if (resNorm.error) throw resNorm.error;
-          if (resGrp.error) throw resGrp.error;
-
-          totalIndividuales = (resNorm.data || []).reduce((acc, r) => acc + (r.cantidad || 0), 0);
-          totalGrupos = (resGrp.data || []).reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
+          totalIndividuales = registros.reduce((acc, r) => acc + (r.cantidad || 0), 0);
+          totalGrupos = grupos.reduce((acc, g) => acc + (g.num_visitantes || 0), 0);
         }
 
         const totalGeneral = totalIndividuales + totalGrupos;
@@ -801,19 +902,20 @@ export function useChatIA() {
     // 1. RENDIMIENTO DEL PERSONAL
     if (tienePersonal) {
       try {
-        const [resPerfiles, resReg, resEvt, resNot] = await Promise.all([
-          supabase.from('profiles').select('id, nombre, nombre_usuario').eq('active', true),
-          supabase.from('registro_visitante').select('id_usuario, creado_en').gte('creado_en', inicioMes).lte('creado_en', finMes),
-          supabase.from('evento').select('id_usuario, fecha_inicio').gte('fecha_inicio', inicioMes).lte('fecha_inicio', finMes),
-          supabase.from('notas').select('creado_por, creado_en').gte('creado_en', inicioMes).lte('creado_en', finMes)
+        const [perfiles, registros, eventosUsuarios, notas] = await Promise.all([
+          statsRepo.getPerfilesActivos(),
+          statsRepo.getRegistrosVisitante({
+            inicio: `${inicioMes}T00:00:00`,
+            fin: finMes,
+            seleccion: 'idUsuario',
+          }),
+          statsRepo.getEventosUsuariosPorPeriodo(inicioMes, finMes),
+          statsRepo.getNotasUsuariosPorPeriodo(inicioMes, finMes),
         ]);
 
-        if (resPerfiles.error) throw resPerfiles.error;
-
-        const perfiles = resPerfiles.data || [];
         const mapa: Record<string, { nombre: string; registros: number; eventos: number; notas: number; total: number }> = {};
 
-        perfiles.forEach((p: any) => {
+        perfiles.forEach((p) => {
           mapa[p.id] = {
             nombre: p.nombre || p.nombre_usuario || 'Desconocido',
             registros: 0,
@@ -823,21 +925,15 @@ export function useChatIA() {
           };
         });
 
-        if (resReg.data) {
-          resReg.data.forEach((r: any) => {
-            if (mapa[r.id_usuario]) mapa[r.id_usuario].registros += 1;
-          });
-        }
-        if (resEvt.data) {
-          resEvt.data.forEach((e: any) => {
-            if (mapa[e.id_usuario]) mapa[e.id_usuario].eventos += 1;
-          });
-        }
-        if (resNot.data) {
-          resNot.data.forEach((n: any) => {
-            if (mapa[n.creado_por]) mapa[n.creado_por].notas += 1;
-          });
-        }
+        registros.forEach((r) => {
+          if (r.id_usuario && mapa[r.id_usuario]) mapa[r.id_usuario].registros += 1;
+        });
+        eventosUsuarios.forEach((e) => {
+          if (mapa[e.id_usuario]) mapa[e.id_usuario].eventos += 1;
+        });
+        notas.forEach((n) => {
+          if (mapa[n.creado_por]) mapa[n.creado_por].notas += 1;
+        });
 
         const listaActividad = Object.entries(mapa).map(([id, val]) => ({
           id,
@@ -900,32 +996,19 @@ export function useChatIA() {
           ? `${targetYear}-${pad(currentMonthIndex + 1)}-${pad(ahora.getDate())}T23:59:59.999`
           : `${targetYear}-12-31T23:59:59.999`;
 
-        const [resVista, resNorm, resGrp, resEvt] = await Promise.all([
-          supabase.from('vista_visitantes_totales')
-            .select('total_personas, fecha'),
-          supabase.from('registro_visitante')
-            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
-            .gte('creado_en', inicioAnio).lte('creado_en', finAnio),
-          supabase.from('grupo_visitante')
-            .select(`
-              num_visitantes,
-              tipo_origen,
-              origen,
-              evento!inner (
-                fecha_inicio,
-                nombre_evento
-              )
-            `)
-            .gte('evento.fecha_inicio', inicioAnio).lte('evento.fecha_inicio', finAnio),
-          supabase.from('evento')
-            .select('id_evento, nombre_evento, fecha_inicio')
-            .gte('fecha_inicio', inicioAnio).lte('fecha_inicio', finAnio)
+        const [vistaTotales, registros, grupos, eventosAnio] = await Promise.all([
+          statsRepo.getVistaVisitantesTotales(),
+          statsRepo.getRegistrosVisitante({
+            inicio: inicioAnio,
+            fin: finAnio,
+            seleccion: 'cantidadFechaProvinciaPais',
+          }),
+          statsRepo.getGruposEnRango({ inicio: inicioAnio, fin: finAnio }),
+          statsRepo.getEventos({ inicio: inicioAnio, fin: finAnio }),
         ]);
 
-        if (resVista.error) throw resVista.error;
-
         // Total anual y desglose mensual usando la vista (incluye todo: ventanilla + eventos)
-        const registrosAnio = (resVista.data || []).filter(item => {
+        const registrosAnio = vistaTotales.filter(item => {
           const f = new Date(item.fecha);
           return f.getFullYear() === targetYear;
         });
@@ -945,35 +1028,31 @@ export function useChatIA() {
         const provMap: Record<string, number> = {};
         const paisMap: Record<string, number> = {};
 
-        if (resNorm.data) {
-          resNorm.data.forEach((r: any) => {
-            const paisNombre = r.pais?.nombre_pais || 'España';
-            const cantidad = r.cantidad || 0;
+        registros.forEach((r) => {
+          const paisNombre = r.pais?.nombre_pais || 'España';
+          const cantidad = r.cantidad || 0;
+          if (paisNombre === 'España') {
+            const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
+            provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+          } else {
+            paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+          }
+        });
+
+        grupos.forEach((g) => {
+          const cantidad = g.num_visitantes || 0;
+          if (g.tipo_origen === 'provincia') {
+            const provNombre = g.origen || 'Desconocida';
+            provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+          } else if (g.tipo_origen === 'pais') {
+            const paisNombre = g.origen || 'Otros';
             if (paisNombre === 'España') {
-              const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
-              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+              provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
             } else {
               paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
             }
-          });
-        }
-
-        if (resGrp.data) {
-          resGrp.data.forEach((g: any) => {
-            const cantidad = g.num_visitantes || 0;
-            if (g.tipo_origen === 'provincia') {
-              const provNombre = g.origen || 'Desconocida';
-              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
-            } else if (g.tipo_origen === 'pais') {
-              const paisNombre = g.origen || 'Otros';
-              if (paisNombre === 'España') {
-                provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
-              } else {
-                paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
-              }
-            }
-          });
-        }
+          }
+        });
 
         const topProvincias = Object.entries(provMap)
           .map(([nombre, total]) => ({ nombre, total }))
@@ -988,7 +1067,7 @@ export function useChatIA() {
         const totalEspana = Object.values(provMap).reduce((acc, v) => acc + v, 0);
         const totalMundo = Object.values(paisMap).reduce((acc, v) => acc + v, 0);
         const totalComparativa = totalEspana + totalMundo;
-        const totalEventos = resEvt.data?.length || 0;
+        const totalEventos = eventosAnio.length;
 
         // Mes con más visitantes
         let mejorMes = { mes: '—', total: 0 };
@@ -1090,42 +1169,31 @@ export function useChatIA() {
     // 3. DESGLOSE NACIONAL POR PROVINCIAS
     if (tieneProvincias && !tieneInformeAnual) {
       try {
-        const [resNorm, resGrp] = await Promise.all([
-          supabase.from('registro_visitante')
-            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
-            .gte('creado_en', inicioMes).lte('creado_en', finMes),
-          supabase.from('grupo_visitante')
-            .select(`
-              num_visitantes,
-              tipo_origen,
-              origen,
-              evento!inner (
-                fecha_inicio
-              )
-            `)
-            .gte('evento.fecha_inicio', inicioMes).lte('evento.fecha_inicio', finMes)
+        const [registros, grupos] = await Promise.all([
+          statsRepo.getRegistrosVisitante({
+            inicio: `${inicioMes}T00:00:00`,
+            fin: finMes,
+            seleccion: 'cantidadFechaProvinciaPais',
+          }),
+          statsRepo.getGruposEnRango({ inicio: `${inicioMes}T00:00:00`, fin: finMes }),
         ]);
 
         const mapaProvincias: Record<string, { normales: number; eventos: number }> = {};
 
-        if (resNorm.data) {
-          resNorm.data.forEach((r: any) => {
-            if (r.pais?.nombre_pais !== 'España') return;
-            const prov = r.provincia?.nombre_provincia ?? 'Desconocida';
-            if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
-            mapaProvincias[prov].normales += (r.cantidad || 0);
-          });
-        }
+        registros.forEach((r) => {
+          if (r.pais?.nombre_pais !== 'España') return;
+          const prov = r.provincia?.nombre_provincia ?? 'Desconocida';
+          if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
+          mapaProvincias[prov].normales += (r.cantidad || 0);
+        });
 
-        if (resGrp.data) {
-          resGrp.data.forEach((g: any) => {
-            if (g.tipo_origen === 'provincia') {
-              const prov = g.origen;
-              if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
-              mapaProvincias[prov].eventos += (g.num_visitantes || 0);
-            }
-          });
-        }
+        grupos.forEach((g) => {
+          if (g.tipo_origen === 'provincia') {
+            const prov = g.origen || 'Desconocida';
+            if (!mapaProvincias[prov]) mapaProvincias[prov] = { normales: 0, eventos: 0 };
+            mapaProvincias[prov].eventos += (g.num_visitantes || 0);
+          }
+        });
 
         const listaProvincias = Object.entries(mapaProvincias).map(([provincia, val]) => ({
           provincia,
@@ -1235,41 +1303,23 @@ export function useChatIA() {
         const idEspana = espanaPais?.id_pais;
 
         // 3. Consultar registro_visitante (ventanilla) y grupo_visitante (eventos)
-        let queryReg = supabase
-          .from('registro_visitante')
-          .select('cantidad, creado_en, id_pais')
-          .gte('creado_en', inicio)
-          .lte('creado_en', fin);
-
-        if (idEspana !== undefined) {
-          queryReg = esInternacional
-            ? queryReg.neq('id_pais', idEspana)
-            : queryReg.eq('id_pais', idEspana);
-        }
-
-        const queryGrupo = supabase
-          .from('grupo_visitante')
-          .select(`
-            num_visitantes,
-            tipo_origen,
-            origen,
-            evento!inner (
-              fecha_inicio
-            )
-          `)
-          .gte('evento.fecha_inicio', inicio)
-          .lte('evento.fecha_inicio', fin);
-
-        const [resReg, resGrp] = await Promise.all([queryReg, queryGrupo]);
-        if (resReg.error) throw resReg.error;
-        if (resGrp.error) throw resGrp.error;
+        const [datosReg, datosGrp] = await Promise.all([
+          statsRepo.getRegistrosVisitante({
+            inicio,
+            fin,
+            seleccion: 'cantidadFechaPais',
+            ...(idEspana !== undefined
+              ? (esInternacional ? { idPaisNot: idEspana } : { idPais: idEspana })
+              : {}),
+          }),
+          statsRepo.getGruposEnRango({ inicio, fin }),
+        ]);
 
         // 4. Sumas
-        const datosReg = (resReg.data || []) as Array<{ cantidad: number; creado_en: string }>;
         const totalVentanilla = datosReg.reduce((acc, r) => acc + (r.cantidad || 0), 0);
 
         let totalEventos = 0;
-        (resGrp.data || []).forEach((g: any) => {
+        datosGrp.forEach((g) => {
           const cant = g.num_visitantes || 0;
           if (esInternacional) {
             if (g.tipo_origen === 'pais' && g.origen !== 'España') totalEventos += cant;
@@ -1303,10 +1353,11 @@ export function useChatIA() {
             const mesesCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
             const datosMes = mesesCortos.map(m => ({ mes: m, total: 0 }));
             datosReg.forEach(r => {
+              if (!r.creado_en) return;
               const f = new Date(r.creado_en);
               if (f.getFullYear() === targetYear) datosMes[f.getMonth()].total += (r.cantidad || 0);
             });
-            (resGrp.data || []).forEach((g: any) => {
+            datosGrp.forEach((g) => {
               const cant = g.num_visitantes || 0;
               const aplica = esInternacional
                 ? (g.tipo_origen === 'pais' && g.origen !== 'España')
@@ -1331,13 +1382,14 @@ export function useChatIA() {
             const datosDia: { dia: string; total: number }[] = [];
             for (let d = 1; d <= totalDias; d++) datosDia.push({ dia: `${d}`, total: 0 });
             datosReg.forEach(r => {
+              if (!r.creado_en) return;
               const f = new Date(r.creado_en);
               const dd = f.getDate();
               if (dd >= 1 && dd <= totalDias && f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex) {
                 datosDia[dd - 1].total += (r.cantidad || 0);
               }
             });
-            (resGrp.data || []).forEach((g: any) => {
+            datosGrp.forEach((g) => {
               const cant = g.num_visitantes || 0;
               const aplica = esInternacional
                 ? (g.tipo_origen === 'pais' && g.origen !== 'España')
@@ -1399,64 +1451,50 @@ export function useChatIA() {
           ? `${targetYear}`
           : `${targetMesNombre.charAt(0).toUpperCase() + targetMesNombre.slice(1)} ${targetYear}`;
 
-        const [resNorm, resGrp] = await Promise.all([
-          supabase.from('registro_visitante')
-            .select('cantidad, creado_en, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
-            .gte('creado_en', rangoInicio).lte('creado_en', rangoFin),
-          supabase.from('grupo_visitante')
-            .select(`
-              num_visitantes,
-              tipo_origen,
-              origen,
-              evento!inner (
-                fecha_inicio
-              )
-            `)
-            .gte('evento.fecha_inicio', rangoInicio).lte('evento.fecha_inicio', rangoFin)
+        const [registros, grupos] = await Promise.all([
+          statsRepo.getRegistrosVisitante({
+            inicio: rangoInicio,
+            fin: rangoFin,
+            seleccion: 'cantidadFechaProvinciaPais',
+          }),
+          statsRepo.getGruposEnRango({ inicio: rangoInicio, fin: rangoFin }),
         ]);
-
-        if (resNorm.error) throw resNorm.error;
-        if (resGrp.error) throw resGrp.error;
 
         let totalEspana = 0;
         let totalMundo = 0;
         const provMap: Record<string, number> = {};
         const paisMap: Record<string, number> = {};
 
-        if (resNorm.data) {
-          resNorm.data.forEach((r: any) => {
-            const paisNombre = r.pais?.nombre_pais || 'España';
-            const cantidad = r.cantidad || 0;
+        registros.forEach((r) => {
+          const paisNombre = r.pais?.nombre_pais || 'España';
+          const cantidad = r.cantidad || 0;
+          if (paisNombre === 'España') {
+            totalEspana += cantidad;
+            const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
+            provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+          } else {
+            totalMundo += cantidad;
+            paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
+          }
+        });
+
+        grupos.forEach((g) => {
+          const cantidad = g.num_visitantes || 0;
+          if (g.tipo_origen === 'provincia') {
+            totalEspana += cantidad;
+            const provNombre = g.origen || 'Desconocida';
+            provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+          } else if (g.tipo_origen === 'pais') {
+            const paisNombre = g.origen || 'Otros';
             if (paisNombre === 'España') {
               totalEspana += cantidad;
-              const provNombre = r.provincia?.nombre_provincia || 'Desconocida';
-              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
+              provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
             } else {
               totalMundo += cantidad;
               paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
             }
-          });
-        }
-
-        if (resGrp.data) {
-          resGrp.data.forEach((g: any) => {
-            const cantidad = g.num_visitantes || 0;
-            if (g.tipo_origen === 'provincia') {
-              totalEspana += cantidad;
-              const provNombre = g.origen || 'Desconocida';
-              provMap[provNombre] = (provMap[provNombre] || 0) + cantidad;
-            } else if (g.tipo_origen === 'pais') {
-              const paisNombre = g.origen || 'Otros';
-              if (paisNombre === 'España') {
-                totalEspana += cantidad;
-                provMap['Otras (Grupos)'] = (provMap['Otras (Grupos)'] || 0) + cantidad;
-              } else {
-                totalMundo += cantidad;
-                paisMap[paisNombre] = (paisMap[paisNombre] || 0) + cantidad;
-              }
-            }
-          });
-        }
+          }
+        });
 
         const totalUnico = totalEspana + totalMundo;
 
@@ -1551,17 +1589,13 @@ export function useChatIA() {
           labelDia = `el día ${numeroDia}`;
         }
 
-        const { data: vistaData, error: vistaError } = await supabase
-          .from('vista_visitantes_totales')
-          .select('total_personas, fecha, origen');
-
-        if (vistaError) throw vistaError;
+        const vistaData = await statsRepo.getVistaVisitantesTotales();
 
         const dia = targetDate.getDate();
         const mesIndex = targetDate.getMonth();
         const anio = targetDate.getFullYear();
 
-        const registrosDia = (vistaData || []).filter(item => {
+        const registrosDia = vistaData.filter(item => {
           const f = new Date(item.fecha);
           return f.getDate() === dia && f.getMonth() === mesIndex && f.getFullYear() === anio;
         });
@@ -1628,13 +1662,9 @@ export function useChatIA() {
           totalDias = new Date(targetYear, targetMonthIndex + 1, 0).getDate();
         }
 
-        const { data: vistaData, error: vistaError } = await supabase
-          .from('vista_visitantes_totales')
-          .select('total_personas, fecha');
+        const vistaData = await statsRepo.getVistaVisitantesTotales();
 
-        if (vistaError) throw vistaError;
-
-        const registrosMes = (vistaData || []).filter(item => {
+        const registrosMes = vistaData.filter(item => {
           const f = new Date(item.fecha);
           return f.getFullYear() === targetYear && f.getMonth() === targetMonthIndex;
         });
@@ -1721,16 +1751,12 @@ export function useChatIA() {
     // 8. VISITANTES ANUALES O TOTAL HISTÓRICO
     if (tieneVisitantes && (tieneAnio || tieneTotalHistorico)) {
       try {
-        const { data: vistaData, error: vistaError } = await supabase
-          .from('vista_visitantes_totales')
-          .select('total_personas, fecha');
-
-        if (vistaError) throw vistaError;
+        const vistaData = await statsRepo.getVistaVisitantesTotales();
 
         let totalAnual = 0;
         let totalHistorico = 0;
 
-        vistaData?.forEach(item => {
+        vistaData.forEach(item => {
           const fecha = new Date(item.fecha);
           const anio = fecha.getFullYear();
           const personas = item.total_personas || 0;
