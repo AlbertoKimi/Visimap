@@ -26,12 +26,29 @@ export interface AuthState {
   isAuthenticated: boolean;
   /** Indicador de estado de carga durante las peticiones de autenticación */
   isLoading: boolean;
+  /**
+   * `true` mientras se está validando el perfil tras un login (o tras restaurar
+   * sesión al cargar la página). Permite a las rutas mostrar un spinner durante
+   * ese hueco entre "sesión creada en Supabase Auth" y "perfil validado en la BD",
+   * evitando el parpadeo del dashboard cuando un usuario desactivado intenta entrar.
+   */
+  isCheckingProfile: boolean;
+  /**
+   * Mensaje que explica por qué la última sesión fue rechazada o cerrada.
+   * Se usa para mostrar feedback al usuario en el FormularioSesion (p.ej. cuenta
+   * desactivada o perfil no encontrado) en lugar de un error genérico.
+   */
+  authError: string | null;
   /** Establece o actualiza la sesión actual */
   setSession: (session: Session | null) => void;
   /** Establece o actualiza el perfil extendido del usuario */
   setUserProfile: (profile: Perfil | null) => void;
   /** Modifica el estado de carga */
   setLoading: (isLoading: boolean) => void;
+  /** Marca si se está validando el perfil tras un login */
+  setCheckingProfile: (checking: boolean) => void;
+  /** Establece o limpia un mensaje de error de autenticación */
+  setAuthError: (mensaje: string | null) => void;
   /** Limpia completamente la sesión y el estado local (Logout) */
   clearSession: () => void;
 }

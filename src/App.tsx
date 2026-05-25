@@ -62,7 +62,9 @@ export default function App() {
     clearSession,
     userProfile,
     setUserProfile,
-    setLoading
+    setLoading,
+    setCheckingProfile,
+    setAuthError
   } = useAuthStore();
 
   const isAdmin = userProfile?.role_id === 1;
@@ -127,19 +129,52 @@ export default function App() {
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    // Marcamos que estamos validando el perfil. Las rutas (Protected/Public)
+    // mostrarán un spinner durante este intervalo en vez de redirigir, evitando
+    // el "parpadeo" del dashboard cuando un usuario desactivado intenta entrar.
+    setCheckingProfile(true);
+    try {
+      // .maybeSingle() devuelve null cuando no encuentra fila, en lugar de lanzar
+      // un 406 como hace .single(). Permite distinguir limpiamente "no hay perfil"
+      // de "el perfil existe pero está inactivo".
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
 
-    if (profile) {
-      if (profile.active === false) {
-        supabase.auth.signOut();
+      // Caso A: error inesperado de red o BD (típicamente JWT caducado tras una
+      // sesión muy antigua) → cerramos sesión silenciosamente y dejamos volver a entrar.
+      if (error) {
+        console.error('Error al cargar perfil:', error);
+        await supabase.auth.signOut();
         clearSession();
-      } else {
-        setUserProfile(profile);
+        setAuthError('No se pudo cargar tu perfil. Vuelve a iniciar sesión.');
+        return;
       }
+
+      // Caso B: el usuario existe en auth.users pero no tiene fila en profiles.
+      // Suele indicar un alta a medias o un perfil borrado a mano.
+      if (!profile) {
+        await supabase.auth.signOut();
+        clearSession();
+        setAuthError('No se encontró tu perfil en el sistema. Contacta con un administrador.');
+        return;
+      }
+
+      // Caso C: el perfil existe pero está desactivado.
+      if (profile.active === false) {
+        await supabase.auth.signOut();
+        clearSession();
+        setAuthError('Tu cuenta está desactivada. Contacta con un administrador para reactivarla.');
+        return;
+      }
+
+      // Caso D: todo OK, perfil válido y activo.
+      setAuthError(null);
+      setUserProfile(profile);
+    } finally {
+      setCheckingProfile(false);
     }
   };
 

@@ -19,6 +19,8 @@ export const useAuthStore = create<AuthState>()(
       userProfile: null,
       isAuthenticated: false,
       isLoading: true,
+      isCheckingProfile: false,
+      authError: null,
 
       setSession: (session: Session | null) => {
         set({
@@ -37,6 +39,14 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading });
       },
 
+      setCheckingProfile: (checking: boolean) => {
+        set({ isCheckingProfile: checking });
+      },
+
+      setAuthError: (mensaje: string | null) => {
+        set({ authError: mensaje });
+      },
+
       clearSession: () => {
         set({
           session: null,
@@ -44,6 +54,7 @@ export const useAuthStore = create<AuthState>()(
           userProfile: null,
           isAuthenticated: false,
           isLoading: false,
+          isCheckingProfile: false,
         });
       },
     }),
