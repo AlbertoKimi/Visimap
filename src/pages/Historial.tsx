@@ -168,6 +168,34 @@ export const Historial: React.FC = () => {
       styles: { fontSize: 10 }
     });
 
+    // Top 10 Provincias
+    doc.text('Top 10 Provincias:', 14, (doc as any).lastAutoTable.finalY + 15);
+
+    autoTable(doc, {
+      startY: (doc as any).lastAutoTable.finalY + 20,
+      head: [['#', 'Provincia', 'Total Visitantes']],
+      body: datosProvincias.length > 0
+        ? datosProvincias.map((p, i) => [i + 1, p.nombre, p.total.toLocaleString()])
+        : [['—', 'Sin datos', '0']],
+      theme: 'grid',
+      headStyles: { fillColor: [168, 85, 247] },
+      styles: { fontSize: 10 }
+    });
+
+    // Top 10 Países
+    doc.text('Top 10 Países:', 14, (doc as any).lastAutoTable.finalY + 15);
+
+    autoTable(doc, {
+      startY: (doc as any).lastAutoTable.finalY + 20,
+      head: [['#', 'País', 'Total Visitantes']],
+      body: datosPaises.length > 0
+        ? datosPaises.map((p, i) => [i + 1, p.nombre, p.total.toLocaleString()])
+        : [['—', 'Sin datos', '0']],
+      theme: 'grid',
+      headStyles: { fillColor: [16, 185, 129] },
+      styles: { fontSize: 10 }
+    });
+
     // Pie de página
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
