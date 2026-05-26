@@ -89,17 +89,23 @@ export class SupabaseEventRepository implements EventRepository {
   }
 
   async getAllGrupoVisitantes(): Promise<any[]> {
-    // Obtener grupos con los datos básicos del evento
+    // Obtener grupos con los joins de procedencia (provincia/pais) y datos del evento
     const { data: grupos, error: grupoError } = await supabase
       .from('grupo_visitante')
-      .select('*, evento:id_evento(nombre_evento, id_usuario, descripcion, tipo_evento(nombre))')
+      .select(
+        'id_grupo, id_evento, id_pais, id_provincia, num_visitantes, created_at,' +
+        ' provincia:id_provincia(nombre_provincia),' +
+        ' pais:id_pais(nombre_pais),' +
+        ' evento:id_evento(nombre_evento, id_usuario, descripcion, tipo_evento(nombre))'
+      )
       .order('created_at', { ascending: false });
 
     if (grupoError) throw grupoError;
     if (!grupos || grupos.length === 0) return [];
 
     // Obtener IDs únicos de los usuarios que crearon los eventos
-    const userIds = [...new Set(grupos.map(g => g.evento?.id_usuario).filter(id => id))];
+    const gruposAny = grupos as unknown as any[];
+    const userIds = [...new Set(gruposAny.map(g => g.evento?.id_usuario).filter(id => id))];
 
     // Traer los perfiles de esos usuarios
     const { data: perfiles, error: perfError } = await supabase
@@ -109,7 +115,7 @@ export class SupabaseEventRepository implements EventRepository {
 
     if (perfError) {
       console.error('Error al cargar perfiles para eventos:', perfError);
-      return grupos;
+      return gruposAny;
     }
 
     // Mapear perfiles por ID
@@ -119,8 +125,12 @@ export class SupabaseEventRepository implements EventRepository {
       return acc;
     }, {});
 
-    return grupos.map(g => ({
+    // Derivamos `origen` y `tipo_origen` desde los joins para mantener
+    // compatibilidad con la UI sin tener que tocar todos los consumidores.
+    return gruposAny.map((g: any) => ({
       ...g,
+      origen: g.provincia?.nombre_provincia ?? g.pais?.nombre_pais ?? 'Desconocido',
+      tipo_origen: g.id_provincia != null ? 'provincia' : 'pais',
       evento: {
         ...g.evento,
         perfil: perfilesMap[g.evento?.id_usuario] || null
@@ -158,11 +168,15 @@ export class SupabaseEventRepository implements EventRepository {
   async getGruposByEvento(id_evento: number): Promise<GrupoVisitante[]> {
     const { data, error } = await supabase
       .from('grupo_visitante')
-      .select('*')
+      .select(
+        'id_grupo, id_evento, id_pais, id_provincia, num_visitantes,' +
+        ' provincia:id_provincia(nombre_provincia),' +
+        ' pais:id_pais(nombre_pais)'
+      )
       .eq('id_evento', id_evento)
       .order('id_grupo');
 
     if (error) throw error;
-    return data || [];
+    return (data || []) as unknown as GrupoVisitante[];
   }
 }

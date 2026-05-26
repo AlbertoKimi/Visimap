@@ -6,7 +6,9 @@ import {
 } from 'recharts';
 import { RefreshCw } from 'lucide-react';
 import { TarjetaGrafico } from './TarjetaGrafico';
-import { supabase } from '@/database/supabase/client';
+import { RepositoryFactory } from '@/database/RepositoryFactory';
+
+const statsRepo = RepositoryFactory.getStatsRepository();
 
 import {
   ActividadTrabajador,
@@ -222,48 +224,33 @@ export const GraficosPanel: React.FC = () => {
       // Consultamos en paralelo las dos fuentes de visitantes:
       //  - registro_visitante (ventanilla individual)
       //  - grupo_visitante (subgrupos asociados a eventos), filtrando por fecha_inicio del evento
-      const [resVentanilla, resGrupos] = await Promise.all([
-        supabase
-          .from('registro_visitante')
-          .select('cantidad, pais:id_pais(nombre_pais)')
-          .gte('creado_en', inicio)
-          .lte('creado_en', fin),
-        supabase
-          .from('grupo_visitante')
-          .select(`
-            num_visitantes,
-            tipo_origen,
-            origen,
-            evento!inner (
-              fecha_inicio
-            )
-          `)
-          .gte('evento.fecha_inicio', inicio)
-          .lte('evento.fecha_inicio', fin)
+      const [ventanilla, grupos] = await Promise.all([
+        statsRepo.getRegistrosVisitante({
+          inicio,
+          fin,
+          seleccion: 'cantidadProvinciaPais',
+        }),
+        statsRepo.getGruposEnRango({ inicio, fin }),
       ]);
-
-      if (resVentanilla.error) throw resVentanilla.error;
-      if (resGrupos.error) throw resGrupos.error;
 
       let españa = 0;
       let mundo = 0;
 
       // 1. Ventanilla: sumamos según el país asignado al registro
-      const ventanilla = (resVentanilla.data || []) as unknown as { cantidad: number; pais: { nombre_pais: string } | null }[];
       for (const r of ventanilla) {
-        if (r.pais?.nombre_pais === 'España') españa += r.cantidad;
-        else mundo += r.cantidad;
+        if (r.pais?.nombre_pais === 'España') españa += (r.cantidad || 0);
+        else mundo += (r.cantidad || 0);
       }
 
-      // 2. Eventos: si tipo_origen es 'provincia' → España. Si es 'pais' y origen ≠ 'España' → mundo.
-      const grupos = (resGrupos.data || []) as unknown as { num_visitantes: number; tipo_origen: string; origen: string }[];
+      // 2. Eventos: si tiene id_provincia → España. Si solo tiene id_pais → según el país.
       for (const g of grupos) {
         const personas = g.num_visitantes || 0;
-        if (g.tipo_origen === 'provincia') {
+        if (g.id_provincia != null) {
           españa += personas;
-        } else if (g.tipo_origen === 'pais') {
-          if (g.origen?.toLowerCase() === 'españa') españa += personas;
-          else mundo += personas;
+        } else if (g.pais?.nombre_pais?.toLowerCase() === 'españa') {
+          españa += personas;
+        } else {
+          mundo += personas;
         }
       }
 
@@ -282,17 +269,13 @@ export const GraficosPanel: React.FC = () => {
       const now = new Date(selectedYear, selectedMonth + 1, 0);
       const diasDelMes = now.getDate();
 
-      const [resNormal, resGrupo] = await Promise.all([
-        supabase.from('registro_visitante').select('cantidad, creado_en, tipo_visita').gte('creado_en', inicio).lte('creado_en', fin),
-        supabase.from('grupo_visitante')
-          .select(`
-            num_visitantes,
-            evento!inner (
-              fecha_inicio
-            )
-          `)
-          .gte('evento.fecha_inicio', inicio)
-          .lte('evento.fecha_inicio', fin)
+      const [registrosNormales, gruposEventos] = await Promise.all([
+        statsRepo.getRegistrosVisitante({
+          inicio,
+          fin,
+          seleccion: 'cantidadFechaTipo',
+        }),
+        statsRepo.getGruposEnRango({ inicio, fin }),
       ]);
 
       const mapaDias: Record<string, { individuales: number; grupos: number }> = {};
@@ -300,25 +283,23 @@ export const GraficosPanel: React.FC = () => {
         mapaDias[i.toString()] = { individuales: 0, grupos: 0 };
       }
 
-      if (resNormal.data) {
-        for (const r of resNormal.data as unknown as { cantidad: number; creado_en: string; tipo_visita: string }[]) {
-          const dia = new Date(r.creado_en).getDate().toString();
-          if (r.tipo_visita === 'individual') {
-            mapaDias[dia].individuales += (r.cantidad || 0);
-          } else {
-            mapaDias[dia].grupos += (r.cantidad || 0);
-          }
+      for (const r of registrosNormales) {
+        if (!r.creado_en) continue;
+        const dia = new Date(r.creado_en).getDate().toString();
+        if (!mapaDias[dia]) continue;
+        if (r.tipo_visita === 'individual') {
+          mapaDias[dia].individuales += (r.cantidad || 0);
+        } else {
+          mapaDias[dia].grupos += (r.cantidad || 0);
         }
       }
 
-      if (resGrupo.data) {
-        for (const g of resGrupo.data as any) {
-          const fechaInicio = g.evento?.fecha_inicio;
-          if (!fechaInicio) continue;
-          const dia = new Date(fechaInicio).getDate().toString();
-          if (mapaDias[dia]) {
-            mapaDias[dia].grupos += (g.num_visitantes || 0);
-          }
+      for (const g of gruposEventos) {
+        const fechaInicio = g.evento?.fecha_inicio;
+        if (!fechaInicio) continue;
+        const dia = new Date(fechaInicio).getDate().toString();
+        if (mapaDias[dia]) {
+          mapaDias[dia].grupos += (g.num_visitantes || 0);
         }
       }
 
@@ -342,46 +323,29 @@ export const GraficosPanel: React.FC = () => {
     try {
       const { inicio, fin } = rango;
 
-      const { data: resNorm, error: errNorm } = await supabase
-        .from('registro_visitante')
-        .select('cantidad, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)')
-        .gte('creado_en', inicio)
-        .lte('creado_en', fin);
-
-      const { data: resGrp, error: errGrp } = await supabase
-        .from('grupo_visitante')
-        .select(`
-          num_visitantes,
-          tipo_origen,
-          origen,
-          evento!inner (
-            fecha_inicio
-          )
-        `)
-        .gte('evento.fecha_inicio', inicio)
-        .lte('evento.fecha_inicio', fin);
-
-      if (errNorm) throw errNorm;
-      if (errGrp) throw errGrp;
+      const [registros, grupos] = await Promise.all([
+        statsRepo.getRegistrosVisitante({
+          inicio,
+          fin,
+          seleccion: 'cantidadProvinciaPais',
+        }),
+        statsRepo.getGruposEnRango({ inicio, fin }),
+      ]);
 
       const mapa: Record<string, { normales: number; eventos: number }> = {};
 
-      if (resNorm) {
-        for (const r of resNorm as unknown as { cantidad: number; provincia: { nombre_provincia: string } | null; pais: { nombre_pais: string } | null }[]) {
-          if (r.pais?.nombre_pais !== 'España') continue;
-          const prov = r.provincia?.nombre_provincia ?? 'Desconocida';
-          if (!mapa[prov]) mapa[prov] = { normales: 0, eventos: 0 };
-          mapa[prov].normales += (r.cantidad || 0);
-        }
+      for (const r of registros) {
+        if (r.pais?.nombre_pais !== 'España') continue;
+        const prov = r.provincia?.nombre_provincia ?? 'Desconocida';
+        if (!mapa[prov]) mapa[prov] = { normales: 0, eventos: 0 };
+        mapa[prov].normales += (r.cantidad || 0);
       }
 
-      if (resGrp) {
-        for (const g of resGrp as unknown as { num_visitantes: number; tipo_origen: string; origen: string }[]) {
-          if (g.tipo_origen === 'provincia') {
-            const prov = g.origen;
-            if (!mapa[prov]) mapa[prov] = { normales: 0, eventos: 0 };
-            mapa[prov].eventos += (g.num_visitantes || 0);
-          }
+      for (const g of grupos) {
+        if (g.id_provincia != null) {
+          const prov = g.provincia?.nombre_provincia ?? 'Desconocida';
+          if (!mapa[prov]) mapa[prov] = { normales: 0, eventos: 0 };
+          mapa[prov].eventos += (g.num_visitantes || 0);
         }
       }
 
@@ -408,10 +372,15 @@ export const GraficosPanel: React.FC = () => {
     try {
       const { inicio, fin } = rango;
 
-      const { data: perfiles } = await supabase.from('profiles').select('id, nombre, nombre_usuario').eq('active', true);
+      const [perfiles, registros, eventosUsuarios, notas] = await Promise.all([
+        statsRepo.getPerfilesActivos(),
+        statsRepo.getRegistrosVisitante({ inicio, fin, seleccion: 'idUsuario' }),
+        statsRepo.getEventosUsuariosPorPeriodo(inicio, fin),
+        statsRepo.getNotasUsuariosPorPeriodo(inicio, fin),
+      ]);
 
       const mapa: Record<string, ActividadTrabajador> = {};
-      for (const p of (perfiles || []) as PerfilRaw[]) {
+      for (const p of perfiles as PerfilRaw[]) {
         mapa[p.id] = {
           id: p.id,
           nombre: p.nombre || p.nombre_usuario || 'Desconocido',
@@ -422,30 +391,15 @@ export const GraficosPanel: React.FC = () => {
         };
       }
 
-      const [resReg, resEvt, resNot] = await Promise.all([
-        supabase.from('registro_visitante').select('id_usuario').gte('creado_en', inicio).lte('creado_en', fin),
-        supabase.from('evento').select('id_usuario').gte('fecha_inicio', inicio).lte('fecha_inicio', fin),
-        supabase.from('notas').select('creado_por').gte('creado_en', inicio).lte('creado_en', fin)
-      ]);
-
-      if (resReg.data) {
-        resReg.data.forEach((r: unknown) => {
-          const rec = r as { id_usuario: string };
-          if (mapa[rec.id_usuario]) mapa[rec.id_usuario].registros += 1;
-        });
-      }
-      if (resEvt.data) {
-        resEvt.data.forEach((e: unknown) => {
-          const evt = e as { id_usuario: string };
-          if (mapa[evt.id_usuario]) mapa[evt.id_usuario].eventos += 1;
-        });
-      }
-      if (resNot.data) {
-        resNot.data.forEach((n: unknown) => {
-          const no = n as { creado_por: string };
-          if (mapa[no.creado_por]) mapa[no.creado_por].notas += 1;
-        });
-      }
+      registros.forEach(r => {
+        if (r.id_usuario && mapa[r.id_usuario]) mapa[r.id_usuario].registros += 1;
+      });
+      eventosUsuarios.forEach(e => {
+        if (mapa[e.id_usuario]) mapa[e.id_usuario].eventos += 1;
+      });
+      notas.forEach(n => {
+        if (mapa[n.creado_por]) mapa[n.creado_por].notas += 1;
+      });
 
       const resultado = Object.values(mapa)
         .map(w => ({
@@ -467,31 +421,16 @@ export const GraficosPanel: React.FC = () => {
     try {
       const { inicio, fin } = rango;
 
-      const { data, error } = await supabase
-        .from('grupo_visitante')
-        .select(`
-          num_visitantes,
-          evento!inner (
-            fecha_inicio,
-            tipo_evento (
-              nombre
-            )
-          )
-        `)
-        .gte('evento.fecha_inicio', inicio)
-        .lte('evento.fecha_inicio', fin);
-
-      if (error) throw error;
+      const grupos = await statsRepo.getGruposEnRango({
+        inicio,
+        fin,
+        incluirCategoria: true,
+      });
 
       const mapa: Record<string, number> = {};
 
-      for (const g of (data || []) as any[]) {
-        let nombreCategoria = 'Categoría Desconocida';
-
-        if (g.evento?.tipo_evento?.nombre) {
-          nombreCategoria = g.evento.tipo_evento.nombre;
-        }
-
+      for (const g of grupos) {
+        const nombreCategoria = g.evento?.tipo_evento?.nombre || 'Categoría Desconocida';
         mapa[nombreCategoria] = (mapa[nombreCategoria] || 0) + (g.num_visitantes || 0);
       }
 

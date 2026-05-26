@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Globe, Map as MapIcon, Calendar, FileText } from 'lucide-react';
-import { supabase } from '@/database/supabase/client';
+import { RepositoryFactory } from '@/database/RepositoryFactory';
+
+const statsRepo = RepositoryFactory.getStatsRepository();
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -44,17 +46,13 @@ export const Historial: React.FC = () => {
     setLoading(true);
     try {
       // 1. Obtener totales por mes/año desde la vista vista_visitantes_totales
-      const { data: vistaData, error: vistaError } = await supabase
-        .from('vista_visitantes_totales')
-        .select('total_personas, fecha');
-
-      if (vistaError) throw vistaError;
+      const vistaData = await statsRepo.getVistaVisitantesTotales();
 
       const resumenMensual: Record<string, number> = {};
       let totalA = 0;
       const currentYear = new Date().getFullYear();
 
-      vistaData?.forEach(item => {
+      vistaData.forEach(item => {
         const fecha = new Date(item.fecha);
         const anio = fecha.getFullYear();
         const mes = fecha.getMonth();
@@ -77,60 +75,38 @@ export const Historial: React.FC = () => {
       setDatosMensuales(mensualArray);
       setTotalAnual(totalA);
 
-      // 2. Top 10 por Provincias
-      const [provVentanilla, provGrupos] = await Promise.all([
-        supabase
-          .from('registro_visitante')
-          .select('cantidad, provincia:id_provincia(nombre_provincia), pais:id_pais(nombre_pais)'),
-        supabase
-          .from('grupo_visitante')
-          .select('num_visitantes, tipo_origen, origen')
+      // 2. Top 10 por Provincias y Países (registros + grupos sin filtro de fecha = todo el histórico)
+      const [registrosVentanilla, grupos] = await Promise.all([
+        statsRepo.getRegistrosVisitante({ seleccion: 'cantidadProvinciaPais' }),
+        statsRepo.getGruposEnRango({}),
       ]);
 
       const provMap: Record<string, number> = {};
+      const paisMap: Record<string, number> = {};
 
-      // Ventanilla
-      (provVentanilla.data as any[] | null)?.forEach(r => {
+      registrosVentanilla.forEach(r => {
+        const cantidad = r.cantidad || 0;
         const prov = r.provincia?.nombre_provincia;
-        if (!prov) return; // descartamos los sin provincia asignada
-        provMap[prov] = (provMap[prov] || 0) + (r.cantidad || 0);
+        if (prov) provMap[prov] = (provMap[prov] || 0) + cantidad;
+        const pais = r.pais?.nombre_pais;
+        if (pais) paisMap[pais] = (paisMap[pais] || 0) + cantidad;
       });
 
-      // Grupos/eventos
-      (provGrupos.data as any[] | null)?.forEach(g => {
-        if (g.tipo_origen !== 'provincia' || !g.origen) return;
-        provMap[g.origen] = (provMap[g.origen] || 0) + (g.num_visitantes || 0);
+      grupos.forEach(g => {
+        const cant = g.num_visitantes || 0;
+        if (g.id_provincia != null) {
+          const prov = g.provincia?.nombre_provincia;
+          if (prov) provMap[prov] = (provMap[prov] || 0) + cant;
+        } else {
+          const pais = g.pais?.nombre_pais;
+          if (pais) paisMap[pais] = (paisMap[pais] || 0) + cant;
+        }
       });
 
       setDatosProvincias(Object.entries(provMap)
         .map(([nombre, total]) => ({ nombre, total }))
         .sort((a, b) => b.total - a.total)
         .slice(0, 10));
-
-      // 3. Top 10 por Países
-      const [paisVentanilla, paisGrupos] = await Promise.all([
-        supabase
-          .from('registro_visitante')
-          .select('cantidad, pais:id_pais(nombre_pais)'),
-        supabase
-          .from('grupo_visitante')
-          .select('num_visitantes, tipo_origen, origen')
-      ]);
-
-      const paisMap: Record<string, number> = {};
-
-      // Ventanilla
-      (paisVentanilla.data as any[] | null)?.forEach(r => {
-        const pais = r.pais?.nombre_pais;
-        if (!pais) return; // descartamos los sin país asignado
-        paisMap[pais] = (paisMap[pais] || 0) + (r.cantidad || 0);
-      });
-
-      // Grupos/eventos
-      (paisGrupos.data as any[] | null)?.forEach(g => {
-        if (g.tipo_origen !== 'pais' || !g.origen) return;
-        paisMap[g.origen] = (paisMap[g.origen] || 0) + (g.num_visitantes || 0);
-      });
 
       setDatosPaises(Object.entries(paisMap)
         .map(([nombre, total]) => ({ nombre, total }))

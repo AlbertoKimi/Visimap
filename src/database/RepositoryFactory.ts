@@ -5,6 +5,7 @@ import { SupabaseRoleRepository } from "@/database/supabase/SupabaseRoleReposito
 import { SupabaseEventRepository } from "@/database/supabase/SupabaseEventRepository";
 import { SupabaseEventTypeRepository } from "@/database/supabase/SupabaseEventTypeRepository";
 import { SupabaseNotaRepository } from "@/database/supabase/SupabaseNotaRepository";
+import { SupabaseStatsRepository } from "@/database/supabase/SupabaseStatsRepository";
 
 import { AuthRepository } from './repositories/AuthRepository';
 import { VisitorRepository } from './repositories/VisitorRepository';
@@ -13,6 +14,7 @@ import { RoleRepository } from './repositories/RoleRepository';
 import { EventRepository } from './repositories/EventRepository';
 import { EventTypeRepository } from './repositories/EventTypeRepository';
 import { NotaRepository } from './repositories/NotaRepository';
+import { StatsRepository } from './repositories/StatsRepository';
 
 /**
  * Patrón de diseño Abstract Factory.
@@ -47,5 +49,9 @@ export class RepositoryFactory {
 
   static getNotaRepository(): NotaRepository {
     return SupabaseNotaRepository.getInstance();
+  }
+
+  static getStatsRepository(): StatsRepository {
+    return SupabaseStatsRepository.getInstance();
   }
 }
