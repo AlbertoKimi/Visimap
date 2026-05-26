@@ -9,8 +9,10 @@ import { useAuthStore } from "@/stores/authStore";
  * @returns El componente de ruta pública
  */
 export const PublicRoute: React.FC = () => {
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, isCheckingProfile } = useAuthStore();
 
+    // En la carga inicial de la app sí mostramos spinner (todavía no sabemos si
+    // hay sesión restaurada de localStorage).
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -19,7 +21,13 @@ export const PublicRoute: React.FC = () => {
         );
     }
 
-    if (isAuthenticated) {
+    // Si el usuario ya está autenticado Y el perfil ha sido validado (no
+    // estamos en medio de un check) → al dashboard.
+    //
+    // Si la sesión está autenticada PERO `isCheckingProfile=true`, dejamos el
+    // formulario de login a la vista. Así el banner rojo de
+    // "cuenta desactivada" aparece directamente sobre el form.
+    if (isAuthenticated && !isCheckingProfile) {
         return <Navigate to="/dashboard" replace />;
     }
 

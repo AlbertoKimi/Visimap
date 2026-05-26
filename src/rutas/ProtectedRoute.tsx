@@ -9,9 +9,12 @@ import { useAuthStore } from "@/stores/authStore";
  * @returns El componente de ruta protegida
  */
 export const ProtectedRoute: React.FC = () => {
-    const { isAuthenticated, isLoading } = useAuthStore();
+    const { isAuthenticated, isLoading, isCheckingProfile } = useAuthStore();
 
-    if (isLoading) {
+    // Mientras se valida el perfil tras un login (o restauración de sesión),
+    // mostramos spinner para evitar renderizar el dashboard si el usuario
+    // resulta estar desactivado o sin perfil válido en BD.
+    if (isLoading || isCheckingProfile) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-blue-600"></div>

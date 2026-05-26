@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Trash2, Loader2, CheckCircle2, Plus, Edit3, X } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { supabase } from "@/database/supabase/client";
 import { PROVINCIAS, obtenerColor } from "@/constantes/appConstants";
 import { formatearRangoFechas } from "@/utils/utils";
 import Input from "@/components/ui/input";
@@ -16,6 +15,7 @@ import { ICONOS } from '@/constantes/iconos';
 
 const visitorRepo = RepositoryFactory.getVisitorRepository();
 const statsRepo = RepositoryFactory.getStatsRepository();
+const eventRepo = RepositoryFactory.getEventRepository();
 
 /**
  * Modal Complejo de Gestión de Eventos.
@@ -85,29 +85,23 @@ export const EventModal: React.FC<EventModalProps> = ({
 
     if (!isNew && event?.id_evento) {
       setCargandoGrupos(true);
-      // Cargamos los grupos existentes con los joins para resolver nombres
-      supabase
-        .from('grupo_visitante')
-        .select(
-          'id_grupo, id_evento, id_pais, id_provincia, num_visitantes,' +
-          ' provincia:id_provincia(nombre_provincia),' +
-          ' pais:id_pais(nombre_pais)'
-        )
-        .eq('id_evento', event.id_evento)
-        .order('id_grupo')
-        .then(({ data }) => {
-          if (data) {
-            setGrupos(data.map((g: any) => ({
-              _key: g.id_grupo,
-              id_grupo: g.id_grupo,
-              id_evento: g.id_evento,
-              modoOrigen: g.id_provincia != null ? 'provincia' : 'pais',
-              nombreOrigen: g.provincia?.nombre_provincia ?? g.pais?.nombre_pais ?? '',
-              num_visitantes: g.num_visitantes,
-            })));
-          }
-          setCargandoGrupos(false);
-        });
+      // Cargamos los grupos existentes (con joins de provincia/pais ya resueltos)
+      // a través del repositorio para no acoplar el componente al cliente Supabase.
+      eventRepo.getGruposByEvento(event.id_evento)
+        .then((data) => {
+          setGrupos(data.map((g: any) => ({
+            _key: g.id_grupo,
+            id_grupo: g.id_grupo,
+            id_evento: g.id_evento,
+            modoOrigen: g.id_provincia != null ? 'provincia' : 'pais',
+            nombreOrigen: g.provincia?.nombre_provincia ?? g.pais?.nombre_pais ?? '',
+            num_visitantes: g.num_visitantes,
+          })));
+        })
+        .catch((err) => {
+          console.error('Error al cargar grupos del evento:', err);
+        })
+        .finally(() => setCargandoGrupos(false));
     }
   }, [isNew, event?.id_evento]);
 
@@ -125,13 +119,7 @@ export const EventModal: React.FC<EventModalProps> = ({
     }
     setEnProcesoFinalizacion(true);
     try {
-      const { error } = await supabase
-        .from('evento')
-        .update({ finalizado: true })
-        .eq('id_evento', event.id_evento);
-
-      if (error) throw error;
-
+      await eventRepo.toggleFinalizado(event.id_evento, true);
       setFinalizado(true);
       onFinalized(event.id_evento);
     } catch (err: any) {
