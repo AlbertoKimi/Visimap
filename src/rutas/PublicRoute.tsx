@@ -11,11 +11,9 @@ import { useAuthStore } from "@/stores/authStore";
 export const PublicRoute: React.FC = () => {
     const { isAuthenticated, isLoading, isCheckingProfile } = useAuthStore();
 
-    // Mientras se valida el perfil, NO redirigimos al dashboard aunque la sesión
-    // de Supabase ya esté creada. Esto es lo que elimina el parpadeo cuando un
-    // usuario desactivado se autentica con éxito en Auth pero la app va a
-    // rechazarlo segundos después.
-    if (isLoading || isCheckingProfile) {
+    // En la carga inicial de la app sí mostramos spinner (todavía no sabemos si
+    // hay sesión restaurada de localStorage).
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="animate-spin rounded-full size-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -23,7 +21,13 @@ export const PublicRoute: React.FC = () => {
         );
     }
 
-    if (isAuthenticated) {
+    // Si el usuario ya está autenticado Y el perfil ha sido validado (no
+    // estamos en medio de un check) → al dashboard.
+    //
+    // Si la sesión está autenticada PERO `isCheckingProfile=true`, dejamos el
+    // formulario de login a la vista. Así el banner rojo de
+    // "cuenta desactivada" aparece directamente sobre el form.
+    if (isAuthenticated && !isCheckingProfile) {
         return <Navigate to="/dashboard" replace />;
     }
 
