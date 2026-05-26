@@ -53,7 +53,7 @@ Visimap consolida un sistema escalable y eficiente para ofrecer una experiencia 
 Recorrido completo por las funcionalidades clave de Visimap: dashboard de gestión, mapa interactivo de visitantes, planificación de eventos en el calendario, administración del personal y el asistente de Inteligencia Artificial.
 
 <p align="center">
-  <video src="https://github.com/AlbertoKimi/Visimap/raw/master/docs/Extra/Gesti%C3%B3n_del_MUVI_Visimap.webm" controls width="720"></video>
+  <video src="https://github.com/user-attachments/assets/3a4d5886-0710-434e-9280-25b9e90650b6" controls width="720"></video>
 </p>
 
 <p align="center">
