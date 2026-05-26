@@ -3,6 +3,9 @@ name: Deploy Documentation
 on:
   push:
     branches: [ master, main ]
+  # Permite disparar manualmente este workflow desde la pestaña Actions de GitHub
+  # (botón "Run workflow"). Útil cuando un push no detona el trigger automático.
+  workflow_dispatch:
 
 permissions:
   contents: write
