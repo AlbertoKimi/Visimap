@@ -137,6 +137,15 @@ export const BurbujaMensaje: React.FC<BurbujaMensajeProps> = ({ mensaje }) => {
               {mensaje.texto && (
                 <div className="flex items-start gap-2">
                   {mensaje.error && <AlertCircle className="size-4 text-red-500 shrink-0 mt-0.5" />}
+                  {/*
+                    Uso de dangerouslySetInnerHTML SEGURO:
+                    `htmlTexto` se construye con `renderMarkdown` (lista cerrada de
+                    transformaciones) y se sanea con `DOMPurify.sanitize(...)` antes
+                    de inyectarlo, eliminando cualquier <script>, atributos `on*`,
+                    `javascript:` URLs, etc. Sin esto no podríamos renderizar
+                    markdown ligero (negritas, listas, encabezados) en las
+                    respuestas del chat IA.
+                  */}
                   <div
                     className="chat-burbuja-texto"
                     dangerouslySetInnerHTML={{ __html: `<p class="chat-md-p">${htmlTexto}</p>` }}
