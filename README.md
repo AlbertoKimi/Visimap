@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/assets/Logo-1.webp" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
+  <img src="src/assets/Logo-1-opt.webp" alt="Visimap Logo" width="180" style="margin-bottom: 20px;">
 
   # Visimap
   **Plataforma Integral de Gestión de Visitantes y Personal**
@@ -29,6 +29,7 @@
   <summary><b>📑 Índice de Contenidos</b></summary>
   <ol>
     <li><a href="#-descripción-general">Descripción General</a></li>
+    <li><a href="#-demostración-en-vídeo">Demostración en Vídeo</a></li>
     <li><a href="#-características-implementadas">Características Implementadas</a></li>
     <li><a href="#-tecnologías-principales">Tecnologías Principales</a></li>
     <li><a href="#-estructura-del-proyecto">Estructura del Proyecto</a></li>
@@ -44,6 +45,20 @@
 
 ## 🎯 Descripción General
 Visimap consolida un sistema escalable y eficiente para ofrecer una experiencia de usuario optimizada en entornos de alta concurrencia. Su propósito principal es facilitar el control de acceso fluido y mejorar la toma de decisiones basada en datos geográficos y organizativos.
+
+<br>
+
+## 🎥 Demostración en Vídeo
+
+Recorrido completo por las funcionalidades clave de Visimap: dashboard de gestión, mapa interactivo de visitantes, planificación de eventos en el calendario, administración del personal y el asistente de Inteligencia Artificial.
+
+<p align="center">
+  <video src="https://github.com/AlbertoKimi/Visimap/raw/master/docs/Extra/Gesti%C3%B3n_del_MUVI_Visimap.webm" controls width="720"></video>
+</p>
+
+<p align="center">
+  <em>Si tu navegador no reproduce el vídeo incrustado, puedes <a href="docs/Extra/Gestión_del_MUVI_Visimap.webm">verlo o descargarlo directamente desde aquí</a>.</em>
+</p>
 
 <br>
 
