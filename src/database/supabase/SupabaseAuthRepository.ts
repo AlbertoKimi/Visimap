@@ -37,6 +37,16 @@ export class SupabaseAuthRepository implements AuthRepository {
     if (error) throw error;
   }
 
+  async sendPasswordReset(email: string) {
+    // Envía un correo de recuperación al usuario indicado. El enlace del
+    // correo redirige al `redirectTo` con el fragmento `#type=recovery`
+    // que App.tsx detecta para mostrar la pantalla EstablecerContrasena.
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    if (error) throw error;
+  }
+
   onAuthStateChange(callback: (event: string, session: any) => void) {
     supabase.auth.onAuthStateChange((event, session) => {
       callback(event, session);
