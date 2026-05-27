@@ -44,7 +44,7 @@ export const TablaRegistroMapa: React.FC<TablaRegistroMapaProps> = ({
       header: 'Fecha',
       sortable: true,
       render: (reg) => (
-        <span className="text-sm text-slate-500 dark:text-slate-400">{formatearFecha(reg.creado_en)}</span>
+        <span className="text-sm text-slate-600 dark:text-slate-400">{formatearFecha(reg.creado_en)}</span>
       ),
     },
     {

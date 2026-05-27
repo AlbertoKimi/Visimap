@@ -263,7 +263,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium self-start"
+            className="flex items-center gap-2 text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium self-start"
           >
             <ArrowLeft size={20} />
             Volver al listado
@@ -375,9 +375,24 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               <p className="text-slate-600 dark:text-slate-400 font-medium">@{user.nombre_usuario}</p>
 
               <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 uppercase">
-                  {getRoleName(user.role_id)}
-                </span>
+                {(() => {
+                  // Color semántico del rol coherente con la tabla de usuarios:
+                  // admin → violeta, trabajador → teal, otros → slate.
+                  // En dark mode usamos fondos sólidos para mejor contraste
+                  // sobre el azul de la fila seleccionada.
+                  const roleName = getRoleName(user.role_id).toLowerCase();
+                  const roleClasses =
+                    roleName === 'admin'
+                      ? 'bg-violet-100 dark:bg-violet-800 text-violet-700 dark:text-violet-100 border-violet-300 dark:border-violet-500'
+                      : roleName === 'trabajador'
+                        ? 'bg-teal-100 dark:bg-teal-800 text-teal-700 dark:text-teal-100 border-teal-300 dark:border-teal-500'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600';
+                  return (
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${roleClasses}`}>
+                      {getRoleName(user.role_id)}
+                    </span>
+                  );
+                })()}
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${user.active !== false
                   ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-800'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'

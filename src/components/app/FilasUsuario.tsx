@@ -60,7 +60,7 @@ export const UserRow: React.FC<UserRowProps> = ({ profile, roles, onAction }) =>
 
           <div>
             <p className="font-semibold text-slate-800">{displayName}</p>
-            <p className="text-xs text-slate-400">@{profile.nombre_usuario}</p>
+            <p className="text-xs text-slate-500">@{profile.nombre_usuario}</p>
           </div>
         </div>
       </td>
