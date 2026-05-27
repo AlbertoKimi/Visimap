@@ -11,13 +11,22 @@ import { EstablecerContrasenaProps } from "@/interfaces/components";
 const COPYRIGHT_YEAR = new Date().getFullYear();
 
 /**
- * Vista mostrada a los nuevos usuarios tras aceptar la invitación por correo.
- * Les permite configurar su nombre de usuario final y establecer una contraseña
- * robusta para activar su cuenta por completo.
- * @param props.session - Sesión actual temporal obtenida del enlace de invitación
+ * Vista mostrada a los nuevos usuarios tras aceptar la invitación por correo
+ * y también a los usuarios que reciben un correo de restablecimiento de
+ * contraseña enviado por un admin.
+ *
+ * Se diferencian dos modos según el tipo del enlace del correo:
+ * - "invite":   Usuario nuevo → debe elegir nombre de usuario + contraseña.
+ * - "recovery": Usuario existente → solo cambia la contraseña (el nombre de
+ *   usuario ya existe y no debe poder modificarse desde este flujo).
+ * @param props.session - Sesión temporal obtenida del enlace del correo
  * @param props.onComplete - Callback tras configurar la cuenta exitosamente
  */
-export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ session, onComplete }) => {
+export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ session, mode, onComplete }) => {
+    // App.tsx captura el tipo de enlace (invite/recovery) en cuanto se monta,
+    // antes de que Supabase JS limpie el hash. Aquí solo lo consumimos.
+    const isRecovery = mode === 'recovery';
+
     const [passwords, setPasswords] = useState({
         password: '',
         confirmPassword: ''
@@ -91,7 +100,9 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
             return;
         }
 
-        if (!username.trim()) {
+        // El nombre de usuario solo es obligatorio en el flujo de invitación
+        // (usuario nuevo). En recovery el usuario ya lo tiene asignado.
+        if (!isRecovery && !username.trim()) {
             setNotification({ open: true, message: 'El nombre de usuario es obligatorio.', severity: 'error' });
             return;
         }
@@ -101,21 +112,26 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
         setIsLoading(true);
 
         try {
-            const { error: authError } = await supabase.auth.updateUser({
-                password: passwords.password,
-                data: { display_name: username, nombre_usuario: username }
-            });
+            // En recovery solo actualizamos la contraseña. En invitación
+            // aprovechamos para guardar también el nombre de usuario elegido.
+            const { error: authError } = await supabase.auth.updateUser(
+                isRecovery
+                    ? { password: passwords.password }
+                    : { password: passwords.password, data: { display_name: username, nombre_usuario: username } }
+            );
 
             if (authError) throw authError;
 
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .update({ nombre_usuario: username })
-                .eq('id', session.user.id);
+            if (!isRecovery) {
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({ nombre_usuario: username })
+                    .eq('id', session.user.id);
 
-            if (profileError) {
-                console.error("Error updating profile:", profileError);
-                throw new Error("Contraseña actualizada, pero error al guardar el nombre de usuario.");
+                if (profileError) {
+                    console.error("Error updating profile:", profileError);
+                    throw new Error("Contraseña actualizada, pero error al guardar el nombre de usuario.");
+                }
             }
 
             setNotification({
@@ -160,13 +176,27 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                     {/* Bloque principal*/}
                     <div className="flex-1 flex flex-col justify-center gap-6">
                         <div>
-                            <h1 className="text-5xl font-semibold leading-tight mb-4">
-                                ¡Bienvenido<br />
-                                al equipo{session?.user?.user_metadata?.nombre ? `, ${session.user.user_metadata.nombre}` : ''}!
-                            </h1>
-                            <p className="text-white/70 text-base leading-relaxed max-w-sm">
-                                Has sido invitado a formar parte del sistema de gestión del Museo MUVI. Configura tu cuenta para comenzar.
-                            </p>
+                            {isRecovery ? (
+                                <>
+                                    <h1 className="text-5xl font-semibold leading-tight mb-4">
+                                        Recupera<br />
+                                        el acceso{session?.user?.user_metadata?.nombre ? `, ${session.user.user_metadata.nombre}` : ''}
+                                    </h1>
+                                    <p className="text-white/70 text-base leading-relaxed max-w-sm">
+                                        Has solicitado restablecer tu contraseña del sistema VisiMap. Elige una nueva contraseña segura para volver a entrar.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <h1 className="text-5xl font-semibold leading-tight mb-4">
+                                        ¡Bienvenido<br />
+                                        al equipo{session?.user?.user_metadata?.nombre ? `, ${session.user.user_metadata.nombre}` : ''}!
+                                    </h1>
+                                    <p className="text-white/70 text-base leading-relaxed max-w-sm">
+                                        Has sido invitado a formar parte del sistema de gestión del Museo MUVI. Configura tu cuenta para comenzar.
+                                    </p>
+                                </>
+                            )}
                         </div>
 
 
@@ -177,11 +207,18 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
 
                         {/* Lista*/}
                         <div className="space-y-3">
-                            {[
-                                'Acceso completo al dashboard',
-                                'Gestión de visitantes en tiempo real',
-                                'Análisis y estadísticas avanzadas'
-                            ].map((item) => (
+                            {(isRecovery
+                                ? [
+                                    'Tu nombre de usuario se mantiene',
+                                    'Tus eventos y registros no se pierden',
+                                    'Acceso inmediato tras guardar'
+                                ]
+                                : [
+                                    'Acceso completo al dashboard',
+                                    'Gestión de visitantes en tiempo real',
+                                    'Análisis y estadísticas avanzadas'
+                                ]
+                            ).map((item) => (
                                 <div key={item} className="flex items-center gap-3">
                                     <div className="size-5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
                                         <CheckCircle className="size-3 text-green-400" />
@@ -222,27 +259,36 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                 <div className="relative z-10 w-full max-w-md space-y-8">
                     {/* Encabezado del formulario */}
                     <div className="space-y-1">
-                        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">Configura tu perfil</h2>
+                        <h2 className="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight">
+                            {isRecovery ? 'Restablece tu contraseña' : 'Configura tu perfil'}
+                        </h2>
                         <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                            Establece tu nombre de usuario y contraseña para acceder a{' '}
-                            <span className="font-bold text-indigo-600 dark:text-blue-400">VisiMap</span>
+                            {isRecovery ? (
+                                <>Elige una nueva contraseña para acceder a{' '}
+                                    <span className="font-bold text-indigo-600 dark:text-blue-400">VisiMap</span></>
+                            ) : (
+                                <>Establece tu nombre de usuario y contraseña para acceder a{' '}
+                                    <span className="font-bold text-indigo-600 dark:text-blue-400">VisiMap</span></>
+                            )}
                         </p>
                     </div>
 
                     <form className="space-y-5" onSubmit={handleSubmit}>
-                        <Input
-                            label="Nombre de Usuario"
-                            name="username"
-                            type="text"
-                            value={username}
-                            manejarCambio={manejarCambioUsername}
-                            manejarError={manejarError}
-                            placeholder="Ej: jgarcia"
-                            required
-                            maxLength={20}
-                            regex={/^[a-zA-Z0-9._-]{3,20}$/}
-                            error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
-                        />
+                        {!isRecovery && (
+                            <Input
+                                label="Nombre de Usuario"
+                                name="username"
+                                type="text"
+                                value={username}
+                                manejarCambio={manejarCambioUsername}
+                                manejarError={manejarError}
+                                placeholder="Ej: jgarcia"
+                                required
+                                maxLength={20}
+                                regex={/^[a-zA-Z0-9._-]{3,20}$/}
+                                error="Entre 3 y 20 caracteres. Solo letras, números, '.', '_' o '-'."
+                            />
+                        )}
 
                         <Input
                             label="Nueva Contraseña"
@@ -282,7 +328,7 @@ export const EstablecerContrasena: React.FC<EstablecerContrasenaProps> = ({ sess
                                 </div>
                             ) : (
                                 <span className="flex items-center justify-center gap-2">
-                                    Establecer Contraseña
+                                    {isRecovery ? 'Restablecer Contraseña' : 'Establecer Contraseña'}
                                 </span>
                             )}
                         </Button>

@@ -29,6 +29,12 @@ export interface LandingPageProps {
 /** Props para el flujo de recuperación/creación de contraseña */
 export interface EstablecerContrasenaProps {
   session: Session | null;
+  /**
+   * Tipo de enlace por el que el usuario ha llegado a esta pantalla:
+   * - 'invite':   alta nueva → pide nombre de usuario + contraseña.
+   * - 'recovery': restablecer contraseña → solo cambia la contraseña.
+   */
+  mode: 'invite' | 'recovery';
   onComplete?: () => void;
 }
 

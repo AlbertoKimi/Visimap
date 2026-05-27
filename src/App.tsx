@@ -69,7 +69,17 @@ export default function App() {
 
   const isAdmin = userProfile?.role_id === 1;
 
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  // Capturamos el tipo del enlace del correo INMEDIATAMENTE al montar el
+  // componente (función lazy del useState). Supabase JS limpia el hash en
+  // cuanto procesa la sesión, así que si esperáramos a un useEffect el hash
+  // ya podría haber desaparecido y perderíamos la distinción invite/recovery.
+  const [recoveryType] = useState<'recovery' | 'invite' | null>(() => {
+    const hash = window.location.hash;
+    if (hash.includes('type=recovery')) return 'recovery';
+    if (hash.includes('type=invite')) return 'invite';
+    return null;
+  });
+  const [isRecoveryMode, setIsRecoveryMode] = useState(() => recoveryType !== null);
 
   useEffect(() => {
     setLoading(true);
@@ -93,11 +103,6 @@ export default function App() {
         clearSession();
       }
     });
-
-    const hash = window.location.hash;
-    if (hash && (hash.includes('type=recovery') || hash.includes('type=invite'))) {
-      setIsRecoveryMode(true);
-    }
 
     // Corrección para el bug de desplazamiento del viewport en iOS Safari (cierre de teclado)
     // Cuando body es position:fixed, window.scrollY siempre es 0 — hay que usar visualViewport
@@ -213,7 +218,11 @@ export default function App() {
         {
           path: "/dashboard",
           element: isRecoveryMode && session ? (
-            <EstablecerContrasena session={session} onComplete={() => setIsRecoveryMode(false)} />
+            <EstablecerContrasena
+              session={session}
+              mode={recoveryType ?? 'invite'}
+              onComplete={() => setIsRecoveryMode(false)}
+            />
           ) : (
             <DashboardLayout />
           ),
