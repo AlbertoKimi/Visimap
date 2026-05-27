@@ -176,6 +176,12 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
         `Correo de restablecimiento enviado a ${user.email}. El usuario podrá cambiar su contraseña desde el enlace.`,
         'success'
       );
+      // El envío del correo es la acción final del flujo de "cambiar
+      // contraseña ajena", así que salimos del modo edición. Descartamos
+      // también cambios pendientes en otros campos para evitar que queden
+      // a medio guardar (el admin debería volver a Editar si quería tocar
+      // nombre/teléfono/rol, y guardarlos explícitamente).
+      handleCancel();
     } catch (err: any) {
       console.error('Error al enviar reset de contraseña:', err);
       mostrarNotificacion('No se pudo enviar el correo. Inténtalo de nuevo en unos segundos.', 'error');
