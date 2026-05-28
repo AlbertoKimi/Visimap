@@ -266,6 +266,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       }
       activateSelectedLabel="Marcar activos"
       getRowActiveState={(profile) => profile.active !== false}
+      isRowSelectable={(profile) => profile.id !== currentUserId}
       deleteSelectedLabel="Marcar inactivos"
       pageSize={10}
       emptyMessage="No hay usuarios registrados"

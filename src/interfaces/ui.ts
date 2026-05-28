@@ -97,6 +97,7 @@ export interface TablaGenericaProps<T> {
   onActivateSelected?: (ids: (string | number)[]) => void;
   activateSelectedLabel?: string;
   getRowActiveState?: (row: T) => boolean;
+  isRowSelectable?: (row: T) => boolean;
   pageSize?: number;
   emptyMessage?: string;
   emptyDescription?: string;
