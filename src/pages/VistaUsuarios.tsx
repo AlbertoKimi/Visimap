@@ -105,7 +105,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
     if (action === 'toggle_status') {
       const currentStatus = user.active !== false;
       const newStatus = !currentStatus;
-      
+
       setConfirmacion(prev => ({
         ...prev,
         isOpen: true,
@@ -139,6 +139,7 @@ export const VistaUsuarios: React.FC<{ onRefreshProfile?: () => void }> = ({ onR
   const handleUpdateSuccess = () => {
     fetchProfiles(false);
     if (onRefreshProfile) onRefreshProfile();
+    setViewState(prev => prev.mode === 'detail' ? { ...prev, initialMode: 'view' } : prev);
   };
 
   const handleDeactivateSelected = async (ids: string[]) => {
