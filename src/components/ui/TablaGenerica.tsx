@@ -47,6 +47,7 @@ export function TablaGenerica<T>({
   onActivateSelected,
   activateSelectedLabel = 'Marcar activos',
   getRowActiveState,
+  isRowSelectable,
   pageSize = 10,
   emptyMessage = 'No hay registros',
   emptyDescription = 'No se encontraron resultados para los filtros aplicados.',
@@ -130,27 +131,32 @@ export function TablaGenerica<T>({
     }
   };
 
-  const pageIds = paginated.map(row => getRowId(row));
-  const allPageSelected = pageIds.length > 0 && pageIds.every(id => selected.has(id));
-  const somePageSelected = pageIds.some(id => selected.has(id));
+  const canSelectRow = (row: T) => !isRowSelectable || isRowSelectable(row);
+
+  // Solo las filas seleccionables de la página cuentan para "seleccionar todos".
+  const selectablePageIds = paginated.filter(canSelectRow).map(row => getRowId(row));
+  const allPageSelected = selectablePageIds.length > 0 && selectablePageIds.every(id => selected.has(id));
+  const somePageSelected = selectablePageIds.some(id => selected.has(id));
 
   const toggleSelectAll = () => {
     if (allPageSelected) {
       setSelected(prev => {
         const next = new Set(prev);
-        pageIds.forEach(id => next.delete(id));
+        selectablePageIds.forEach(id => next.delete(id));
         return next;
       });
     } else {
       setSelected(prev => {
         const next = new Set(prev);
-        pageIds.forEach(id => next.add(id));
+        selectablePageIds.forEach(id => next.add(id));
         return next;
       });
     }
   };
 
-  const toggleRow = (id: string | number) => {
+  const toggleRow = (id: string | number, row: T) => {
+
+    if (!canSelectRow(row)) return;
     setSelected(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -307,6 +313,7 @@ export function TablaGenerica<T>({
               {paginated.map(row => {
                 const id = getRowId(row);
                 const isSelected = selected.has(id);
+                const selectable = canSelectRow(row);
                 return (
                   <tr
                     key={id}
@@ -316,15 +323,21 @@ export function TablaGenerica<T>({
                     {onDeleteSelected && (
                       <td className="flex justify-between items-center lg:table-cell px-0 lg:px-5 py-2 lg:py-4 border-b border-slate-50 dark:border-slate-800/50 lg:border-none mb-4 lg:mb-0">
                         <div className="flex items-center gap-4">
-                          <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Seleccionar</span>
-                          <input
-                            type="checkbox"
-                            className="checkbox-input"
-                            checked={isSelected}
-                            onChange={() => toggleRow(id)}
-                            aria-label={`Seleccionar fila ${id}`}
-                            onClick={e => e.stopPropagation()}
-                          />
+                          {selectable ? (
+                            <>
+                              <span className="lg:hidden text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Seleccionar</span>
+                              <input
+                                type="checkbox"
+                                className="checkbox-input"
+                                checked={isSelected}
+                                onChange={() => toggleRow(id, row)}
+                                aria-label={`Seleccionar fila ${id}`}
+                                onClick={e => e.stopPropagation()}
+                              />
+                            </>
+                          ) : (
+                            <span className="inline-block size-4" aria-hidden="true" />
+                          )}
                         </div>
 
                         {/* Acciones en móvil (arriba a la derecha) */}

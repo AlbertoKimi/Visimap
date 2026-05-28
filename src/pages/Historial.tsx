@@ -14,10 +14,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { VisitaHistorial, DesgloseItem } from '@/interfaces/Historial';
 import { getNombreMes, calcularPaginas } from '@/utils/utils';
+import { generarReporteHistorialPdf } from '@/utils/reporteHistorialPdf';
 
 const HISTORIAL_PAGE_SIZE = 10;
 
@@ -120,91 +119,13 @@ export const Historial: React.FC = () => {
     }
   };
 
-  const exportarPDF = () => {
-    const doc = new jsPDF();
-    const now = new Date();
-    const fechaStr = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-    // Título y Cabecera
-    doc.setFontSize(20);
-    doc.setTextColor(40, 44, 52);
-    doc.text('Reporte Histórico de Visitantes', 14, 22);
-
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Generado el: ${fechaStr}`, 14, 30);
-    doc.text(`Visimap Analytics - Panel Administrativo`, 14, 35);
-
-    // Resumen de Totales
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text('Resumen General:', 14, 48);
-
-    autoTable(doc, {
-      startY: 52,
-      head: [['Concepto', 'Cantidad']],
-      body: [
-        ['Total Histórico', datosMensuales.reduce((acc, curr) => acc + curr.total, 0).toLocaleString()],
-        [`Total Año ${now.getFullYear()}`, totalAnual.toLocaleString()],
-        ['Media Mensual', Math.round(datosMensuales.reduce((acc, curr) => acc + curr.total, 0) / (datosMensuales.length || 1)).toLocaleString()]
-      ],
-      theme: 'striped',
-      headStyles: { fillColor: [59, 130, 246] }
+  const exportarPDF = async () => {
+    await generarReporteHistorialPdf({
+      datosMensuales,
+      datosProvincias,
+      datosPaises,
+      totalAnual,
     });
-
-    // Tabla Mensual
-    doc.text('Evolución Mensual:', 14, (doc as any).lastAutoTable.finalY + 15);
-
-    autoTable(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 20,
-      head: [['Año', 'Mes', 'Total Visitantes']],
-      body: datosMensuales.map(item => [
-        item.anio,
-        getNombreMes(item.mes).charAt(0).toUpperCase() + getNombreMes(item.mes).slice(1),
-        item.total.toLocaleString()
-      ]),
-      theme: 'grid',
-      headStyles: { fillColor: [79, 70, 229] },
-      styles: { fontSize: 10 }
-    });
-
-    // Top 10 Provincias
-    doc.text('Top 10 Provincias:', 14, (doc as any).lastAutoTable.finalY + 15);
-
-    autoTable(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 20,
-      head: [['#', 'Provincia', 'Total Visitantes']],
-      body: datosProvincias.length > 0
-        ? datosProvincias.map((p, i) => [i + 1, p.nombre, p.total.toLocaleString()])
-        : [['—', 'Sin datos', '0']],
-      theme: 'grid',
-      headStyles: { fillColor: [168, 85, 247] },
-      styles: { fontSize: 10 }
-    });
-
-    // Top 10 Países
-    doc.text('Top 10 Países:', 14, (doc as any).lastAutoTable.finalY + 15);
-
-    autoTable(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 20,
-      head: [['#', 'País', 'Total Visitantes']],
-      body: datosPaises.length > 0
-        ? datosPaises.map((p, i) => [i + 1, p.nombre, p.total.toLocaleString()])
-        : [['—', 'Sin datos', '0']],
-      theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129] },
-      styles: { fontSize: 10 }
-    });
-
-    // Pie de página
-    const pageCount = (doc as any).internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(8);
-      doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
-    }
-
-    doc.save(`Visimap_Reporte_Historial_${now.getFullYear()}.pdf`);
   };
 
   return (
@@ -219,7 +140,7 @@ export const Historial: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={exportarPDF}
+            onClick={() => void exportarPDF()}
             disabled={loading || datosMensuales.length === 0}
             className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm font-medium disabled:opacity-50"
           >
