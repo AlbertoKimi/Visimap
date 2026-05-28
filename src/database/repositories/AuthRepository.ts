@@ -23,4 +23,12 @@ export interface AuthRepository {
    * @param metadata Metadatos opcionales (ej: rol asignado, nombre)
    */
   inviteUser(email: string, metadata: any): Promise<void>;
+  /**
+   * Envía a un usuario YA EXISTENTE un correo de restablecimiento de contraseña.
+   * Usado por administradores para forzar el reset de un trabajador, sin
+   * exponer la contraseña al admin. El usuario abrirá el enlace del correo y
+   * aterrizará en la pantalla de Establecer Contraseña.
+   * @param email Correo electrónico del usuario al que se enviará el reset
+   */
+  sendPasswordReset(email: string): Promise<void>;
 }

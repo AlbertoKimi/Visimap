@@ -16,6 +16,82 @@ tbody .tabla-fila-alterna:not(.fila-seleccionada):nth-child(odd):hover {
   background-color: var(--tabla-hover-bg) !important;
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Ruby para columnas de Ubicación (etiqueta tipo_origen debajo del nombre)
+   ──────────────────────────────────────────────────────────────────────────
+   Los navegadores tratan <rt> con un display nativo (`ruby-text`) que ignora
+   `display: block`. Para forzar que la anotación caiga DEBAJO del valor
+   principal (y no inline ni encima), usamos `ruby-position: under` y
+   añadimos un layout flex en el <ruby> que apila base+anotación verticalmente.
+*/
+ruby.ubicacion-ruby {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  ruby-position: under;
+}
+
+ruby.ubicacion-ruby rt {
+  display: block;
+  font-size: 0.625rem;       /* 10px */
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  text-align: left;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Fila seleccionada (.fila-seleccionada)
+   El fondo azul saturado tapaba textos secundarios e iconos de acción.
+   Forzamos contraste alto consistente para cumplir WCAG AA en ambos temas.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Texto base: todo el contenido de la fila pasa a blanco.
+   IMPORTANTE: el :not([class*="bg-"]) excluye los badges (Individual/Grupo/
+   admin/trabajador/Activo/Inactivo/PAIS/PROVINCIA), que tienen su propio
+   fondo y texto semántico. Si los pintáramos blancos se volverían
+   invisibles sobre su fondo claro. */
+.fila-seleccionada td,
+.fila-seleccionada td [class*="text-slate-"]:not([class*="bg-"]),
+.fila-seleccionada td [class*="text-gray-"]:not([class*="bg-"]) {
+  color: #ffffff !important;
+}
+
+/* Texto secundario (emails, fechas, usernames) → blanco con leve transparencia
+   para mantener jerarquía visual sin sacrificar la legibilidad */
+.fila-seleccionada td [class*="text-slate-400"]:not([class*="bg-"]),
+.fila-seleccionada td [class*="text-slate-500"]:not([class*="bg-"]) {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Botones de acción (modificar, eliminar) — fondo translúcido blanco
+   con icono blanco. El usuario percibe claramente las acciones disponibles
+   sobre el azul saturado de la fila seleccionada.
+   IMPORTANTE: excluimos los botones declarados como `bg-transparent`. Esos
+   suelen ser wrappers de fila clicables (avatar+nombre, etc.) que NO
+   queremos pintar con la pastilla translúcida. */
+.fila-seleccionada td button:not([class*="bg-transparent"]) {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.fila-seleccionada td button:not([class*="bg-transparent"]):hover {
+  background-color: rgba(255, 255, 255, 0.32) !important;
+}
+
+.fila-seleccionada td button:not([class*="bg-transparent"]) svg {
+  color: inherit;
+}
+
+/* Badges con fondo propio (Individual / Grupo / Provincia / País / etc.)
+   conservan sus colores semánticos, pero les damos un anillo blanco interior
+   discreto para destacar sobre el azul saturado */
+.fila-seleccionada td span[class*="bg-"] {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
 
 
 /* ─── Encabezados de página ────────────────────────────────────────────────── */

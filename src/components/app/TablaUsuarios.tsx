@@ -129,12 +129,11 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         const fullName = `${profile.nombre || ''} ${profile.primer_apellido || ''} ${profile.segundo_apellido || ''}`.trim();
         const displayName = fullName || profile.nombre_usuario || 'Sin nombre';
         const initial = displayName.charAt(0).toUpperCase();
+        // No envolvemos en <button>: el click se gestiona a nivel de fila
+        // (onRowClick más abajo). Así toda la fila es clicable salvo el
+        // menú de 3 puntos, que hace stopPropagation.
         return (
-          <button
-            type="button"
-            className="flex items-center gap-3 cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-0.5 bg-transparent border-0 text-left"
-            onClick={() => onAction('view', profile)}
-          >
+          <div className="flex items-center gap-3">
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
@@ -148,9 +147,9 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             )}
             <div>
               <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">{displayName}</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500">@{profile.nombre_usuario}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">@{profile.nombre_usuario}</p>
             </div>
-          </button>
+          </div>
         );
       },
     },
@@ -168,8 +167,29 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       sortable: true,
       render: (profile) => {
         const role = roles.find(r => r.id === profile.role_id);
+        const roleName = role?.nombre?.toLowerCase() || '';
+
+        // Colores semánticos por rol, coherentes con el resto de badges
+        // de la app (Activo=verde, Inactivo=rojo, Individual=ámbar, Grupo=índigo).
+        // Admin → violeta (autoridad), Trabajador → teal (operativo).
+        // En dark mode usamos fondos SÓLIDOS (sin opacidad /30) para que
+        // los badges no se mezclen con el azul de la fila seleccionada.
+        let roleClasses: string;
+        if (roleName === 'admin') {
+          roleClasses =
+            'bg-violet-100 dark:bg-violet-800 text-violet-700 dark:text-violet-100 border-violet-300 dark:border-violet-500';
+        } else if (roleName === 'trabajador') {
+          roleClasses =
+            'bg-teal-100 dark:bg-teal-800 text-teal-700 dark:text-teal-100 border-teal-300 dark:border-teal-500';
+        } else {
+          roleClasses =
+            'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-600';
+        }
+
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border dark:border-slate-700">
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${roleClasses}`}
+          >
             {role ? role.nombre : 'Sin rol'}
           </span>
         );
@@ -227,6 +247,11 @@ export const UsersTable: React.FC<UsersTableProps> = ({
       columns={columns}
       getRowId={profile => profile.id}
       columnFilters={columnFilters}
+      // Toda la fila abre el perfil del usuario (acción "view"). El menú
+      // de 3 puntos (ActionsCell) hace stopPropagation, por lo que clicarlo
+      // NO dispara este onRowClick. Para la propia cuenta del admin la
+      // acción se descarta en `handleAction` de VistaUsuarios.
+      onRowClick={(profile) => onAction('view', profile)}
       searchPlaceholder="Buscar por nombre, email o usuario..."
       searchKeys={['nombre', 'primer_apellido', 'segundo_apellido', 'email', 'nombre_usuario']}
       onDeleteSelected={

@@ -57,6 +57,8 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
   // Estados para contraseñas
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // Estado del envío del correo de restablecimiento (para perfiles ajenos)
+  const [enviandoReset, setEnviandoReset] = useState(false);
 
   // Estados para imagen pendiente (vista previa local antes de guardar)
   const pendingImageFile = useRef<File | null>(null);
@@ -154,6 +156,40 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
     formErrors.current[name] = hasError;
   };
 
+  /**
+   * Acción de admin: envía al usuario un correo de restablecimiento de
+   * contraseña. El propio usuario abrirá el enlace y aterrizará en la
+   * pantalla EstablecerContrasena con la sesión de recovery activa.
+   * Esto evita exponer la contraseña al admin y respeta el principio de
+   * menor privilegio (Supabase no permite cambiar la contraseña de otro
+   * usuario desde el cliente con la anon key).
+   */
+  const handleEnviarReset = async () => {
+    if (!user.email) {
+      mostrarNotificacion('Este usuario no tiene email registrado, no se puede enviar el correo.', 'error');
+      return;
+    }
+    setEnviandoReset(true);
+    try {
+      await authRepo.sendPasswordReset(user.email);
+      mostrarNotificacion(
+        `Correo de restablecimiento enviado a ${user.email}. El usuario podrá cambiar su contraseña desde el enlace.`,
+        'success'
+      );
+      // El envío del correo es la acción final del flujo de "cambiar
+      // contraseña ajena", así que salimos del modo edición. Descartamos
+      // también cambios pendientes en otros campos para evitar que queden
+      // a medio guardar (el admin debería volver a Editar si quería tocar
+      // nombre/teléfono/rol, y guardarlos explícitamente).
+      handleCancel();
+    } catch (err: any) {
+      console.error('Error al enviar reset de contraseña:', err);
+      mostrarNotificacion('No se pudo enviar el correo. Inténtalo de nuevo en unos segundos.', 'error');
+    } finally {
+      setEnviandoReset(false);
+    }
+  };
+
   // Valida los campos y, si todo OK, abre el modal de confirmación.
 
   const handleSave = () => {
@@ -189,8 +225,10 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
       const dataToUpdate = { ...editData, avatar_url: finalAvatarUrl };
       await userRepo.update(user.id, dataToUpdate);
 
-      // Actualizar contraseña
-      if (newPassword) {
+      // Actualizar contraseña sólo si es el perfil propio. Supabase no permite
+      // que un admin cambie la contraseña de otro usuario desde el cliente; para
+      // ese caso usamos el botón "Enviar correo de restablecimiento" (más arriba).
+      if (newPassword && hideBack) {
         await authRepo.updatePassword(newPassword);
       }
 
@@ -263,7 +301,7 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors font-medium self-start"
+            className="flex items-center gap-2 text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium self-start"
           >
             <ArrowLeft size={20} />
             Volver al listado
@@ -375,9 +413,24 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
               <p className="text-slate-600 dark:text-slate-400 font-medium">@{user.nombre_usuario}</p>
 
               <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 uppercase">
-                  {getRoleName(user.role_id)}
-                </span>
+                {(() => {
+                  // Color semántico del rol coherente con la tabla de usuarios:
+                  // admin → violeta, trabajador → teal, otros → slate.
+                  // En dark mode usamos fondos sólidos para mejor contraste
+                  // sobre el azul de la fila seleccionada.
+                  const roleName = getRoleName(user.role_id).toLowerCase();
+                  const roleClasses =
+                    roleName === 'admin'
+                      ? 'bg-violet-100 dark:bg-violet-800 text-violet-700 dark:text-violet-100 border-violet-300 dark:border-violet-500'
+                      : roleName === 'trabajador'
+                        ? 'bg-teal-100 dark:bg-teal-800 text-teal-700 dark:text-teal-100 border-teal-300 dark:border-teal-500'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600';
+                  return (
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${roleClasses}`}>
+                      {getRoleName(user.role_id)}
+                    </span>
+                  );
+                })()}
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase ${user.active !== false
                   ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-800'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
@@ -502,30 +555,60 @@ export const DetalleUsuario: React.FC<DetalleUsuarioProps> = ({
                     <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                       <Key size={16} className="text-blue-500" /> Cambiar Contraseña
                     </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-                      <Input
-                        label="Nueva Contraseña"
-                        type="password"
-                        name="newPassword"
-                        value={newPassword}
-                        manejarCambio={manejarCambioPass}
-                        manejarError={manejarError}
-                        placeholder="********"
-                        regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/ : undefined}
-                        error="Entre 8 y 40 caracteres, 1 mayúscula, 1 número y 1 símbolo."
-                        maxLength={40}
-                      />
-                      <Input
-                        label="Confirmar Contraseña"
-                        type="password"
-                        name="confirmPassword"
-                        value={confirmPassword}
-                        manejarCambio={manejarCambioPass}
-                        placeholder="********"
-                        maxLength={40}
-                      />
-                    </div>
+                    {hideBack ? (
+                      <>
+                        <p className="text-xs text-slate-500 dark:text-slate-500 italic">Si dejas estos campos en blanco, la contraseña se mantendrá igual.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                          <Input
+                            label="Nueva Contraseña"
+                            type="password"
+                            name="newPassword"
+                            value={newPassword}
+                            manejarCambio={manejarCambioPass}
+                            manejarError={manejarError}
+                            placeholder="********"
+                            regex={newPassword ? /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,40}$/ : undefined}
+                            error="Entre 8 y 40 caracteres, 1 mayúscula, 1 número y 1 símbolo."
+                            maxLength={40}
+                          />
+                          <Input
+                            label="Confirmar Contraseña"
+                            type="password"
+                            name="confirmPassword"
+                            value={confirmPassword}
+                            manejarCambio={manejarCambioPass}
+                            placeholder="********"
+                            maxLength={40}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      // Para perfiles ajenos, el admin no puede establecer la contraseña
+                      // directamente (Supabase no lo permite con anon key), así que
+                      // enviamos al usuario un correo de restablecimiento.
+                      <div className="space-y-3">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                          Por seguridad, no es posible establecer la contraseña de otro usuario directamente.
+                          Envíale un correo de restablecimiento y el usuario podrá elegir su nueva contraseña desde el enlace.
+                        </p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleEnviarReset}
+                          disabled={enviandoReset || !user.email}
+                          className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        >
+                          {enviandoReset ? (
+                            <><Loader2 size={16} className="animate-spin mr-2" /> Enviando...</>
+                          ) : (
+                            <><Mail size={16} className="mr-2" /> Enviar correo de restablecimiento</>
+                          )}
+                        </Button>
+                        {!user.email && (
+                          <p className="text-xs text-red-500">Este usuario no tiene email registrado.</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

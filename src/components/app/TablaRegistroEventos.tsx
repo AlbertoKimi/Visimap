@@ -35,11 +35,15 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       key: 'origen',
       header: 'Ubicación (Origen)',
       sortable: true,
+      // Usamos el elemento semántico <ruby> con <rt> (ruby text) para indicar
+      // que `tipo_origen` (PAIS / PROVINCIA) es una anotación del valor
+      // principal `origen`. La clase ".ubicacion-ruby" en components.css
+      // fuerza el render con la anotación DEBAJO en lugar de inline.
       render: (reg) => (
-        <div className="flex items-center gap-2">
-          <span className="text-slate-600 dark:text-slate-400 font-medium">{reg.origen}</span>
-          <span className="text-[10px] uppercase font-bold text-slate-300 dark:text-slate-600 ml-1">{reg.tipo_origen}</span>
-        </div>
+        <ruby className="ubicacion-ruby text-slate-700 dark:text-slate-200 font-semibold">
+          {reg.origen}
+          <rt className="text-slate-500 dark:text-slate-400">{reg.tipo_origen}</rt>
+        </ruby>
       ),
     },
     {
@@ -55,7 +59,7 @@ export const TablaRegistroEventos: React.FC<TablaRegistroEventosProps> = ({
       header: 'Fecha de Creación',
       sortable: true,
       render: (reg) => (
-        <span className="text-sm text-slate-500 dark:text-slate-400">{formatearFecha(reg.created_at)}</span>
+        <span className="text-sm text-slate-600 dark:text-slate-400">{formatearFecha(reg.created_at)}</span>
       ),
     },
     {
