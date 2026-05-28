@@ -91,7 +91,7 @@ export const RegistroVisitante: React.FC = () => {
 
   // ── Borrado masivo desde el checkbox ──
   const handleDeleteSelected = async (ids: (string | number)[]) => {
-    if (!window.confirm(`¿Eliminar ${ids.length} registro(s) seleccionado(s)? Esta acción es permanente.`)) return;
+
     try {
       if (activeTab === 'mapa') {
         await Promise.all(ids.map(id => visitorRepo.deleteRegistro(Number(id))));
@@ -182,22 +182,20 @@ export const RegistroVisitante: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('mapa')}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                activeTab === 'mapa'
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${activeTab === 'mapa'
                   ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/20 dark:border-slate-600'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               Mapa
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('eventos')}
-              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                activeTab === 'eventos'
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${activeTab === 'eventos'
                   ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm border border-slate-200/20 dark:border-slate-600'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               Eventos
             </button>
